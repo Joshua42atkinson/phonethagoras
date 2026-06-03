@@ -1,0 +1,27 @@
+{
+  "name": "phonethagoras",
+  "version": "1.0.0",
+  "description": "> **The Local-First, Non-Custodial Pedagogical Engine** > > A zero-cost, privacy-sovereign learning platform built on WebLLM edge-inference, > Liquid Foundation Models, and Self-Determination Theory.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joshua42atkinson/phonethagoras.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Joshua42atkinson/phonethagoras/issues"
+  },
+  "homepage": "https://github.com/Joshua42atkinson/phonethagoras#readme",
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.8"
+  }
+}

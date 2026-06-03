@@ -1,9 +1,9 @@
 /**
  * RECYCLER CONTROLLER — phone.com
  * 
- * Implements "The Great Recycler" alchemical engine.
+ * Implements "The Reframing Engine".
  * Takes raw personal narratives/trauma and parses them (using PhoneAI or offline heuristics)
- * to output professional resume competencies and vocational summaries.
+ * to output professional resume competencies through third-person cognitive detachment.
  */
 
 const PhoneRecycle = (() => {
@@ -52,21 +52,23 @@ const PhoneRecycle = (() => {
     // Load current state for prompt context
     const state = PhoneState.load();
     
-    // Construct alchemical system prompt
-    const systemPrompt = `You are the Alchemical Recycling Engine of phone, a local-first vocational assistant. 
-Your task is to take the user's raw lived experience, trauma, setbacks, or transition challenges, throw away the shame, guilt, and emotional blame, and extract raw, high-value professional competencies and skills.
+    // Construct reframing system prompt
+    const systemPrompt = `You are the Cognitive Reframing Engine of phone, a local-first vocational assistant. 
+Your task is to take the user's raw lived experience, trauma, setbacks, or transition challenges, and process them using third-person detachment. Strip away the shame, guilt, and emotional blame, and extract raw, high-value professional competencies and skills.
 
-Use the current player's attribute matrix for context:
-- mind (Intellect/Sage): ${state.shape.mind}
-- heart (Courage/Hero): ${state.shape.heart}
-- body (Empathy/Caregiver): ${state.shape.body}
-- act (Eloquence/Jester): ${state.shape.act}
+Use the current player's state for context:
+- mind: ${state.shape.mind}
+- heart: ${state.shape.heart}
+- body: ${state.shape.body}
+- act: ${state.shape.act}
 
 Format the output strictly as markdown containing:
-1. ### PROFESSIONAL SUMMARY
-A 2-3 sentence resume summary framing their experience positively and professionally (avoiding mentions of addiction, rehab, discharge details, or failures).
-2. ### KEY COMPETENCIES & EXPERIENCES
-3 bullet points starting with strong action verbs mapping their skills to standard vocational standards.`;
+1. ### THE CHARACTER'S JOURNEY
+A short paragraph rewriting their experience in the third person (e.g. "The Character experienced X..."). This creates cognitive distance and objective observation.
+2. ### UNLOCKED CLASS & PLAYSTYLE
+A 2-3 sentence summary framing their reframed experience as an unlocked "Class" (e.g. "The resilient coordinator") and their overarching "Playstyle" (professional summary).
+3. ### NEW PERKS & ABILITIES
+3 bullet points starting with strong action verbs. Frame them as "Unlocked Perks" or "Skill Tree Nodes" that map directly to standard vocational resume standards.`;
 
     try {
       const result = await PhoneAI.complete(systemPrompt, text);
@@ -80,8 +82,6 @@ A 2-3 sentence resume summary framing their experience positively and profession
 
       // Automatically update state.story with the original text (to save narrative context)
       state.story = text;
-      // Boost "act" (action/eloquence) score by 5 points for performing this alchemical work!
-      state.shape.act = Math.min(state.shape.act + 5, 100);
       PhoneState.save(state);
       updateNarrativeDisplay();
       
@@ -97,7 +97,7 @@ A 2-3 sentence resume summary framing their experience positively and profession
       console.error('[phone-recycle] Alchemize failed:', e);
       alert('Failed to alchemize raw input. Check console.');
     } finally {
-      runBtn.textContent = 'Alchemize to Skills';
+      runBtn.textContent = 'Reframe Experience';
       runBtn.disabled = false;
     }
   }

@@ -16,7 +16,8 @@ const PhoneDashboard = (() => {
   function render(state) {
     renderRoots(state.roots);
     renderWalk(state.walk);
-    renderPulse(state.pulse);
+    renderFirebox(state.thermo);
+    renderPearl(state.pearlState);
     renderIdentity(state);
   }
 
@@ -59,15 +60,39 @@ const PhoneDashboard = (() => {
     }
   }
 
-  // ─── Pulse Gauges ───
-  function renderPulse(pulse) {
+  // ─── Firebox Gauges ───
+  function renderFirebox(thermo) {
+    if (!thermo) return;
     const circumference = 2 * Math.PI * 50; // r=50
 
-    animateGauge('gauge-focus-arc', pulse.focus, circumference);
-    setText('gauge-focus-val', formatPercent(pulse.focus));
+    // Coal (Stamina), max 100
+    const coalPct = Math.min(Math.max(thermo.coal / 100, 0), 1);
+    animateGauge('gauge-coal-arc', coalPct, circumference);
+    setText('gauge-coal-val', thermo.coal);
 
-    animateGauge('gauge-guard-arc', pulse.guard, circumference);
-    setText('gauge-guard-val', formatPercent(pulse.guard));
+    // Steam (Momentum), max 100 for gauge display
+    const steamPct = Math.min(Math.max(thermo.steam / 100, 0), 1);
+    animateGauge('gauge-steam-arc', steamPct, circumference);
+    setText('gauge-steam-val', thermo.steam);
+  }
+
+  // ─── PEARL Map ───
+  function renderPearl(currentPhase) {
+    const phases = ['perspective', 'engineering', 'aesthetic', 'research', 'alignment'];
+    let passed = true;
+    
+    for (const p of phases) {
+      const el = document.getElementById(`node-${p}`);
+      if (!el) continue;
+      
+      el.classList.remove('active', 'completed');
+      if (p === currentPhase) {
+        el.classList.add('active');
+        passed = false;
+      } else if (passed) {
+        el.classList.add('completed');
+      }
+    }
   }
 
   function animateGauge(id, value, circumference) {
@@ -85,8 +110,35 @@ const PhoneDashboard = (() => {
   // ─── Player Identity ───
   function renderIdentity(state) {
     setText('identity-name', state.name);
-    setText('identity-face', state.face || 'none');
-    setText('identity-id', truncateUUID(state.id));
+    
+    const faceText = state.face || 'none';
+    setText('identity-face', faceText);
+    
+    // Apply aura based on face mapping if available in ZEN_CONST
+    const auraEl = document.getElementById('identity-aura');
+    if (auraEl && typeof ZEN_CONST !== 'undefined') {
+      let hexColor = 'var(--color-surface-2)';
+      let shadowColor = 'transparent';
+
+      if (faceText === ZEN_CONST.FACE.SEER) {
+        hexColor = ZEN_CONST.COLOR[ZEN_CONST.DIR.MIND];
+      } else if (faceText === ZEN_CONST.FACE.SINGER) {
+        hexColor = ZEN_CONST.COLOR[ZEN_CONST.DIR.HEART];
+      } else if (faceText === ZEN_CONST.FACE.GARDENER) {
+        hexColor = ZEN_CONST.COLOR[ZEN_CONST.DIR.BODY];
+      } else if (faceText === ZEN_CONST.FACE.MAKER) {
+        hexColor = ZEN_CONST.COLOR[ZEN_CONST.DIR.ACT];
+      } else if (faceText === ZEN_CONST.FACE.WEAVER) {
+        hexColor = '#9a7fd5'; // Special balance color
+      }
+
+      if (faceText !== 'none') {
+        shadowColor = hexColor + '66'; // 40% opacity hex
+      }
+
+      auraEl.style.background = hexColor;
+      auraEl.style.boxShadow = `0 0 15px ${shadowColor}`;
+    }
   }
 
   // ─── Utilities ───

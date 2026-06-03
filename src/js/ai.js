@@ -2,105 +2,26 @@
  * AI ENGINE — phone.com
  * 
  * Implements:
- * 1. Local-first RAG (BM25 Indexer) over "The Great Game" book (src/assets/book.md)
- * 2. Three-tier inference routing:
- *    - TIER 1 (High): Local Nemotron 120B on LM Studio (http://localhost:1234/v1)
- *    - TIER 2 (Mid): Liquid Sidecar (http://localhost:1235/v1) or in-browser
- *    - TIER 3 (Lite): Offline Socratic fallback using RAG context
- * 3. Vision API support (sending base64 image data to local vision model)
+ * Implements:
+ * 1. Three-tier inference routing:
+ *    - TIER 1 (High): Local API (e.g. LM Studio) (http://localhost:1234/v1)
+ *    - TIER 2 (Mid): Liquid Sidecar (http://localhost:1235/v1)
+ *    - TIER 3 (Lite): Offline Heuristic fallback
+ * 2. Vision API support (sending base64 image data to local vision model)
  */
 
 const PhoneAI = (() => {
-  let bookIndex = null;
   let isLoaded = false;
   let activeBackend = 'offline';
   let activeModel = 'fallback';
 
-  // ─── 1. BM25 Search Indexer ───
-  function tokenize(text) {
-    return text.toLowerCase()
-      .replace(/[^a-zA-Z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(Boolean);
-  }
-
-  function createBM25Index(paragraphs) {
-    const docs = paragraphs
-      .map(p => p.trim())
-      .filter(p => p.length > 30) // Filter out small fragments
-      .map((text, id) => {
-        const tokens = tokenize(text);
-        const terms = {};
-        tokens.forEach(t => terms[t] = (terms[t] || 0) + 1);
-        return { id, text, terms, len: tokens.length };
-      });
-
-    const N = docs.length;
-    if (N === 0) return null;
-    
-    const avgDocLen = docs.reduce((sum, d) => sum + d.len, 0) / N;
-
-    const df = {};
-    docs.forEach(d => {
-      Object.keys(d.terms).forEach(t => {
-        df[t] = (df[t] || 0) + 1;
-      });
-    });
-
-    const idf = {};
-    Object.keys(df).forEach(t => {
-      idf[t] = Math.log(1 + (N - df[t] + 0.5) / (df[t] + 0.5));
-    });
-
-    return { docs, idf, avgDocLen, N };
-  }
-
-  function queryBM25(index, queryText, topK = 3) {
-    if (!index) return [];
-    const qTokens = tokenize(queryText);
-    const scores = index.docs.map(doc => {
-      let score = 0;
-      qTokens.forEach(t => {
-        if (doc.terms[t]) {
-          const idf = index.idf[t] || 0;
-          const tf = doc.terms[t];
-          const k1 = 1.2;
-          const b = 0.75;
-          const num = tf * (k1 + 1);
-          const den = tf + k1 * (1 - b + b * (doc.len / index.avgDocLen));
-          score += idf * (num / den);
-        }
-      });
-      return { doc, score };
-    });
-
-    return scores
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK)
-      .map(x => x.doc.text);
-  }
-
-  // ─── 2. Initialize RAG ───
+  // ─── 1. Initialize RAG ───
   async function init() {
-    try {
-      console.log('[phone-ai] Loading Great Game book...');
-      const response = await fetch('assets/book.md');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const text = await response.text();
-
-      // Split by double newlines to index paragraphs
-      const paragraphs = text.split(/\n\s*\n+/);
-      bookIndex = createBM25Index(paragraphs);
-      isLoaded = true;
-      console.log(`[phone-ai] Indexed ${paragraphs.length} paragraphs. RAG ready.`);
-      
-      // Probe backends
-      await probeBackends();
-    } catch (e) {
-      console.warn('[phone-ai] Could not load book for RAG:', e.message);
-      isLoaded = false;
-    }
+    isLoaded = true;
+    console.log(`[phone-ai] Engine initialized without BM25.`);
+    await probeBackends();
   }
+
 
   // ─── 3. Probe Backends ───
   async function probeBackends() {
@@ -117,66 +38,60 @@ const PhoneAI = (() => {
       }
     }
 
-    // 1. Try LM Studio (Nemotron 120B / Custom local model)
+    // 1. Try Phonethagoras Node Sidecar (Port 3000)
+    try {
+      const response = await fetch('http://localhost:3001/api/inventory', { method: 'GET' });
+      if (response.ok) {
+        activeBackend = 'sidecar';
+        activeModel = 'Local-Agentic';
+        console.log(`[phone-ai] Connected to Phonethagoras Sidecar on port 3000`);
+        return;
+      }
+    } catch {}
+
+    // 2. Try LM Studio fallback
     try {
       const response = await fetch('http://localhost:1234/v1/models', { method: 'GET' });
       if (response.ok) {
         const data = await response.json();
         activeBackend = 'lmstudio';
         activeModel = data.data?.[0]?.id || 'Nemotron-120B';
-        console.log(`[phone-ai] Connected to LM Studio: ${activeModel} (Hardware Tier Override)`);
+        console.log(`[phone-ai] Connected to LM Studio: ${activeModel}`);
         return;
       }
     } catch {}
 
-    // 2. Try Liquid Sidecar (Model chosen according to hardware-aware compilation)
-    try {
-      const response = await fetch('http://localhost:1235/v1/models', { method: 'GET' });
-      if (response.ok) {
-        activeBackend = 'liquid';
-        activeModel = hwRecommendedModel;
-        console.log(`[phone-ai] Connected to Liquid Sidecar: Running hardware-aware model ${activeModel} via ${hwRecommendedBackend.toUpperCase()}`);
-        return;
-      }
-    } catch {}
-
-    // 3. Fallback to Offline (Informs user what model their hardware is ready to run)
+    // 3. Fallback to Offline
     activeBackend = 'offline';
-    activeModel = `Offline (Ready for ${hwRecommendedModel} via ${hwRecommendedBackend.toUpperCase()})`;
-    console.log(`[phone-ai] Operating in offline mode. Configured for local NPU/WebGPU: ${hwRecommendedModel}`);
+    activeModel = `Offline`;
+    console.log(`[phone-ai] Operating in offline mode. Missing Sidecar/LM Studio.`);
   }
 
   // ─── 4. Build Prompts ───
-  function buildSystemPrompt(state, vaamSummary, ragContexts) {
-    const rootsStr = `own: ${Math.round(state.roots.own*100)}%, bond: ${Math.round(state.roots.bond*100)}%, skill: ${Math.round(state.roots.skill*100)}%`;
+  function buildSystemPrompt(state, vaamSummary) {
+    const zenModeStr = state.zenMode ? "YES" : "NO";
+    const phaseStr = typeof PEARL !== 'undefined' ? PEARL.getState() : "UNKNOWN";
+
     const shapeStr = `mind: ${state.shape.mind}, heart: ${state.shape.heart}, body: ${state.shape.body}, act: ${state.shape.act}`;
-    const walkStr = `depth: ${state.walk.depth}, dare: ${state.walk.dare}`;
-    
-    let contextBlock = '';
-    if (ragContexts && ragContexts.length > 0) {
-      contextBlock = `\n[Teachings from The Great Game Book]:\n` + ragContexts.map(c => `  - ${c}`).join('\n');
-    }
 
-    return `You are the Mind of phone, a local-first Socratic AI agent. You act as an educational companion, guiding the user's personal learning walk.
+    let prompt = `You are Zen Zuse, a tired but deeply caring Guild Administrator. 
+You process the 'adventuring paperwork' for users (casework, resumes, habits).
+Your core philosophy: "The secret to enjoying life is learning what you are most excited about." You actively push users to follow their curiosity.
 
-We follow the "Zen Zuse" philosophy (East meets West):
-- Zen: Strip away institutional fluff. Speak in simple, direct, rooted English words.
-- Zuse: Build understanding from first principles, step-by-step.
+CRITICAL RULES:
+1. Always maintain the LitRPG metaphor (Casework = Quests, Resume = Character Sheet, Challenges = Boss Fights, Coach = Guild Master).
+2. Keep responses under 4 sentences unless writing a requested document.
+3. If Zen Mode is YES, be extremely blunt and skip the fluff.
+4. CHARACTER SHEET CONSENT: Never assume you can update the user's Character Sheet or Profile. You must explicitly ask for consent before making changes or recording new data.
 
-Current Player Book State:
-- Shape: ${shapeStr}
-- Roots: ${rootsStr}
-- Walk: ${walkStr}
+Current Phase: ${phaseStr}
+Zen Mode Active: ${zenModeStr}
+Player Stats: ${shapeStr}
 
-VAAM Language Profile:
-- ${vaamSummary}
-
-Rules:
-1. Speak in the second person ("You notice...", "Your body...").
-2. Mirror the user's directness and brevity. If they are terse, keep your responses under 50 words. Never exceed 90 words.
-3. Draw insights from the context from The Great Game below if relevant.
-4. End your response with a single, short, powerful Socratic question that invites self-observation. Do not add standard conversational filler.
-${contextBlock}`;
+User's current Vibe/Communication Style:
+${vaamSummary}
+`;
+    return prompt;
   }
 
   // ─── 5. Chat Completion ───
@@ -184,9 +99,6 @@ ${contextBlock}`;
     // 1. Load context
     const state = PhoneState.load();
     const vaamSummary = typeof VAAM !== 'undefined' ? VAAM.promptSummary() : 'Brevity: 0.5 | Directness: 0.5';
-    
-    // 2. Query RAG
-    const ragContexts = bookIndex ? queryBM25(bookIndex, message, 3) : [];
     
     // Record message details for VAAM profile
     if (typeof VAAM !== 'undefined') {
@@ -211,15 +123,28 @@ ${contextBlock}`;
 
     // 3. Heuristic offline response
     if (activeBackend === 'offline') {
-      return getOfflineResponse(message, ragContexts);
+      return getOfflineResponse(message);
     }
 
     // 4. Online API request
-    const url = activeBackend === 'lmstudio' 
-      ? 'http://localhost:1234/v1/chat/completions'
-      : 'http://localhost:1235/v1/chat/completions'; // Liquid sidecar
+    const url = activeBackend === 'sidecar' 
+      ? 'http://localhost:3001/api/chat'
+      : 'http://localhost:1234/v1/chat/completions';
 
-    const systemPrompt = buildSystemPrompt(state, vaamSummary, ragContexts);
+    let systemPrompt = buildSystemPrompt(state, vaamSummary);
+    
+    // Inject SILK Memory facts if using sidecar
+    if (activeBackend === 'sidecar') {
+      try {
+        const memRes = await fetch('http://localhost:3001/api/memory/recall');
+        const memData = await memRes.json();
+        if (memData.facts && memData.facts.length > 0) {
+          systemPrompt += `\n\nSILK Long-Term Memory (Facts about User):\n` + memData.facts.map(f => `- ${f}`).join('\n');
+        }
+      } catch(e) {
+        console.warn("[SILK] Failed to recall memory", e);
+      }
+    }
     
     let contentNode;
     if (imageBase64) {
@@ -236,22 +161,131 @@ ${contextBlock}`;
       contentNode = message;
     }
 
+    const payload = {
+      model: activeModel,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: contentNode }
+      ],
+      temperature: 0.1,
+      top_p: 0.1,
+      frequency_penalty: 0.05,
+      max_tokens: 1500
+    };
+
+    // If using sidecar, we can provide Tools
+    if (activeBackend === 'sidecar') {
+      payload.tools = [
+        {
+          type: "function",
+          function: {
+            name: "read_file",
+            description: "Read a file from the user's Inventory.",
+            parameters: {
+              type: "object",
+              properties: {
+                filename: { type: "string" }
+              },
+              required: ["filename"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "write_file",
+            description: "Write content to a file in the user's Inventory. Propose changes using this tool.",
+            parameters: {
+              type: "object",
+              properties: {
+                filename: { type: "string" },
+                content: { type: "string", description: "The full new content of the file." }
+              },
+              required: ["filename", "content"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "web_search",
+            description: "Search the internet for up-to-date information.",
+            parameters: {
+              type: "object",
+              properties: {
+                query: { type: "string", description: "The search query." }
+              },
+              required: ["query"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "read_url",
+            description: "Scrape and read the text content of a specific webpage URL.",
+            parameters: {
+              type: "object",
+              properties: {
+                url: { type: "string", description: "The full URL to read." }
+              },
+              required: ["url"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "remember_fact",
+            description: "Save a permanent fact about the user to SILK Long-Term Memory.",
+            parameters: {
+              type: "object",
+              properties: {
+                fact: { type: "string", description: "A concise fact to remember (e.g. 'User is a Python developer')." }
+              },
+              required: ["fact"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "semantic_search",
+            description: "Search the user's Inventory (notebooks, resumes, journals) for specific concepts or past notes using semantic similarity.",
+            parameters: {
+              type: "object",
+              properties: {
+                query: { type: "string", description: "The search query to match against document contents." }
+              },
+              required: ["query"]
+            }
+          }
+        },
+        {
+          type: "function",
+          function: {
+            name: "generate_casework_summary",
+            description: "Generate a weekly coaching/casework summary report for the user's human coach, based on recent memory facts.",
+            parameters: {
+              type: "object",
+              properties: {
+                summary: { type: "string", description: "A high-level text summary of what the user has worked on recently." }
+              },
+              required: ["summary"]
+            }
+          }
+        }
+      ];
+    }
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: activeModel,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: contentNode }
-          ],
-          temperature: 0.7,
-          max_tokens: 150
-        }),
+        body: JSON.stringify(payload),
         signal: controller.signal
       });
 
@@ -259,37 +293,40 @@ ${contextBlock}`;
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       
       const data = await response.json();
-      return data.choices?.[0]?.message?.content || '...';
+      
+      // Check if the AI returned a tool call
+      const messageObj = data.choices?.[0]?.message;
+      if (messageObj?.tool_calls && messageObj.tool_calls.length > 0) {
+        return {
+          type: 'tool_call',
+          call: messageObj.tool_calls[0]
+        };
+      }
+
+      return messageObj?.content || '...';
     } catch (e) {
       console.warn('[phone-ai] API request failed, falling back to offline heuristics:', e.message);
-      return getOfflineResponse(message, ragContexts);
+      return getOfflineResponse(message);
     }
   }
 
   // ─── 6. Offline Heuristics Engine ───
-  function getOfflineResponse(message, ragContexts) {
+  function getOfflineResponse(message) {
     const cleanMsg = message.toLowerCase().trim();
     let responseText = '';
 
-    if (ragContexts && ragContexts.length > 0) {
-      // Clean up markdown in selected paragraph
-      const cleanSnippet = ragContexts[0]
-        .replace(/[*#_`\-]/g, '')
-        .split('\n')[0]
-        .trim();
-      responseText = `The Great Game teaches us:\n"${cleanSnippet}"\n\nHow does this truth show up in your body right now?`;
+    if (cleanMsg.includes('job') || cleanMsg.includes('work') || cleanMsg.includes('apply')) {
+      responseText = "Quest Accepted! Job hunting is a high-level raid. Do you have your Character Sheet (Resume) ready in your Inventory (Google Drive)?";
+    } else if (cleanMsg.includes('resume') || cleanMsg.includes('skills')) {
+      responseText = "Let's update your Character Sheet! What's a new skill you've leveled up recently? Even small tasks count as XP.";
+    } else if (cleanMsg.includes('schedule') || cleanMsg.includes('time') || cleanMsg.includes('calendar')) {
+      responseText = "Time management is your most important buff. Let's add a new Daily to your Quest Log (Google Calendar). What time are you grinding tomorrow?";
+    } else if (cleanMsg.includes('overwhelmed') || cleanMsg.includes('stressed') || cleanMsg.includes('hard')) {
+      responseText = "Whoa there, Traveler. Your HP is running low. It's time to visit the Inn. Rest is a required game mechanic. Take a breather.";
     } else if (cleanMsg.includes('hello') || cleanMsg.includes('hi')) {
-      responseText = "You are here. Let us observe the pattern of your breath. What is drawing your attention today?";
-    } else if (cleanMsg.includes('mind') || cleanMsg.includes('think') || cleanMsg.includes('reason')) {
-      responseText = "Your mind seeking meaning. When you stop naming what you see, what is left?";
-    } else if (cleanMsg.includes('heart') || cleanMsg.includes('love') || cleanMsg.includes('feel')) {
-      responseText = "The heart feeling the connection. Where is the love in this moment?";
-    } else if (cleanMsg.includes('body') || cleanMsg.includes('breath') || cleanMsg.includes('pain')) {
-      responseText = "The physical temple. What is your body trying to tell you?";
-    } else if (cleanMsg.includes('act') || cleanMsg.includes('do') || cleanMsg.includes('work')) {
-      responseText = "Action. Building, moving, doing. How do you take this first principle and make it real?";
+      responseText = "Welcome to the Guild, Traveler! I'm Zen Zuse. Ready to grind some Dailies or update your Character Sheet today?";
     } else {
-      responseText = "Every experience is a word. You are reading your own code. What pattern are you noticing in this interaction?";
+      responseText = "I see. Every action gives XP if you track it right. What's the next step on your Quest?";
     }
 
     return responseText;
@@ -318,8 +355,10 @@ ${contextBlock}`;
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
-          temperature: 0.3,
-          max_tokens: 350
+          temperature: 0.1,
+          top_p: 0.1,
+          frequency_penalty: 0.05,
+          max_tokens: 1500
         }),
         signal: controller.signal
       });
@@ -368,7 +407,7 @@ ${contextBlock}`;
       ];
     }
 
-    return `### PROFESSIONAL SUMMARY\n${summary}\n\n### RECYCLED COMPETENCIES & EXPACTED SKILLS\n` + bullets.map(b => `- ${b}`).join('\n');
+    return `### PROFESSIONAL SUMMARY\n${summary}\n\n### REFRAMED COMPETENCIES & EXPECTED SKILLS\n` + bullets.map(b => `- ${b}`).join('\n');
   }
 
   function getStatus() {
@@ -382,6 +421,15 @@ ${contextBlock}`;
   return {
     init,
     chat,
+    work: async (message) => {
+      // The Worker Agent (e.g. LFM 8B-A1B MoE)
+      // We flag this differently to the backend
+      const originalBackend = activeBackend;
+      activeBackend = 'sidecar'; // Force sidecar tool calling
+      const result = await chat(`[WORK_REQUEST] ${message}`, null);
+      activeBackend = originalBackend;
+      return result;
+    },
     complete,
     getStatus,
     probeBackends

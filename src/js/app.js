@@ -16,7 +16,12 @@
   let playerState = PhoneState.load();
   PhoneState.save(playerState); // Persist defaults if first run
 
-  console.log('[phone] Player state loaded:', playerState.id);
+  console.log('[phonethagoras] Player state loaded:', playerState.id);
+  
+  // ─── 1b. Translate DOM ───
+  if (typeof PhoneI18n !== 'undefined') {
+    PhoneI18n.translateDOM(playerState.language);
+  }
 
   // ─── 2. Hardware Profile ───
   const hwProfile = await PhoneHardware.profile();
@@ -51,25 +56,39 @@
     PhoneDocs.init();
   }
 
-  // ─── 4. Navigation ───
-  const navButtons = document.querySelectorAll('.nav-btn[data-panel]');
+  // ─── 4. Navigation (Chat-First Floating Widgets) ───
+  const navButtons = document.querySelectorAll('.sigil-btn[data-panel]');
   const panels = document.querySelectorAll('.panel');
 
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.classList.contains('locked')) {
+        const toast = document.createElement('div');
+        toast.textContent = "Feature Locked (Coming Soon)";
+        toast.style.cssText = "position:fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--color-surface-2); border: 1px solid var(--color-border); padding: 8px 16px; border-radius: 20px; z-index: 1000; animation: fadeout 2s forwards;";
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+        return;
+      }
+      
       const targetPanel = btn.dataset.panel;
 
-      // Update active button
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      // If clicking Walk (Chat), just close all widgets
+      if (targetPanel === 'walk') {
+        panels.forEach(p => p.classList.remove('widget-active'));
+        return;
+      }
 
-      // Show target panel
-      panels.forEach(p => {
-        p.classList.remove('panel-active');
-        if (p.id === `panel-${targetPanel}`) {
-          p.classList.add('panel-active');
-        }
-      });
+      const panelEl = document.getElementById(`panel-${targetPanel}`);
+      const isCurrentlyActive = panelEl.classList.contains('widget-active');
+
+      // Close all widgets
+      panels.forEach(p => p.classList.remove('widget-active'));
+
+      // Toggle the clicked widget
+      if (!isCurrentlyActive) {
+        panelEl.classList.add('widget-active');
+      }
     });
   });
 
@@ -91,7 +110,7 @@
 
     if (zenModeActive) {
       // If user is currently on a hidden panel, push them back to the 'shape' panel
-      const activeBtn = document.querySelector('.nav-btn.active');
+      const activeBtn = document.querySelector('.sigil-btn.active');
       if (activeBtn && gatedTabs.includes(activeBtn.id)) {
         const shapeTab = document.getElementById('nav-shape');
         if (shapeTab) shapeTab.click();
@@ -112,11 +131,24 @@
       playerState.zenMode = checkZenMode.checked;
       PhoneState.save(playerState);
       applyZenModeGating(playerState.zenMode);
-      console.log(`[phone] Zen Mode (KISS) set to: ${playerState.zenMode}`);
+      console.log(`[phonethagoras] Zen Mode (KISS) set to: ${playerState.zenMode}`);
     });
   }
 
-  // ─── 5. Settings Buttons ───
+  // ─── 5. Settings Buttons & Selectors ───
+  const selectLanguage = document.getElementById('setting-language');
+  if (selectLanguage) {
+    selectLanguage.value = playerState.language || 'en';
+    selectLanguage.addEventListener('change', (e) => {
+      playerState.language = e.target.value;
+      PhoneState.save(playerState);
+      if (typeof PhoneI18n !== 'undefined') {
+        PhoneI18n.translateDOM(playerState.language);
+      }
+      console.log(`[phonethagoras] Language set to: ${playerState.language}`);
+    });
+  }
+
   const btnExport = document.getElementById('btn-export-state');
   const btnImport = document.getElementById('btn-import-state');
   const btnReset = document.getElementById('btn-reset-state');
@@ -146,9 +178,15 @@
           applyZenModeGating(playerState.zenMode);
         }
         
-        console.log('[phone] State imported successfully');
+        // Refresh Language on import
+        if (selectLanguage) selectLanguage.value = playerState.language || 'en';
+        if (typeof PhoneI18n !== 'undefined') {
+          PhoneI18n.translateDOM(playerState.language);
+        }
+        
+        console.log('[phonethagoras] State imported successfully');
       } catch (err) {
-        console.error('[phone] Import failed:', err);
+        console.error('[phonethagoras] Import failed:', err);
         alert('Failed to import state: ' + err.message);
       }
       fileInput.value = ''; // Reset for re-import
@@ -169,7 +207,13 @@
           applyZenModeGating(true);
         }
         
-        console.log('[phone] State reset to defaults');
+        // Reset language
+        if (selectLanguage) selectLanguage.value = 'en';
+        if (typeof PhoneI18n !== 'undefined') {
+          PhoneI18n.translateDOM('en');
+        }
+        
+        console.log('[phonethagoras] State reset to defaults');
       }
     });
   }
@@ -183,5 +227,5 @@
     }, 800);
   }
 
-  console.log('[phone] ◆ ready.');
+  console.log('[phonethagoras] ◆ portal open.');
 })();

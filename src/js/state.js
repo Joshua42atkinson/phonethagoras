@@ -7,13 +7,21 @@
  * Zen Zuse naming: every field uses the simplest possible English word.
  */
 
-const PhoneState = (() => {
+(function(root, factory) {
+  const state = factory();
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = state;
+  } else {
+    root.PhoneState = state;
+  }
+})(typeof self !== 'undefined' ? self : this, function() {
   const STORAGE_KEY = 'zen_book';
 
   function createDefaultState() {
     return {
       id: generateUUID(),
       zenMode: true,
+      language: 'en',              // Current user language
       name: 'newcomer',           // was archetype_build / 'Unawakened'
       story: '',                   // was demographics_private.narrative_context
       shape: {                     // was attribute_matrix
@@ -61,11 +69,13 @@ const PhoneState = (() => {
         focus: 0.50,               // was attention_stewardship_score
         guard: 0.50,               // was armor_density_vulnerability
       },
+
+      pearlState: 'perspective',   // Current PEARL phase (Perspective -> Engineering -> Aesthetic -> Research -> Alignment)
       face: null,                  // was prestige_class
       _meta: {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        version: '0.2.0'
+        version: '0.3.0'
       }
     };
   }
@@ -80,6 +90,30 @@ const PhoneState = (() => {
       const r = Math.random() * 16 | 0;
       return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
+  }
+  
+  // ─── Face Evolvement ───
+  function updateFace(state) {
+    if (typeof ZEN_CONST === 'undefined') return;
+    
+    const { mind, heart, body, act } = state.shape;
+    const maxVal = Math.max(mind, heart, body, act);
+    
+    if (maxVal < 60) {
+      state.face = 'none'; // Not attuned enough
+      return;
+    }
+    
+    // Simplistic assignment based on max
+    if (mind === maxVal) state.face = ZEN_CONST.FACE.SEER;
+    else if (heart === maxVal) state.face = ZEN_CONST.FACE.SINGER;
+    else if (body === maxVal) state.face = ZEN_CONST.FACE.GARDENER;
+    else if (act === maxVal) state.face = ZEN_CONST.FACE.MAKER;
+    
+    // If all are perfectly balanced and high, they become WEAVER
+    if (mind > 75 && heart > 75 && body > 75 && act > 75) {
+       state.face = ZEN_CONST.FACE.WEAVER;
+    }
   }
 
   // ─── Persistence ───
@@ -99,6 +133,7 @@ const PhoneState = (() => {
 
   function save(state) {
     try {
+      updateFace(state); // Automatically evolve face before saving
       state._meta.updated_at = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       return true;
@@ -169,4 +204,4 @@ const PhoneState = (() => {
     importJSON,
     createDefaultState
   };
-})();
+});

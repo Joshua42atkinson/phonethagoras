@@ -17,7 +17,7 @@ const PhoneVoice = (() => {
   let isListening = false;
   let isSpeaking = false;
   let handsFree = false;
-  let ttsEnabled = true;
+  let ttsEnabled = false; // Turned off by default because user found it jarring
   
   let onTranscriptChangeCallback = null;
   let onFinalTranscriptCallback = null;

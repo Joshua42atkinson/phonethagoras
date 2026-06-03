@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="phone — a local-first learning tool. your words, your data, your device. east meets west.">
-  <title>phone — zen zuse</title>
+  <meta name="description" content="Phonethagoras — The Portal to the Guild. Your life, organized.">
+  <title>Phonethagoras — The Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/index.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
 </head>
@@ -27,7 +27,7 @@
             </linearGradient>
           </defs>
         </svg>
-        <p class="loading-text">listening…</p>
+        <p class="loading-text">Opening portal…</p>
       </div>
     </div>
 
@@ -35,18 +35,60 @@
     <header id="main-header" class="header">
       <div class="header-inner">
         <div class="header-brand">
-          <img src="assets/sigil.png" alt="Sigil" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 0 6px rgba(212, 120, 60, 0.3); object-fit: cover;">
-          <h1 class="brand-name">phone</h1>
-          <span class="brand-epoch">Summer 2026</span>
+          <img src="assets/portal_sigil.png" alt="Sigil" id="header-sigil" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 0 6px rgba(100, 200, 255, 0.5); object-fit: cover;">
+          <h1 class="brand-name" data-i18n="app.name">Phonethagoras</h1>
+          <span class="brand-epoch" data-i18n="app.epoch">Portal Active</span>
         </div>
-        <nav class="header-nav" id="main-nav">
-          <button class="nav-btn active" data-panel="shape" id="nav-shape">shape</button>
-          <button class="nav-btn" data-panel="walk" id="nav-walk">walk</button>
-          <button class="nav-btn" data-panel="breath" id="nav-breath">breath</button>
-          <button class="nav-btn" data-panel="recycle" id="nav-recycle">recycle</button>
-          <button class="nav-btn" data-panel="bridge" id="nav-bridge">bridge</button>
-          <button class="nav-btn" data-panel="docs" id="nav-docs">docs</button>
-          <button class="nav-btn" data-panel="settings" id="nav-settings">settings</button>
+        <nav class="sigil-nav" id="main-nav">
+          <!-- The Walk (Active Campaign) -->
+          <button class="sigil-btn active" data-panel="walk" id="nav-walk" data-i18n-title="nav.walk" title="The Walk">
+            <svg viewBox="0 0 100 100" class="sigil-icon">
+              <path d="M20 80 Q 50 20 80 80 M50 50 L 50 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+          </button>
+
+          <!-- Character Sheet -->
+          <button class="sigil-btn" data-panel="shape" id="nav-shape" title="Character Sheet">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+
+          <!-- Rest / Recovery -->
+          <button class="sigil-btn locked" data-panel="breath" id="nav-breath" title="Rest (Inn)">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-10-5-10 5z"></path>
+              <path d="M12 15v5"></path>
+            </svg>
+          </button>
+
+          <!-- Quest Log -->
+          <button class="sigil-btn locked" data-panel="recycle" id="nav-recycle" title="Quest Log">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Inventory -->
+          <button class="sigil-btn locked" data-panel="bridge" id="nav-bridge" title="Inventory">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </button>
+
+          <!-- The Gear (Settings) -->
+          <button class="sigil-btn" data-panel="settings" id="nav-settings" title="Settings">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
         </nav>
         <div class="header-status">
           <span class="status-indicator" id="hardware-tier-badge">—</span>
@@ -56,83 +98,61 @@
 
     <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
     <main id="main-content" class="main-content">
+      
+      <!-- UI Background Image -->
+      <div class="litrpg-bg"></div>
 
       <!-- ═══ SHAPE (DASHBOARD) PANEL ═══ -->
-      <section id="panel-shape" class="panel panel-active">
+      <section id="panel-shape" class="panel">
         <div class="dashboard-grid">
 
-          <!-- shape Radar Chart -->
-          <div class="card card-radar" id="card-radar">
+          <!-- Main Quest Map -->
+          <div class="card card-iron-road" id="card-iron-road">
             <div class="card-header">
-              <h2 class="card-title">shape</h2>
-              <span class="card-subtitle">the four directions</span>
+              <h2 class="card-title" data-i18n="dashboard.iron_road.title">Main Quest</h2>
+              <span class="card-subtitle" data-i18n="dashboard.iron_road.subtitle">Current Progress</span>
             </div>
-            <div class="radar-container" id="radar-container">
-              <svg id="radar-chart" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-                <!-- Grid rings -->
-                <g class="radar-grid" opacity="0.15">
-                  <polygon points="200,80 320,200 200,320 80,200" fill="none" stroke="var(--color-grid)" stroke-width="1" />
-                  <polygon points="200,110 290,200 200,290 110,200" fill="none" stroke="var(--color-grid)" stroke-width="1" />
-                  <polygon points="200,140 260,200 200,260 140,200" fill="none" stroke="var(--color-grid)" stroke-width="1" />
-                  <polygon points="200,170 230,200 200,230 170,200" fill="none" stroke="var(--color-grid)" stroke-width="1" />
-                </g>
-                <!-- Axis lines -->
-                <g class="radar-axes" opacity="0.2">
-                  <line x1="200" y1="60" x2="200" y2="340" stroke="var(--color-grid)" stroke-width="1" />
-                  <line x1="60" y1="200" x2="340" y2="200" stroke="var(--color-grid)" stroke-width="1" />
-                </g>
-                <!-- The Player's Diamond (filled shape) -->
-                <polygon id="radar-diamond" class="radar-diamond" points="200,200 200,200 200,200 200,200" />
-                <!-- Axis endpoint dots -->
-                <circle id="dot-mind" class="radar-dot dot-mind" cx="200" cy="200" r="6" />
-                <circle id="dot-heart" class="radar-dot dot-heart" cx="200" cy="200" r="6" />
-                <circle id="dot-body" class="radar-dot dot-body" cx="200" cy="200" r="6" />
-                <circle id="dot-act" class="radar-dot dot-act" cx="200" cy="200" r="6" />
-                <!-- Labels -->
-                <text x="200" y="50" class="radar-label label-mind" text-anchor="middle">mind</text>
-                <text x="200" y="42" class="radar-label-sub" text-anchor="middle">seer</text>
-                <text x="350" y="204" class="radar-label label-heart" text-anchor="start">heart</text>
-                <text x="350" y="218" class="radar-label-sub" text-anchor="start">singer</text>
-                <text x="200" y="370" class="radar-label label-body" text-anchor="middle">body</text>
-                <text x="200" y="382" class="radar-label-sub" text-anchor="middle">gardener</text>
-                <text x="50" y="204" class="radar-label label-act" text-anchor="end">act</text>
-                <text x="50" y="218" class="radar-label-sub" text-anchor="end">maker</text>
-              </svg>
-            </div>
-            <div class="radar-stats" id="radar-stats">
-              <div class="stat-row">
-                <span class="stat-dot mind"></span>
-                <span class="stat-label">mind</span>
-                <span class="stat-value" id="stat-mind">—</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-dot heart"></span>
-                <span class="stat-label">heart</span>
-                <span class="stat-value" id="stat-heart">—</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-dot body"></span>
-                <span class="stat-label">body</span>
-                <span class="stat-value" id="stat-body">—</span>
-              </div>
-              <div class="stat-row">
-                <span class="stat-dot act"></span>
-                <span class="stat-label">act</span>
-                <span class="stat-value" id="stat-act">—</span>
+            <div class="iron-road-container" id="iron-road-container">
+              <!-- Visual path of PEARL -->
+              <div class="pearl-path">
+                <div class="pearl-node active" id="node-perspective">
+                  <span class="node-icon">?</span>
+                  <span class="node-label">Assess</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-engineering">
+                  <span class="node-icon">📝</span>
+                  <span class="node-label">Stats</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-aesthetic">
+                  <span class="node-icon">⚔️</span>
+                  <span class="node-label">Quests</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-research">
+                  <span class="node-icon">🎒</span>
+                  <span class="node-label">Inventory</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-alignment">
+                  <span class="node-icon">⭐</span>
+                  <span class="node-label">Level Up</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- roots Topology -->
-          <div class="card card-virtues" id="card-virtues">
+          <!-- Core Attributes -->
+          <div class="card card-virtues hidden" id="card-virtues">
             <div class="card-header">
-              <h2 class="card-title">roots</h2>
-              <span class="card-subtitle">own · bond · skill</span>
+              <h2 class="card-title" data-i18n="dashboard.roots.title">Core Attributes</h2>
+              <span class="card-subtitle" data-i18n="dashboard.roots.subtitle">Base Stats</span>
             </div>
             <div class="virtue-bars">
               <div class="virtue-row">
                 <div class="virtue-info">
-                  <span class="virtue-name">own</span>
+                  <span class="virtue-name" data-i18n="dashboard.roots.own">own</span>
                   <span class="virtue-value" id="root-own-val">—</span>
                 </div>
                 <div class="virtue-track">
@@ -141,7 +161,7 @@
               </div>
               <div class="virtue-row">
                 <div class="virtue-info">
-                  <span class="virtue-name">bond</span>
+                  <span class="virtue-name" data-i18n="dashboard.roots.bond">bond</span>
                   <span class="virtue-value" id="root-bond-val">—</span>
                 </div>
                 <div class="virtue-track">
@@ -150,7 +170,7 @@
               </div>
               <div class="virtue-row">
                 <div class="virtue-info">
-                  <span class="virtue-name">skill</span>
+                  <span class="virtue-name" data-i18n="dashboard.roots.skill">skill</span>
                   <span class="virtue-value" id="root-skill-val">—</span>
                 </div>
                 <div class="virtue-track">
@@ -160,15 +180,15 @@
             </div>
           </div>
 
-          <!-- walk Status -->
+          <!-- Quest Status -->
           <div class="card card-campaign" id="card-campaign">
             <div class="card-header">
-              <h2 class="card-title">walk</h2>
+              <h2 class="card-title" data-i18n="dashboard.walk.title">Current Quest</h2>
               <span class="card-subtitle" id="walk-depth">—</span>
             </div>
             <div class="campaign-body">
               <div class="campaign-quest">
-                <span class="quest-label">dare</span>
+                <span class="quest-label" data-i18n="dashboard.walk.dare">Goal</span>
                 <p class="quest-title" id="walk-dare">—</p>
               </div>
               <div class="campaign-milestones" id="walk-steps">
@@ -183,53 +203,22 @@
             </div>
           </div>
 
-          <!-- pulse -->
-          <div class="card card-telemetry" id="card-telemetry">
-            <div class="card-header">
-              <h2 class="card-title">pulse</h2>
-              <span class="card-subtitle">focus · guard</span>
-            </div>
-            <div class="telemetry-gauges">
-              <div class="gauge" id="gauge-attention">
-                <svg viewBox="0 0 120 120" class="gauge-svg">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--color-surface-2)" stroke-width="8" />
-                  <circle id="gauge-focus-arc" cx="60" cy="60" r="50" fill="none" stroke="var(--color-sage)" stroke-width="8" stroke-dasharray="0 314" stroke-linecap="round" transform="rotate(-90 60 60)" />
-                </svg>
-                <div class="gauge-inner">
-                  <span class="gauge-value" id="gauge-focus-val">—</span>
-                  <span class="gauge-label">focus</span>
-                </div>
-              </div>
-              <div class="gauge" id="gauge-armor">
-                <svg viewBox="0 0 120 120" class="gauge-svg">
-                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--color-surface-2)" stroke-width="8" />
-                  <circle id="gauge-guard-arc" cx="60" cy="60" r="50" fill="none" stroke="var(--color-caregiver)" stroke-width="8" stroke-dasharray="0 314" stroke-linecap="round" transform="rotate(-90 60 60)" />
-                </svg>
-                <div class="gauge-inner">
-                  <span class="gauge-value" id="gauge-guard-val">—</span>
-                  <span class="gauge-label">guard</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- self Identity -->
           <div class="card card-identity" id="card-identity">
             <div class="card-header">
-              <h2 class="card-title">self</h2>
+              <h2 class="card-title" data-i18n="dashboard.self.title">Character Sheet (Resume)</h2>
             </div>
             <div class="identity-body">
-              <div class="identity-field">
-                <span class="identity-label">name</span>
-                <span class="identity-value" id="identity-name">—</span>
-              </div>
-              <div class="identity-field">
-                <span class="identity-label">face</span>
-                <span class="identity-value" id="identity-face">none</span>
-              </div>
-              <div class="identity-field">
-                <span class="identity-label">id</span>
-                <span class="identity-value identity-mono" id="identity-id">—</span>
+              <div class="identity-aura" id="identity-aura"></div>
+              <div class="identity-details">
+                <div class="identity-field">
+                  <span class="identity-label" data-i18n="dashboard.self.name">player name</span>
+                  <span class="identity-value" id="identity-name">—</span>
+                </div>
+                <div class="identity-field">
+                  <span class="identity-label" data-i18n="dashboard.self.face">class / role</span>
+                  <span class="identity-value" id="identity-face">none</span>
+                </div>
               </div>
             </div>
           </div>
@@ -238,26 +227,39 @@
       </section>
 
       <!-- ═══ walk PANEL (Socratic Agent Chat) ═══ -->
-      <section id="panel-walk" class="panel">
+      <section id="panel-walk" class="panel panel-active">
         <div class="chat-wrapper">
           <div class="chat-header-bar">
             <div class="chat-agent-info">
               <img src="assets/zz_lightning.png" alt="ZZ" class="agent-avatar" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 0 10px hsla(38, 92%, 56%, 0.3); object-fit: cover;">
               <div>
-                <span class="agent-title">Zen Zuse</span>
+                <span class="agent-title">Guild NPC: Zen Zuse</span>
                 <span class="agent-status" id="agent-backend-status">offline</span>
               </div>
             </div>
             <div class="chat-controls">
-              <button class="control-btn" id="btn-toggle-tts" title="Toggle Voice Output">🔊 Voice: On</button>
+              <button class="control-btn" id="btn-toggle-tts" title="Toggle Voice Output">🔇 Voice: Off</button>
               <button class="control-btn" id="btn-toggle-handsfree" title="Toggle Hands-Free Loop">🔁 Hands-Free: Off</button>
-              <span class="rag-badge" id="rag-status-badge">RAG: Loading</span>
             </div>
           </div>
           
+          <!-- Document Viewer Overlay -->
+          <div id="chat-document-viewer" class="document-viewer hidden">
+            <div class="document-header">
+              <span id="doc-title" data-i18n="chat.doc_title">Document</span>
+              <button id="btn-close-doc" class="close-doc-btn" title="Close Document">×</button>
+            </div>
+            <div class="document-content">
+              <textarea id="doc-editor" class="doc-editor" spellcheck="false"></textarea>
+            </div>
+            <div class="document-actions">
+              <button id="btn-save-doc" class="btn">Save</button>
+            </div>
+          </div>
+
           <div class="chat-messages" id="chat-feed">
             <div class="chat-message agent">
-              <p>Welcome, traveler. I am Zen Zuse, the AI mind of your book. What draws your attention to your walk today?</p>
+              <p>Welcome to the Guild, traveler. I am Zen Zuse. Let's get your adventuring paperwork sorted out. What skill are you grinding today?</p>
             </div>
           </div>
           
@@ -271,7 +273,7 @@
           <div class="chat-input-area">
             <button class="input-action-btn" id="btn-attach-image" title="Attach Image for Vision">📷</button>
             <input type="file" id="file-image-input" accept="image/*" style="display: none">
-            <input type="text" class="chat-text-input" id="chat-user-input" placeholder="Speak or type your observation...">
+            <input type="text" class="chat-text-input" id="chat-user-input" data-i18n="chat.input_placeholder" placeholder="Speak your mind...">
             <button class="input-action-btn" id="btn-mic" title="Talk Hands-Free">🎙️</button>
             <button class="send-btn" id="btn-send-chat">Send</button>
           </div>
@@ -312,8 +314,8 @@
         <div class="recycle-container">
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">the recycler</h2>
-              <span class="card-subtitle">Alchemize raw lived experience into professional skills and resume competencies. Discard the shame; extract the XP.</span>
+              <h2 class="card-title">reflection engine</h2>
+              <span class="card-subtitle">Reframe raw lived experience into professional skills and resume competencies. Discard the shame through third-person objective observation.</span>
             </div>
             <div class="recycle-body">
               <div class="setting-row">
@@ -324,12 +326,12 @@
                 <label for="recycle-raw-input" class="settings-label" style="font-size: 0.85rem; color: var(--color-text-dim);">Raw Story / Experience / Setback</label>
                 <textarea id="recycle-raw-input" class="recycle-textarea" style="width: 100%; min-height: 120px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="Type a story or journal entry about a setback, trauma, or transition challenges (e.g., 'I left the Marines, felt disconnected, and struggled to adjust...')."></textarea>
               </div>
-              <button class="btn btn-secondary" id="btn-run-recycler" style="margin-top: 1.5rem; width: 100%;">Alchemize to Skills</button>
+              <button class="btn btn-secondary" id="btn-run-recycler" style="margin-top: 1.5rem; width: 100%;">Reframe Experience</button>
             </div>
           </div>
           <div class="card card-result hidden" id="card-recycle-result" style="margin-top: 1.5rem;">
             <div class="card-header">
-              <h2 class="card-title">recycled output</h2>
+              <h2 class="card-title">reframed output</h2>
               <span class="card-subtitle">Extracted vocational descriptors ready for your resume.</span>
             </div>
             <div class="recycle-result-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
@@ -463,10 +465,19 @@
                 <span class="setting-value" id="setting-model">—</span>
               </div>
               <div class="setting-row" style="border-top: 1px dashed var(--color-border); padding-top: 0.8rem; margin-top: 0.5rem;">
-                <span class="setting-label">Zen Mode (KISS)</span>
+                <span class="setting-label" data-i18n="settings.language_label">Language</span>
+                <span class="setting-value">
+                  <select id="setting-language" style="background: var(--color-surface-2); border: 1px solid var(--color-border); color: var(--color-text); padding: 0.4rem; border-radius: 4px; font-family: inherit; font-size: 0.8rem;">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                  </select>
+                </span>
+              </div>
+              <div class="setting-row" style="border-top: 1px dashed var(--color-border); padding-top: 0.8rem; margin-top: 0.5rem;">
+                <span class="setting-label" data-i18n="settings.zen_mode_label">Zen Mode (KISS)</span>
                 <span class="setting-value" style="display: flex; align-items: center; gap: 0.5rem;">
                   <input type="checkbox" id="setting-zen-mode" style="accent-color: var(--color-accent); cursor: pointer;">
-                  <label for="setting-zen-mode" style="font-size: 0.8rem; color: var(--color-text-muted); cursor: pointer;">Hide advanced tools</label>
+                  <label for="setting-zen-mode" style="font-size: 0.8rem; color: var(--color-text-muted); cursor: pointer;" data-i18n="settings.zen_mode_desc">Hide advanced tools until needed.</label>
                 </span>
               </div>
             </div>
@@ -477,11 +488,11 @@
             </div>
             <div class="settings-body" style="display: flex; flex-direction: column; gap: 0.8rem; padding: 1.5rem;">
               <div style="display: flex; gap: 0.8rem;">
-                <button class="btn btn-secondary" id="btn-export-state" style="flex: 1; padding: 0.6rem;">save book</button>
-                <button class="btn btn-secondary" id="btn-import-state" style="flex: 1; padding: 0.6rem;">load book</button>
+                <button class="btn btn-secondary" id="btn-export-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.export_btn">Export State</button>
+                <button class="btn btn-secondary" id="btn-import-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.import_btn">Import State</button>
               </div>
               <button class="btn btn-secondary" id="btn-drive-sync" style="width: 100%; padding: 0.6rem; background: var(--color-surface-2); border: 1px dashed var(--color-border);">Sync to Google Drive (OAuth)</button>
-              <button class="btn btn-danger" id="btn-reset-state" style="width: 100%; padding: 0.6rem;">start over</button>
+              <button class="btn btn-danger" id="btn-reset-state" style="width: 100%; padding: 0.6rem;" data-i18n="settings.reset_btn">Reset Forge</button>
               <input type="file" id="file-import" accept=".json" style="display:none">
             </div>
           </div>
@@ -492,8 +503,11 @@
   </div>
 
   <script src="js/data/constants.js"></script>
+  <script src="js/data/i18n.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/vaam.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/pearl.js"></script>
   <script src="js/hardware.js"></script>
   <script src="js/ai.js"></script>
   <script src="js/voice.js"></script>
