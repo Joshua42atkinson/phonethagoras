@@ -1,0 +1,50 @@
+{
+  "player_id": "uuid-mj-28",
+  "archetype_build": "Techno-Druid-In-Training",
+  "demographics_private": {
+    "narrative_context": "Transitioning veteran, currently in substance recovery"
+  },
+  "attribute_matrix": {
+    "intelligence_sage": 65,
+    "courage_hero": 85,
+    "empathy_caregiver": 40,
+    "eloquence_jester": 30
+  },
+  "virtue_topology_gravity": {
+    "autonomy_sovereignty": 0.80,
+    "relatedness_tribe": 0.35,
+    "competence_mastery": 0.55
+  },
+  "active_campaign": {
+    "current_level": "Edge Lord (Observer Mode)",
+    "current_quest": "Metabolic and Attention Stewardship Reset",
+    "commitment_contract": {
+      "contract_id": "contract-01",
+      "self_directed_goal": "Maintain a 16-hour daily fasting window and execute 3-minute cold showers to stabilize the Ventral Vagal nervous system.",
+      "milestones": [
+        {
+          "step": 1,
+          "action": "Clean the 'Forge' via physical fasting",
+          "completed": true,
+          "timestamp": "2026-06-03T08:00:00Z"
+        },
+        {
+          "step": 2,
+          "action": "Execute manual override of sympathetic panic (cold shower)",
+          "completed": false,
+          "timestamp": null
+        }
+      ]
+    }
+  },
+  "local_sensor_telemetry": {
+    "attention_stewardship_score": 0.90,
+    "armor_density_vulnerability": 0.30
+  },
+  "prestige_class": null,
+  "_meta": {
+    "created_at": "2026-06-03T08:00:00Z",
+    "updated_at": "2026-06-03T11:00:00Z",
+    "version": "0.1.0"
+  }
+}

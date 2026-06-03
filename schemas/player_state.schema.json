@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://phonethagoras.com/schemas/player_state.schema.json",
+  "title": "Book Schema",
+  "description": "The complete, unified data state of the Player (the book). Stored locally in localStorage under zen_book.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "shape",
+    "roots",
+    "walk",
+    "pulse"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the player (UUID format)"
+    },
+    "name": {
+      "type": "string",
+      "description": "The player's current identity name (e.g. 'newcomer')"
+    },
+    "story": {
+      "type": "string",
+      "description": "Private narrative context"
+    },
+    "shape": {
+      "type": "object",
+      "description": "The four core capacities: mind, heart, body, act",
+      "required": ["mind", "heart", "body", "act"],
+      "properties": {
+        "mind": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "heart": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "body": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "act": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "roots": {
+      "type": "object",
+      "description": "Self-determination roots: own, bond, skill",
+      "required": ["own", "bond", "skill"],
+      "properties": {
+        "own": { "type": "number", "minimum": 0, "maximum": 1 },
+        "bond": { "type": "number", "minimum": 0, "maximum": 1 },
+        "skill": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "walk": {
+      "type": "object",
+      "description": "Current walk progression",
+      "required": ["depth", "dare", "path"],
+      "properties": {
+        "depth": {
+          "type": "string",
+          "enum": ["seen", "felt", "held", "known"]
+        },
+        "dare": {
+          "type": "string"
+        },
+        "path": {
+          "type": "object",
+          "required": ["id", "goal", "steps"],
+          "properties": {
+            "id": { "type": "string" },
+            "goal": { "type": "string" },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["n", "act", "done"],
+                "properties": {
+                  "n": { "type": "integer", "minimum": 1 },
+                  "act": { "type": "string" },
+                  "done": { "type": "boolean" },
+                  "at": { "type": ["string", "null"], "format": "date-time" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "pulse": {
+      "type": "object",
+      "description": "Sensing metrics: focus and guard",
+      "required": ["focus", "guard"],
+      "properties": {
+        "focus": { "type": "number", "minimum": 0, "maximum": 1 },
+        "guard": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "face": {
+      "type": ["string", "null"],
+      "enum": [null, "seer", "singer", "gardener", "maker", "weaver"]
+    },
+    "_meta": {
+      "type": "object",
+      "properties": {
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "version": { "type": "string" }
+      }
+    }
+  }
+}
