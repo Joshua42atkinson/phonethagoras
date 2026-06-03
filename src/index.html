@@ -41,14 +41,14 @@
         </div>
         <nav class="sigil-nav" id="main-nav">
           <!-- The Walk (Active Campaign) -->
-          <button class="sigil-btn active" data-panel="walk" id="nav-walk" data-i18n-title="nav.walk" title="The Walk">
+          <button class="sigil-btn" data-panel="walk" id="nav-walk" data-i18n-title="nav.walk" title="The Walk">
             <svg viewBox="0 0 100 100" class="sigil-icon">
               <path d="M20 80 Q 50 20 80 80 M50 50 L 50 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
             </svg>
           </button>
 
           <!-- Character Sheet -->
-          <button class="sigil-btn" data-panel="shape" id="nav-shape" title="Character Sheet">
+          <button class="sigil-btn active" data-panel="shape" id="nav-shape" title="Character Sheet">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
@@ -103,7 +103,7 @@
       <div class="litrpg-bg"></div>
 
       <!-- ═══ SHAPE (DASHBOARD) PANEL ═══ -->
-      <section id="panel-shape" class="panel">
+      <section id="panel-shape" class="panel panel-active">
         <div class="dashboard-grid">
 
           <!-- Main Quest Map -->
@@ -227,7 +227,7 @@
       </section>
 
       <!-- ═══ walk PANEL (Socratic Agent Chat) ═══ -->
-      <section id="panel-walk" class="panel panel-active">
+      <section id="panel-walk" class="panel">
         <div class="chat-wrapper">
           <div class="chat-header-bar">
             <div class="chat-agent-info">
