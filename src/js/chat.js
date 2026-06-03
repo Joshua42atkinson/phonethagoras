@@ -103,7 +103,20 @@ const PhoneChat = (() => {
 
     // 4. Update status indicators
     updateStatusIndicators();
+    
+    // 5. Check if sidecar is offline
+    if (PhoneAI.getStatus().backend === 'offline') {
+      appendMessage("<strong>[Brain Disconnected]</strong> Cannot connect to local Sidecar. LM Studio integration is offline.", false);
+    }
   }
+
+  // Global Error Boundary (Professional Safety)
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled Promise Rejection:', event.reason);
+    if (chatFeed) {
+      appendMessage(`<em>[System Recovered from Error: ${event.reason?.message || 'Unknown network error'}]</em>`, false);
+    }
+  });
 
   function updateStatusIndicators() {
     const aiStatus = PhoneAI.getStatus();
