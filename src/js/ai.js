@@ -126,7 +126,29 @@ ${vaamSummary}
       return getOfflineResponse(message);
     }
 
-    // 4. Online API request
+    // 4. WebLLM offline mode
+    if (activeBackend === 'webllm') {
+      try {
+        if (typeof WebLLMManager === 'undefined' || !WebLLMManager.isReady()) {
+          return { message: { content: "[System] Offline Brain is still downloading or failed to initialize." } };
+        }
+        
+        let systemPrompt = buildSystemPrompt(state, vaamSummary);
+        const messages = [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ];
+
+        console.log(`[phone-ai] Routing chat to Offline WebLLM...`);
+        let fullResponse = await WebLLMManager.chat(messages);
+        return { message: { content: fullResponse } };
+      } catch (err) {
+        console.error(err);
+        return { message: { content: "[WebGPU Error] Failed to generate response offline. Please check your device." } };
+      }
+    }
+
+    // 5. Online API request
     const url = activeBackend === 'sidecar' 
       ? 'http://localhost:3001/api/chat'
       : 'http://localhost:1234/v1/chat/completions';
@@ -421,6 +443,7 @@ ${vaamSummary}
   return {
     init,
     chat,
+    setActiveBackend,
     work: async (message) => {
       // The Worker Agent (e.g. LFM 8B-A1B MoE)
       // We flag this differently to the backend

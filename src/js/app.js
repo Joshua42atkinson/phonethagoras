@@ -218,14 +218,80 @@
     });
   }
 
-  // ─── 6. Dismiss Loading Overlay ───
-  const overlay = document.getElementById('loading-overlay');
-  if (overlay) {
-    // Small delay to let the initial render settle
-    setTimeout(() => {
-      overlay.classList.add('hidden');
-    }, 800);
+  // ─── 7. Clear Data ───
+  const btnClear = document.getElementById('btn-clear-data');
+  if (btnClear) {
+    btnClear.addEventListener('click', () => {
+      if (confirm('Clear all save data? This cannot be undone.')) {
+        PhoneState.clear();
+        location.reload();
+      }
+    });
   }
+
+  // ─── 8. Brain Settings Modal ───
+  const modal = document.getElementById('brain-settings-modal');
+  const btnSettings = document.getElementById('nav-settings');
+  const btnCloseModal = document.getElementById('close-brain-settings');
+  const engineSelect = document.getElementById('engine-select');
+  const offlineSection = document.getElementById('offline-download-section');
+  const btnDownload = document.getElementById('download-model-btn');
+  const progressContainer = document.getElementById('download-progress-container');
+  const progressFill = document.getElementById('download-progress-fill');
+  const progressText = document.getElementById('download-progress-text');
+
+  if (btnSettings && modal) {
+    btnSettings.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+    });
+    btnCloseModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    engineSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'offline') {
+        offlineSection.classList.remove('hidden');
+      } else {
+        offlineSection.classList.add('hidden');
+      }
+    });
+
+    btnDownload.addEventListener('click', async () => {
+      if (typeof WebLLMManager === 'undefined') {
+        alert("WebLLM offline engine failed to load.");
+        return;
+      }
+      
+      btnDownload.disabled = true;
+      progressContainer.classList.remove('hidden');
+      
+      try {
+        await WebLLMManager.init((progress, text) => {
+          progressFill.style.width = `${progress}%`;
+          progressText.textContent = `${progress}% - ${text}`;
+        });
+        
+        btnDownload.textContent = "Downloaded & Ready!";
+        // Switch PhoneAI to offline WebLLM mode globally
+        if (typeof PhoneAI !== 'undefined') {
+          PhoneAI.setActiveBackend('webllm');
+        }
+      } catch (err) {
+        console.error(err);
+        progressText.textContent = "Error downloading model.";
+        btnDownload.disabled = false;
+      }
+    });
+  }
+
+  // ─── Finish Initialization ───
+  setTimeout(() => {
+    const loading = document.getElementById('loading-overlay');
+    if (loading) {
+      loading.style.opacity = '0';
+      setTimeout(() => loading.remove(), 600);
+    }
+  }, 1200);
 
   console.log('[phonethagoras] ◆ portal open.');
 })();

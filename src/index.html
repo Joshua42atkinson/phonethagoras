@@ -496,7 +496,31 @@
               <input type="file" id="file-import" accept=".json" style="display:none">
             </div>
           </div>
+          <!-- ═══ BRAIN SETTINGS MODAL ═══ -->
+    <div id="brain-settings-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h2>Brain Configuration</h2>
+        <div class="form-group">
+          <label>Inference Engine</label>
+          <select id="engine-select">
+            <option value="lmstudio">Local Network (LM Studio)</option>
+            <option value="offline">Offline On-Device (WebGPU)</option>
+          </select>
         </div>
+        <div id="offline-download-section" class="hidden">
+          <p class="small-text">Download the 1.2B Liquid/Llama WebGPU model (approx 700MB) to your browser cache. Once downloaded, it works completely offline.</p>
+          <button id="download-model-btn" class="sigil-btn">Download Offline Brain</button>
+          <div id="download-progress-container" class="hidden">
+            <div class="progress-bar"><div id="download-progress-fill" class="progress-fill" style="width:0%"></div></div>
+            <span id="download-progress-text" class="small-text">0%</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="close-brain-settings" class="sigil-btn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
       </section>
 
     </main>
@@ -505,6 +529,7 @@
   <script src="js/data/constants.js?v=4"></script>
   <script src="js/data/i18n.js?v=4"></script>
   <script src="js/i18n.js?v=4"></script>
+  <script src="js/webllm-manager.js"></script>
   <script src="js/vaam.js?v=4"></script>
   <script src="js/state.js?v=4"></script>
   <script src="js/pearl.js?v=4"></script>
