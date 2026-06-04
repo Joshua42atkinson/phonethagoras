@@ -104,9 +104,12 @@ const PhoneChat = (() => {
     // 4. Update status indicators
     updateStatusIndicators();
     
-    // 5. Check if sidecar is offline
+    // 5. Update status if running in offline heuristics mode  
     if (PhoneAI.getStatus().backend === 'offline') {
-      appendMessage("<strong>[Brain Disconnected]</strong> Cannot connect to local Sidecar. LM Studio integration is offline.", false);
+      // Don't warn — offline is the default experience. Just update status text.
+      if (agentBackendStatus) {
+        agentBackendStatus.textContent = 'ready (local)';
+      }
     }
   }
 
@@ -482,31 +485,25 @@ const PhoneChat = (() => {
   function adaptStateBasedOnMessage(text) {
     const cleanText = text.toLowerCase();
     let state = PhoneState.load();
-    let changed = false;
 
-    // Direct keywords mapping
-    if (cleanText.match(/\b(think|intellect|mind|reason|logic|learn|read)\b/)) {
-      state.shape.mind = Math.min(state.shape.mind + 1, 100);
-      changed = true;
-    }
-    if (cleanText.match(/\b(love|feel|heart|courage|brave|scared|trust)\b/)) {
-      state.shape.heart = Math.min(state.shape.heart + 1, 100);
-      changed = true;
-    }
-    if (cleanText.match(/\b(body|health|breath|exercise|physical|somatic|pain)\b/)) {
-      state.shape.body = Math.min(state.shape.body + 1, 100);
-      changed = true;
-    }
-    if (cleanText.match(/\b(do|act|make|build|run|work|project)\b/)) {
-      state.shape.act = Math.min(state.shape.act + 1, 100);
-      changed = true;
-    }
+    // Require compound phrases that signal genuine engagement, not single common words.
+    // Only bump at most ONE stat per message to prevent inflation.
+    const signals = [
+      { stat: 'mind',  patterns: [/\b(figur\w+ out|thinking about|understand|analyz|research|study|learn\w+ about|read\w+ about|curious about)\b/] },
+      { stat: 'heart', patterns: [/\b(feel\w+ (like|about|scared|brave|strong)|open\w* up|trust\w* (my|the)|love\w* (my|the)|emotional|vulnerable)\b/] },
+      { stat: 'body',  patterns: [/\b(work\w* out|exercis|breath\w* (in|deep)|physical|my body|somatic|health\w* (goal|plan))\b/] },
+      { stat: 'act',   patterns: [/\b(build\w* (a|my|the)|start\w* (a|my)|project|creat\w* (a|my)|apply\w* (for|to)|launch|ship)\b/] },
+    ];
 
-
-    if (changed) {
-      PhoneState.save(state);
-      PhoneDashboard.render(state);
-      console.log('[phone-chat] Adapted state from message content:', state);
+    for (const { stat, patterns } of signals) {
+      const matched = patterns.some(p => p.test(cleanText));
+      if (matched) {
+        state.shape[stat] = Math.min(state.shape[stat] + 1, 100);
+        PhoneState.save(state);
+        PhoneDashboard.render(state);
+        console.log(`[phone-chat] Adapted state: +1 ${stat} from deliberate language`);
+        return; // Only one bump per message
+      }
     }
   }
 

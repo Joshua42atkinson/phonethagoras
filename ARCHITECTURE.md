@@ -1,0 +1,90 @@
+# Phonethagoras Architecture & Design Document
+
+## Philosophy
+Phonethagoras is designed as a **local-first, offline-capable, privacy-sovereign web application**. 
+It is built specifically for users navigating intense transitions (veterans, single parents, people in recovery).
+- **No external servers required** for the core experience.
+- **Zero data collection.** All state lives in `localStorage`.
+- **Pure JavaScript, HTML, CSS.** No build steps or complex frameworks required to deploy or modify.
+
+---
+
+## 1. Directory Structure
+
+```text
+/src
+  /css
+    index.css         # Complete design system (HSL tokens, glassmorphism, responsive rules)
+  /js
+    /data
+      constants.js    # Enums for Archetypes (FACE), Roots, Colors, Depths
+      personas.js     # Demo data for the Coach's Bridge
+    ai.js             # Offline heuristic engine (regex-based response matching & crisis detection)
+    app.js            # Orchestrator (Tab navigation, zen-mode gating, initialization)
+    breath.js         # Box-breathing mechanic (UI & Timer)
+    bridge.js         # Coach Dashboard (caseload sorting, client viewing)
+    chat.js           # Chat interface controller
+    dashboard.js      # Player identity card and radar chart rendering
+    docs.js           # WIOA intake forms and voice questionnaire hookups
+    onboarding.js     # First-run wizard and character sheet isomorphism
+    pearl.js          # Session state machine (detects context shifts & escalation)
+    radar.js          # SVG Radar chart renderer (no canvas dependency)
+    recycle.js        # Cognitive reframing tool (turns stories into isolated skills)
+    state.js          # Core state manager (localStorage sync, archetype calculation)
+    sync.js           # Peer-to-peer sync protocol stubs
+    voice.js          # Web Speech API wrapper for STT/TTS
+    webllm-manager.js # WebGPU inference manager (optional, progressive enhancement)
+  index.html          # Core single-page application view
+```
+
+---
+
+## 2. State Management (`state.js`)
+
+The user's state is encapsulated in a single JSON object.
+- **Shape (Attributes)**: Mind, Heart, Body, Act. These drive the radar chart.
+- **Roots (Virtues)**: Own (Autonomy), Bond (Relatedness), Skill (Competence). Based on Self-Determination Theory (SDT).
+- **Walk (Progress)**: Tracks current goals (dares), path steps, and session depth.
+- **Face (Archetype)**: The player's identity class (Seer, Singer, Gardener, Maker, Weaver) derived automatically from their highest `Shape` stat.
+
+### The Isomorphism (Character Sheet)
+During onboarding (`onboarding.js`), users answer a 4-question behavioral assessment ("The Sorting"). 
+This maps their real-world psychological inclinations to the RPG stats:
+- **Mind**: Analytical, theoretical problem solving. → **Seer**
+- **Heart**: Empathic, relational connection. → **Singer**
+- **Body**: Enduring, environmental/physical action. → **Gardener**
+- **Act**: Decisive, constructive execution. → **Maker**
+- **Balanced**: Equal distribution. → **Weaver**
+
+The state system `updateFace()` method acts as the single source of truth, recalculating the archetype whenever state is saved.
+
+---
+
+## 3. The Offline AI Engine (`ai.js`)
+
+Because the application must work in environments with poor or no connectivity, it uses a robust fallback heuristic engine.
+- **Regex Pattern Matching**: Evaluates user input against 30+ semantic patterns (e.g., jobs, relationships, burnout, grief).
+- **Crisis Detection**: A hard-coded emergency pattern matcher that halts normal flow and outputs critical hotline numbers (988, 211, Veterans Crisis Line) when words like "suicide" or "harm" are detected.
+- **PEARL State Machine Integration**: Responses are routed through `checkCoachRouting()` in `pearl.js` to determine if a human coach needs to be pinged, or if the offline AI can handle the emotional support locally.
+
+---
+
+## 4. Progressive Enhancement (WebGPU / LLM)
+
+While the default is the offline regex heuristic, the system is wired to detect WebGPU capabilities.
+- If a compatible local model (e.g., Janus Pro 1B / Liquid LFM) is available, `webllm-manager.js` intercepts the chat routing to provide genuine neural generation entirely on the client side.
+- This ensures maximum privacy while offering high-fidelity coaching. If VRAM is exceeded or the connection fails, the system seamlessly degrades back to `ai.js`.
+
+---
+
+## 5. The Coach's Bridge (`bridge.js`)
+
+A secondary interface (hidden behind "Zen Mode" toggle) designed for the human vocational coach.
+- **The Algorithm**: Sorts the caseload using a "Help/Up" matrix. Clients who are stuck (low roots/high depth) are bumped to the top for intervention. Clients who are thriving are flagged for "Level Up" progression.
+- **WIOA Integration**: The `docs.js` engine takes the semantic data generated in the chat and maps it into standard WIOA (Workforce Innovation and Opportunity Act) federal intake forms, saving the coach hours of administrative overhead.
+
+---
+
+## Future Roadmap (Next Steps)
+1. **Google OAuth & Sync**: Implement cross-device syncing and coach-to-client secure telemetry. (Currently mapped in `sync.js`).
+2. **Local Media Suite (Triple-Reply System)**: Integrate Nomic embeddings and local image upscaling for "fun mode" litRPG exploration, ensuring cognitive processing is wrapped in engaging game mechanics.

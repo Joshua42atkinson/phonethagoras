@@ -25,15 +25,15 @@
       name: 'newcomer',           // was archetype_build / 'Unawakened'
       story: '',                   // was demographics_private.narrative_context
       shape: {                     // was attribute_matrix
-        mind:  50,                 // was intelligence_sage
-        heart: 50,                 // was courage_hero
-        body:  50,                 // was empathy_caregiver
-        act:   50,                 // was eloquence_jester
+        mind:  10,                 // was intelligence_sage
+        heart: 10,                 // was courage_hero
+        body:  10,                 // was empathy_caregiver
+        act:   10,                 // was eloquence_jester
       },
       roots: {                     // was virtue_topology_gravity
-        own:   0.50,               // was autonomy_sovereignty
-        bond:  0.50,               // was relatedness_tribe
-        skill: 0.50,               // was competence_mastery
+        own:   0.20,               // was autonomy_sovereignty
+        bond:  0.20,               // was relatedness_tribe
+        skill: 0.20,               // was competence_mastery
       },
       walk: {                      // was active_campaign
         depth: 'seen',             // was current_level (now uses DEPTH enum)
@@ -98,11 +98,6 @@
     
     const { mind, heart, body, act } = state.shape;
     const maxVal = Math.max(mind, heart, body, act);
-    
-    if (maxVal < 60) {
-      state.face = 'none'; // Not attuned enough
-      return;
-    }
     
     // Simplistic assignment based on max
     if (mind === maxVal) state.face = ZEN_CONST.FACE.SEER;

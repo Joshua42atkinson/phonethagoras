@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Phonethagoras — The Portal to the Guild. Your life, organized.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Phonethagoras — A free, private life-coaching tool. Your life, your data, your growth.">
+  <meta name="theme-color" content="#0a0f19">
   <title>Phonethagoras — The Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/index.css?v=4">
+  <link rel="stylesheet" href="css/index.css?v=5">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
 </head>
 <body>
@@ -17,17 +18,82 @@
     <div id="loading-overlay" class="loading-overlay">
       <div class="loading-sigil">
         <svg viewBox="0 0 200 200" class="loading-diamond">
-          <polygon points="100,10 190,100 100,190 10,100" fill="none" stroke="url(#sigil-gradient)" stroke-width="2" />
-          <defs>
-            <linearGradient id="sigil-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="var(--color-sage)" />
-              <stop offset="33%" stop-color="var(--color-hero)" />
-              <stop offset="66%" stop-color="var(--color-caregiver)" />
-              <stop offset="100%" stop-color="var(--color-jester)" />
-            </linearGradient>
-          </defs>
+          <polygon points="100,10 190,100 100,190 10,100" fill="none" stroke="hsl(180, 100%, 50%)" stroke-width="2" />
         </svg>
         <p class="loading-text">Opening portal…</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ ONBOARDING MODAL ═══════════════════ -->
+    <div id="onboarding-modal" class="onboarding-overlay hidden">
+      <div class="onboarding-card">
+        <!-- Step 1: Welcome -->
+        <div class="onboarding-step active" id="onboard-step-1">
+          <div class="onboard-icon">◆</div>
+          <h2>Welcome, Traveler</h2>
+          <p>This is your private space. Nothing you say here leaves your device. No accounts, no servers, no tracking. Just you.</p>
+          <p class="onboard-small">Built with love by a disabled veteran who believes everyone deserves a free tool to organize their life.</p>
+          <button class="btn btn-accent onboard-next" data-next="2">Begin Your Journey</button>
+        </div>
+
+        <!-- Step 2: Name -->
+        <div class="onboarding-step" id="onboard-step-2">
+          <div class="onboard-icon">🛡️</div>
+          <h2>What should we call you?</h2>
+          <p>This is your character name. Use your real name, a nickname, or an alias — whatever feels safe.</p>
+          <input type="text" id="onboard-name" class="onboard-input" placeholder="Your name..." maxlength="40" autocomplete="off">
+          <button class="btn btn-accent onboard-next" data-next="3">Next</button>
+        </div>
+
+        <!-- Step 3: Story -->
+        <div class="onboarding-step" id="onboard-step-3">
+          <div class="onboard-icon">📖</div>
+          <h2>Your story so far</h2>
+          <p>In a sentence or two, where are you at right now? This stays on your device and helps your AI guide understand your situation.</p>
+          <textarea id="onboard-story" class="onboard-textarea" placeholder="e.g. 'I just left the military and I'm trying to figure out what's next...' or 'I'm a single mom looking for a better career path...'" rows="3"></textarea>
+          <button class="btn btn-accent onboard-next" data-next="4">Next</button>
+        </div>
+
+        <!-- Step 4: Character Archetype -->
+        <div class="onboarding-step" id="onboard-step-4">
+          <div class="onboard-icon">⚖️</div>
+          <h2>Your Natural Talents</h2>
+          <p>Let's find your starting archetype. Choose the options that sound most like you.</p>
+          
+          <div class="onboard-questionnaire" style="display: flex; flex-direction: column; gap: 1rem; text-align: left; margin: 1rem 0;">
+            <div class="q-group">
+              <p style="margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: bold;">1. When faced with a complex problem, do you...</p>
+              <label><input type="radio" name="q1" value="mind"> Analyze it until I understand the pattern</label><br>
+              <label><input type="radio" name="q1" value="act"> Jump in and start building a solution</label>
+            </div>
+            <div class="q-group">
+              <p style="margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: bold;">2. When someone is struggling, is your first instinct to...</p>
+              <label><input type="radio" name="q2" value="heart"> Offer emotional support and listen</label><br>
+              <label><input type="radio" name="q2" value="body"> Provide practical help and fix the environment</label>
+            </div>
+            <div class="q-group">
+              <p style="margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: bold;">3. What energizes you more?</p>
+              <label><input type="radio" name="q3" value="mind"> Discovering new ideas and theories</label><br>
+              <label><input type="radio" name="q3" value="heart"> Connecting deeply with other people</label>
+            </div>
+            <div class="q-group">
+              <p style="margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: bold;">4. In a crisis, you are most likely to...</p>
+              <label><input type="radio" name="q4" value="act"> Take charge and direct the action</label><br>
+              <label><input type="radio" name="q4" value="body"> Endure the hardship and protect others physically</label>
+            </div>
+          </div>
+
+          <button class="btn btn-accent onboard-next" data-next="5">Next</button>
+        </div>
+
+        <!-- Step 5: Goal -->
+        <div class="onboarding-step" id="onboard-step-5">
+          <div class="onboard-icon">⭐</div>
+          <h2>Pick one thing to work on</h2>
+          <p>What's the one goal you'd like to tackle first? We'll break it down together.</p>
+          <input type="text" id="onboard-goal" class="onboard-input" placeholder="e.g. 'Get a job in IT' or 'Build a resume' or 'Learn to manage stress'" maxlength="80" autocomplete="off">
+          <button class="btn btn-accent" id="onboard-finish">Enter the Guild</button>
+        </div>
       </div>
     </div>
 
@@ -35,54 +101,54 @@
     <header id="main-header" class="header">
       <div class="header-inner">
         <div class="header-brand">
-          <img src="assets/portal_sigil.png" alt="Sigil" id="header-sigil" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 0 6px rgba(100, 200, 255, 0.5); object-fit: cover;">
+          <div class="brand-sigil">◆</div>
           <h1 class="brand-name" data-i18n="app.name">Phonethagoras</h1>
           <span class="brand-epoch" data-i18n="app.epoch">Portal Active</span>
         </div>
         <nav class="sigil-nav" id="main-nav">
-          <!-- The Walk (Active Campaign) -->
-          <button class="sigil-btn" data-panel="walk" id="nav-walk" data-i18n-title="nav.walk" title="The Walk">
-            <svg viewBox="0 0 100 100" class="sigil-icon">
-              <path d="M20 80 Q 50 20 80 80 M50 50 L 50 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+          <!-- Chat / The Walk -->
+          <button class="sigil-btn" data-panel="walk" id="nav-walk" title="Talk to Zen Zuse">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
           </button>
 
-          <!-- Character Sheet -->
-          <button class="sigil-btn active" data-panel="shape" id="nav-shape" title="Character Sheet">
+          <!-- Character Sheet / Dashboard -->
+          <button class="sigil-btn active" data-panel="shape" id="nav-shape" title="Your Book">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </button>
 
-          <!-- Rest / Recovery -->
-          <button class="sigil-btn locked" data-panel="breath" id="nav-breath" title="Rest (Inn)">
+          <!-- Breathe -->
+          <button class="sigil-btn" data-panel="breath" id="nav-breath" title="Breathe">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-10-5-10 5z"></path>
-              <path d="M12 15v5"></path>
+              <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+              <path d="M12 6v6l4 2"></path>
             </svg>
           </button>
 
-          <!-- Quest Log -->
-          <button class="sigil-btn locked" data-panel="recycle" id="nav-recycle" title="Quest Log">
+          <!-- Reflection / Recycler -->
+          <button class="sigil-btn" data-panel="recycle" id="nav-recycle" title="Turn Stories Into Skills">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <polyline points="23 20 23 14 17 14"></polyline>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
             </svg>
           </button>
 
-          <!-- Inventory -->
-          <button class="sigil-btn locked" data-panel="bridge" id="nav-bridge" title="Inventory">
+          <!-- Coach's Bridge -->
+          <button class="sigil-btn" data-panel="bridge" id="nav-bridge" title="Coach View">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"></path>
-              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
           </button>
 
-          <!-- The Gear (Settings) -->
+          <!-- Settings -->
           <button class="sigil-btn" data-panel="settings" id="nav-settings" title="Settings">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
@@ -98,56 +164,53 @@
 
     <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
     <main id="main-content" class="main-content">
-      
-      <!-- UI Background Image -->
-      <div class="litrpg-bg"></div>
 
-      <!-- ═══ SHAPE (DASHBOARD) PANEL ═══ -->
+      <!-- ═══ YOUR BOOK (DASHBOARD) ═══ -->
       <section id="panel-shape" class="panel panel-active">
         <div class="dashboard-grid">
 
-          <!-- Main Quest Map -->
-          <div class="card card-iron-road" id="card-iron-road">
+          <!-- Shape Diamond (Radar Chart) -->
+          <div class="card card-radar" id="card-radar">
             <div class="card-header">
-              <h2 class="card-title" data-i18n="dashboard.iron_road.title">Main Quest</h2>
-              <span class="card-subtitle" data-i18n="dashboard.iron_road.subtitle">Current Progress</span>
+              <h2 class="card-title">your shape</h2>
+              <span class="card-subtitle">mind · heart · body · act</span>
             </div>
-            <div class="iron-road-container" id="iron-road-container">
-              <!-- Visual path of PEARL -->
-              <div class="pearl-path">
-                <div class="pearl-node active" id="node-perspective">
-                  <span class="node-icon">?</span>
-                  <span class="node-label">Assess</span>
-                </div>
-                <div class="pearl-line"></div>
-                <div class="pearl-node" id="node-engineering">
-                  <span class="node-icon">📝</span>
-                  <span class="node-label">Stats</span>
-                </div>
-                <div class="pearl-line"></div>
-                <div class="pearl-node" id="node-aesthetic">
-                  <span class="node-icon">⚔️</span>
-                  <span class="node-label">Quests</span>
-                </div>
-                <div class="pearl-line"></div>
-                <div class="pearl-node" id="node-research">
-                  <span class="node-icon">🎒</span>
-                  <span class="node-label">Inventory</span>
-                </div>
-                <div class="pearl-line"></div>
-                <div class="pearl-node" id="node-alignment">
-                  <span class="node-icon">⭐</span>
-                  <span class="node-label">Level Up</span>
-                </div>
+            <div class="radar-container">
+              <svg viewBox="0 0 400 400" class="radar-svg" id="radar-svg">
+                <!-- Grid lines -->
+                <polygon points="200,80 320,200 200,320 80,200" fill="none" stroke="hsla(180,80%,40%,0.08)" stroke-width="1"/>
+                <polygon points="200,110 290,200 200,290 110,200" fill="none" stroke="hsla(180,80%,40%,0.06)" stroke-width="1"/>
+                <polygon points="200,140 260,200 200,260 140,200" fill="none" stroke="hsla(180,80%,40%,0.04)" stroke-width="1"/>
+                <!-- Axis lines -->
+                <line x1="200" y1="80" x2="200" y2="320" stroke="hsla(180,80%,40%,0.1)" stroke-width="1"/>
+                <line x1="80" y1="200" x2="320" y2="200" stroke="hsla(180,80%,40%,0.1)" stroke-width="1"/>
+                <!-- Diamond shape (data) -->
+                <polygon id="radar-diamond" points="200,200 200,200 200,200 200,200" fill="hsla(180,100%,50%,0.08)" stroke="hsl(180,100%,50%)" stroke-width="2" style="transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);filter:drop-shadow(0 0 8px hsla(180,100%,50%,0.3))"/>
+                <!-- Dots -->
+                <circle id="dot-mind" cx="200" cy="200" r="5" fill="var(--color-mind)" style="transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1)"/>
+                <circle id="dot-heart" cx="200" cy="200" r="5" fill="var(--color-heart)" style="transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1)"/>
+                <circle id="dot-body" cx="200" cy="200" r="5" fill="var(--color-body)" style="transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1)"/>
+                <circle id="dot-act" cx="200" cy="200" r="5" fill="var(--color-act)" style="transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1)"/>
+                <!-- Labels -->
+                <text x="200" y="65" text-anchor="middle" fill="var(--color-mind)" font-family="var(--font-mono)" font-size="14" font-weight="600">mind</text>
+                <text x="335" y="205" text-anchor="start" fill="var(--color-heart)" font-family="var(--font-mono)" font-size="14" font-weight="600">heart</text>
+                <text x="200" y="348" text-anchor="middle" fill="var(--color-body)" font-family="var(--font-mono)" font-size="14" font-weight="600">body</text>
+                <text x="65" y="205" text-anchor="end" fill="var(--color-act)" font-family="var(--font-mono)" font-size="14" font-weight="600">act</text>
+              </svg>
+              <div class="radar-stats">
+                <div class="radar-stat"><span class="stat-label" style="color:var(--color-mind)">mind</span><span class="stat-value" id="stat-mind">0</span></div>
+                <div class="radar-stat"><span class="stat-label" style="color:var(--color-heart)">heart</span><span class="stat-value" id="stat-heart">0</span></div>
+                <div class="radar-stat"><span class="stat-label" style="color:var(--color-body)">body</span><span class="stat-value" id="stat-body">0</span></div>
+                <div class="radar-stat"><span class="stat-label" style="color:var(--color-act)">act</span><span class="stat-value" id="stat-act">0</span></div>
               </div>
             </div>
           </div>
 
-          <!-- Core Attributes -->
-          <div class="card card-virtues hidden" id="card-virtues">
+          <!-- Roots (SDT Needs) -->
+          <div class="card card-virtues" id="card-virtues">
             <div class="card-header">
-              <h2 class="card-title" data-i18n="dashboard.roots.title">Core Attributes</h2>
-              <span class="card-subtitle" data-i18n="dashboard.roots.subtitle">Base Stats</span>
+              <h2 class="card-title" data-i18n="dashboard.roots.title">roots</h2>
+              <span class="card-subtitle" data-i18n="dashboard.roots.subtitle">own · bond · skill</span>
             </div>
             <div class="virtue-bars">
               <div class="virtue-row">
@@ -180,15 +243,15 @@
             </div>
           </div>
 
-          <!-- Quest Status -->
+          <!-- Main Quest Progress -->
           <div class="card card-campaign" id="card-campaign">
             <div class="card-header">
-              <h2 class="card-title" data-i18n="dashboard.walk.title">Current Quest</h2>
+              <h2 class="card-title" data-i18n="dashboard.walk.title">your quest</h2>
               <span class="card-subtitle" id="walk-depth">—</span>
             </div>
             <div class="campaign-body">
               <div class="campaign-quest">
-                <span class="quest-label" data-i18n="dashboard.walk.dare">Goal</span>
+                <span class="quest-label" data-i18n="dashboard.walk.dare">current goal</span>
                 <p class="quest-title" id="walk-dare">—</p>
               </div>
               <div class="campaign-milestones" id="walk-steps">
@@ -203,20 +266,56 @@
             </div>
           </div>
 
-          <!-- self Identity -->
+          <!-- PEARL Progress Map -->
+          <div class="card card-iron-road" id="card-iron-road">
+            <div class="card-header">
+              <h2 class="card-title">the path</h2>
+              <span class="card-subtitle">your session progress</span>
+            </div>
+            <div class="iron-road-container" id="iron-road-container">
+              <div class="pearl-path">
+                <div class="pearl-node active" id="node-perspective">
+                  <span class="node-icon">?</span>
+                  <span class="node-label">Assess</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-engineering">
+                  <span class="node-icon">📝</span>
+                  <span class="node-label">Stats</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-aesthetic">
+                  <span class="node-icon">⚔️</span>
+                  <span class="node-label">Quests</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-research">
+                  <span class="node-icon">🎒</span>
+                  <span class="node-label">Gear</span>
+                </div>
+                <div class="pearl-line"></div>
+                <div class="pearl-node" id="node-alignment">
+                  <span class="node-icon">⭐</span>
+                  <span class="node-label">Level Up</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player Identity -->
           <div class="card card-identity" id="card-identity">
             <div class="card-header">
-              <h2 class="card-title" data-i18n="dashboard.self.title">Character Sheet (Resume)</h2>
+              <h2 class="card-title" data-i18n="dashboard.self.title">you</h2>
             </div>
             <div class="identity-body">
               <div class="identity-aura" id="identity-aura"></div>
               <div class="identity-details">
                 <div class="identity-field">
-                  <span class="identity-label" data-i18n="dashboard.self.name">player name</span>
+                  <span class="identity-label" data-i18n="dashboard.self.name">name</span>
                   <span class="identity-value" id="identity-name">—</span>
                 </div>
                 <div class="identity-field">
-                  <span class="identity-label" data-i18n="dashboard.self.face">class / role</span>
+                  <span class="identity-label" data-i18n="dashboard.self.face">class</span>
                   <span class="identity-value" id="identity-face">none</span>
                 </div>
               </div>
@@ -226,66 +325,52 @@
         </div>
       </section>
 
-      <!-- ═══ walk PANEL (Socratic Agent Chat) ═══ -->
+      <!-- ═══ CHAT PANEL (Talk to Zen Zuse) ═══ -->
       <section id="panel-walk" class="panel">
         <div class="chat-wrapper">
           <div class="chat-header-bar">
             <div class="chat-agent-info">
-              <img src="assets/zz_lightning.png" alt="ZZ" class="agent-avatar" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 0 10px hsla(38, 92%, 56%, 0.3); object-fit: cover;">
+              <div class="agent-avatar-circle">ZZ</div>
               <div>
-                <span class="agent-title">Guild NPC: Zen Zuse</span>
+                <span class="agent-title">Zen Zuse</span>
                 <span class="agent-status" id="agent-backend-status">offline</span>
               </div>
             </div>
             <div class="chat-controls">
-              <button class="control-btn" id="btn-toggle-tts" title="Toggle Voice Output">🔇 Voice: Off</button>
-              <button class="control-btn" id="btn-toggle-handsfree" title="Toggle Hands-Free Loop">🔁 Hands-Free: Off</button>
-            </div>
-          </div>
-          
-          <!-- Document Viewer Overlay -->
-          <div id="chat-document-viewer" class="document-viewer hidden">
-            <div class="document-header">
-              <span id="doc-title" data-i18n="chat.doc_title">Document</span>
-              <button id="btn-close-doc" class="close-doc-btn" title="Close Document">×</button>
-            </div>
-            <div class="document-content">
-              <textarea id="doc-editor" class="doc-editor" spellcheck="false"></textarea>
-            </div>
-            <div class="document-actions">
-              <button id="btn-save-doc" class="btn">Save</button>
+              <button class="control-btn" id="btn-toggle-tts" title="Toggle Voice">🔇 Voice</button>
+              <button class="control-btn" id="btn-toggle-handsfree" title="Hands-Free">🔁 Hands-Free</button>
             </div>
           </div>
 
           <div class="chat-messages" id="chat-feed">
             <div class="chat-message agent">
-              <p>Welcome to the Guild, traveler. I am Zen Zuse. Let's get your adventuring paperwork sorted out. What skill are you grinding today?</p>
+              <p>Welcome to the Guild, traveler. I am Zen Zuse — your guide. Whatever you're going through, we'll figure it out together. What's on your mind?</p>
             </div>
           </div>
-          
+
           <div class="chat-image-preview-area hidden" id="chat-image-preview-container">
             <div class="preview-thumbnail-wrapper">
-              <img id="chat-image-preview" src="" alt="Vision Input Preview">
+              <img id="chat-image-preview" src="" alt="Image Preview">
               <button id="btn-remove-preview" class="remove-preview-btn">×</button>
             </div>
           </div>
 
           <div class="chat-input-area">
-            <button class="input-action-btn" id="btn-attach-image" title="Attach Image for Vision">📷</button>
+            <button class="input-action-btn" id="btn-attach-image" title="Attach Image">📷</button>
             <input type="file" id="file-image-input" accept="image/*" style="display: none">
             <input type="text" class="chat-text-input" id="chat-user-input" data-i18n="chat.input_placeholder" placeholder="Speak your mind...">
-            <button class="input-action-btn" id="btn-mic" title="Talk Hands-Free">🎙️</button>
+            <button class="input-action-btn" id="btn-mic" title="Talk">🎙️</button>
             <button class="send-btn" id="btn-send-chat">Send</button>
           </div>
         </div>
       </section>
 
-      <!-- ═══ breath PANEL (Breathing Guide) ═══ -->
+      <!-- ═══ BREATHE PANEL ═══ -->
       <section id="panel-breath" class="panel">
         <div class="card card-breath">
           <div class="card-header">
-            <h2 class="card-title">breath</h2>
-            <span class="card-subtitle">Box breathing. Inhale, hold, exhale, hold. 4 seconds each.</span>
+            <h2 class="card-title">breathe</h2>
+            <span class="card-subtitle">Box breathing. 4 seconds each: in, hold, out, hold.</span>
           </div>
           <div class="breath-container">
             <div class="breath-circle" id="breath-visualizer">
@@ -295,132 +380,116 @@
           </div>
           <div class="breath-controls-panel">
             <div class="drone-select-wrapper">
-              <label for="drone-hz-select" class="settings-label">Ambient frequency</label>
+              <label for="drone-hz-select" class="setting-label">Ambient frequency</label>
               <select id="drone-hz-select" class="drone-select">
                 <option value="0">Silence</option>
                 <option value="136.1">136.1 Hz (Om / Earth)</option>
-                <option value="174.6" selected>174.6 Hz (Healing / Solfeggio)</option>
-                <option value="196.0">196.0 Hz (Water / Solfeggio)</option>
-                <option value="220.0">220.0 Hz (Cosmic Void)</option>
+                <option value="174.6" selected>174.6 Hz (Healing)</option>
+                <option value="196.0">196.0 Hz (Water)</option>
+                <option value="220.0">220.0 Hz (Calm)</option>
               </select>
             </div>
-            <button class="btn btn-secondary start-breath-btn" id="btn-toggle-breath">Start Exercise</button>
+            <button class="btn btn-accent start-breath-btn" id="btn-toggle-breath">Start Exercise</button>
           </div>
         </div>
       </section>
 
-      <!-- ═══ RECYCLE PANEL (The Great Recycler) ═══ -->
+      <!-- ═══ REFLECTION PANEL (Turn Stories Into Skills) ═══ -->
       <section id="panel-recycle" class="panel">
         <div class="recycle-container">
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">reflection engine</h2>
-              <span class="card-subtitle">Reframe raw lived experience into professional skills and resume competencies. Discard the shame through third-person objective observation.</span>
+              <h2 class="card-title">turn your story into skills</h2>
+              <span class="card-subtitle">Write about a hard time. The engine will find the strength in it and turn it into resume words.</span>
             </div>
             <div class="recycle-body">
               <div class="setting-row">
-                <span class="setting-label">Client Narrative Context</span>
+                <span class="setting-label">Your story so far</span>
                 <span class="setting-value" id="recycle-story-context">—</span>
               </div>
               <div class="input-group" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <label for="recycle-raw-input" class="settings-label" style="font-size: 0.85rem; color: var(--color-text-dim);">Raw Story / Experience / Setback</label>
-                <textarea id="recycle-raw-input" class="recycle-textarea" style="width: 100%; min-height: 120px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="Type a story or journal entry about a setback, trauma, or transition challenges (e.g., 'I left the Marines, felt disconnected, and struggled to adjust...')."></textarea>
+                <label for="recycle-raw-input" class="setting-label" style="font-size: 0.85rem; color: var(--color-text-dim);">What happened? (Write it raw, messy is fine)</label>
+                <textarea id="recycle-raw-input" class="recycle-textarea" style="width: 100%; min-height: 120px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="e.g. 'I left the Marines after 8 years. I was a squad leader but when I got out nobody cared about that. I felt invisible...'"></textarea>
               </div>
-              <button class="btn btn-secondary" id="btn-run-recycler" style="margin-top: 1.5rem; width: 100%;">Reframe Experience</button>
+              <button class="btn btn-accent" id="btn-run-recycler" style="margin-top: 1.5rem; width: 100%;">Find the Skills in My Story</button>
             </div>
           </div>
           <div class="card card-result hidden" id="card-recycle-result" style="margin-top: 1.5rem;">
             <div class="card-header">
-              <h2 class="card-title">reframed output</h2>
-              <span class="card-subtitle">Extracted vocational descriptors ready for your resume.</span>
+              <h2 class="card-title">your skills — reframed</h2>
+              <span class="card-subtitle">These are ready for your resume.</span>
             </div>
             <div class="recycle-result-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-              <pre class="recycle-output-text" id="recycle-result-text" style="white-space: pre-wrap; font-family: var(--font-mono); font-size: 0.85rem; background: var(--color-surface-2); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border); max-height: 250px; overflow-y: auto; color: var(--color-text-dim);"></pre>
+              <pre class="recycle-output-text" id="recycle-result-text" style="white-space: pre-wrap; font-family: var(--font-mono); font-size: 0.85rem; background: var(--color-surface-2); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border); max-height: 250px; overflow-y: auto; color: var(--color-text);"></pre>
               <div class="recycle-actions" style="display: flex; gap: 1rem;">
                 <button class="btn btn-secondary" id="btn-copy-recycled" style="flex: 1;">Copy Text</button>
-                <button class="btn btn-secondary" id="btn-drive-sync-recycled" style="flex: 1;">Sync to Google Doc</button>
+                <button class="btn btn-secondary" id="btn-drive-sync-recycled" style="flex: 1;">Save to Drive</button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ═══ BRIDGE PANEL (Coach's Bridge) ═══ -->
+      <!-- ═══ COACH'S BRIDGE ═══ -->
       <section id="panel-bridge" class="panel">
         <div class="bridge-container">
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">coach's bridge</h2>
-              <span class="card-subtitle">Caseload priority queue sorted by the self-determination Help/Up algorithm.</span>
+              <h2 class="card-title">coach view</h2>
+              <span class="card-subtitle">Your caseload sorted by who needs help vs. who's ready to advance.</span>
             </div>
             <div class="bridge-body" style="padding: 1rem 0;">
-              <!-- Simulated Caseload list -->
               <div class="caseload-header" style="display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr; padding: 0.8rem 1.5rem; font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase; font-family: var(--font-mono); border-bottom: 1px solid var(--color-border); font-weight: 600;">
-                <span>Client Name / Context</span>
-                <span style="text-align: center;">Readiness</span>
-                <span style="text-align: center;">Attention</span>
+                <span>Client</span>
+                <span style="text-align: center;">Ready</span>
+                <span style="text-align: center;">Focus</span>
                 <span style="text-align: right;">Action</span>
               </div>
               <div class="caseload-list" id="caseload-list" style="display: flex; flex-direction: column;">
-                <!-- Items populated dynamically by bridge.js -->
+                <!-- Populated by bridge.js -->
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ═══ DOCS PANEL (Docs Translation Tool) ═══ -->
+      <!-- ═══ DOCS PANEL (WIOA Forms) ═══ -->
       <section id="panel-docs" class="panel">
         <div class="docs-container" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; align-items: start;">
-          <!-- Left side: Shared coach files -->
           <div class="card">
             <div class="card-header">
-              <h2 class="card-title">coach shared folder</h2>
-              <span class="card-subtitle">Intake files and WIOA worksheets dropped by your coach.</span>
+              <h2 class="card-title">coach files</h2>
+              <span class="card-subtitle">Forms and worksheets from your coach.</span>
             </div>
-            <div class="settings-body" id="docs-list" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-              <!-- Populated dynamically by docs.js -->
-            </div>
+            <div class="settings-body" id="docs-list" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;"></div>
           </div>
 
-          <!-- Right side: Dynamic Translation Intake Form -->
           <div class="card hidden" id="card-doc-form">
             <div class="card-header" style="border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
-              <h2 class="card-title">wioa intake document</h2>
-              <span class="card-subtitle">Autofilled from your private state (Skills, Attitudes, Ambitions).</span>
+              <h2 class="card-title">intake form</h2>
+              <span class="card-subtitle">Filled in from your book automatically.</span>
             </div>
             <div class="doc-form-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-              
-              <!-- Category 1: SKILLS -->
               <div>
                 <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--color-accent); font-family: var(--font-mono); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">1. Skills & Experience</h3>
                 <div id="doc-skills-fields" style="display: flex; flex-direction: column;"></div>
               </div>
-
-              <!-- Category 2: ATTITUDES -->
               <div>
                 <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--color-accent); font-family: var(--font-mono); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">2. Attitudes & Readiness</h3>
                 <div id="doc-attitudes-fields" style="display: flex; flex-direction: column;"></div>
               </div>
-
-              <!-- Category 3: AMBITIONS -->
               <div>
-                <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--color-accent); font-family: var(--font-mono); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">3. Ambitions & Obstacles</h3>
+                <h3 style="font-size: 0.85rem; text-transform: uppercase; color: var(--color-accent); font-family: var(--font-mono); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 0.3rem; margin-bottom: 0.5rem;">3. Goals & Obstacles</h3>
                 <div id="doc-ambitions-fields" style="display: flex; flex-direction: column;"></div>
               </div>
-
-              <!-- Audio Questionnaire Controls -->
               <div class="voice-qa-panel" style="background: var(--color-bg-elevated); border: 1px dashed var(--color-border); border-radius: var(--radius-sm); padding: 1rem; text-align: center; display: flex; flex-direction: column; gap: 0.8rem; align-items: center;">
                 <div style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--color-text-muted);" id="voice-qa-status">Voice Questionnaire Standby</div>
                 <div style="display: flex; gap: 0.8rem; width: 100%;">
-                  <button class="btn btn-primary" id="btn-start-voice-qa" style="flex: 1; padding: 0.6rem;">🎙️ Start Voice Verification</button>
-                  <button class="btn btn-danger hidden" id="btn-stop-voice-qa" style="flex: 1; padding: 0.6rem;">⏹️ Stop Voice QA</button>
+                  <button class="btn btn-accent" id="btn-start-voice-qa" style="flex: 1; padding: 0.6rem;">🎙️ Start Voice Questions</button>
+                  <button class="btn btn-danger hidden" id="btn-stop-voice-qa" style="flex: 1; padding: 0.6rem;">⏹️ Stop</button>
                 </div>
               </div>
-
-              <!-- Action buttons -->
               <button class="btn btn-secondary" id="btn-download-completed-doc" style="width: 100%; padding: 0.75rem;" disabled>Download Completed Form</button>
-
             </div>
           </div>
         </div>
@@ -429,14 +498,14 @@
       <!-- ═══ SETTINGS PANEL ═══ -->
       <section id="panel-settings" class="panel">
         <div class="settings-container">
-          <!-- Zen Zuse Logo/Brand Card -->
+          <!-- Zen Zuse About -->
           <div class="card" style="text-align: center; padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; background: var(--gradient-glass); border: 1px solid var(--color-border); box-shadow: var(--shadow-glow);">
-            <img src="assets/sigil.png" alt="Zen Zuse Logo" style="width: 130px; height: 130px; border-radius: 50%; border: 1px solid var(--color-border); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <div class="brand-sigil-large">◆</div>
             <div>
-              <div style="font-family: var(--font-mono); font-size: 1.25rem; color: var(--color-accent); font-weight: bold; letter-spacing: 0.15em; text-transform: uppercase;">Zen Zuse</div>
-              <div style="font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.05em; margin-top: 0.2rem;">minimalist · aesthetic · balance</div>
+              <div style="font-family: var(--font-header); font-size: 1.25rem; color: var(--color-accent); font-weight: bold; letter-spacing: 0.15em; text-transform: uppercase;">Phonethagoras</div>
+              <div style="font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.05em; margin-top: 0.2rem;">free · private · yours</div>
             </div>
-            <p style="font-size: 0.85rem; color: var(--color-text-muted); max-width: 320px; line-height: 1.5; margin: 0.5rem 0 0 0;">An aesthetic, local-first workspace for adult vocational growth. Keep It Simple & Sovereign.</p>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); max-width: 320px; line-height: 1.5; margin: 0.5rem 0 0 0;">A free tool for organizing your life, building your skills, and getting ready for what's next. Everything stays on your device.</p>
           </div>
 
           <div class="card">
@@ -461,7 +530,7 @@
                 <span class="setting-value" id="setting-tier">—</span>
               </div>
               <div class="setting-row">
-                <span class="setting-label">Recommended Model</span>
+                <span class="setting-label">Model</span>
                 <span class="setting-value" id="setting-model">—</span>
               </div>
               <div class="setting-row" style="border-top: 1px dashed var(--color-border); padding-top: 0.8rem; margin-top: 0.5rem;">
@@ -474,10 +543,10 @@
                 </span>
               </div>
               <div class="setting-row" style="border-top: 1px dashed var(--color-border); padding-top: 0.8rem; margin-top: 0.5rem;">
-                <span class="setting-label" data-i18n="settings.zen_mode_label">Zen Mode (KISS)</span>
+                <span class="setting-label" data-i18n="settings.zen_mode_label">Zen Mode</span>
                 <span class="setting-value" style="display: flex; align-items: center; gap: 0.5rem;">
                   <input type="checkbox" id="setting-zen-mode" style="accent-color: var(--color-accent); cursor: pointer;">
-                  <label for="setting-zen-mode" style="font-size: 0.8rem; color: var(--color-text-muted); cursor: pointer;" data-i18n="settings.zen_mode_desc">Hide advanced tools until needed.</label>
+                  <label for="setting-zen-mode" style="font-size: 0.8rem; color: var(--color-text-muted); cursor: pointer;" data-i18n="settings.zen_mode_desc">Hide advanced tools.</label>
                 </span>
               </div>
             </div>
@@ -488,77 +557,64 @@
             </div>
             <div class="settings-body" style="display: flex; flex-direction: column; gap: 0.8rem; padding: 1.5rem;">
               <div style="display: flex; gap: 0.8rem;">
-                <button class="btn btn-secondary" id="btn-export-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.export_btn">Export State</button>
-                <button class="btn btn-secondary" id="btn-import-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.import_btn">Import State</button>
+                <button class="btn btn-secondary" id="btn-export-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.export_btn">Export</button>
+                <button class="btn btn-secondary" id="btn-import-state" style="flex: 1; padding: 0.6rem;" data-i18n="settings.import_btn">Import</button>
               </div>
-              <button class="btn btn-secondary" id="btn-drive-sync" style="width: 100%; padding: 0.6rem; background: var(--color-surface-2); border: 1px dashed var(--color-border);">Sync to Google Drive (OAuth)</button>
-              <button class="btn btn-danger" id="btn-reset-state" style="width: 100%; padding: 0.6rem;" data-i18n="settings.reset_btn">Reset Forge</button>
+              <button class="btn btn-secondary" id="btn-drive-sync" style="width: 100%; padding: 0.6rem; background: var(--color-surface-2); border: 1px dashed var(--color-border);">Save to Google Drive</button>
+              <button class="btn btn-danger" id="btn-reset-state" style="width: 100%; padding: 0.6rem;" data-i18n="settings.reset_btn">Start Over</button>
               <input type="file" id="file-import" accept=".json" style="display:none">
             </div>
           </div>
-          <!-- ═══ BRAIN SETTINGS MODAL ═══ -->
-    <div id="brain-settings-modal" class="modal-overlay hidden">
-      <div class="modal-content">
-        <h2>Brain Configuration</h2>
-        <div class="form-group">
-          <label>Inference Engine</label>
-          <select id="engine-select">
-            <option value="lmstudio">Local Network (LM Studio)</option>
-            <option value="offline">Offline On-Device (WebGPU)</option>
-          </select>
-        </div>
-        <div id="offline-download-section" class="hidden">
-          <p class="small-text">Download an Offline Persona to run natively in your browser. (Warning: Ensure you are on WiFi and have at least 3GB of free RAM).</p>
-          
-          <div class="form-group" style="margin-top: 1rem;">
-            <label>Select Persona</label>
-            <select id="persona-select">
-              <option value="professor">The Professor (Mind/Sage) - 2.3 GB</option>
-              <option value="nurse">The Nurse (Heart) - 1.1 GB</option>
-              <option value="scout">The Scout (Body) - 0.8 GB</option>
-              <option value="artist">The Artist (Act) - 1.6 GB</option>
-            </select>
-          </div>
-          
-          <p id="persona-description" class="small-text" style="color: var(--color-accent); font-style: italic;">Phi-3 (3.8B) - Expert logic, document parsing, WIOA resume building.</p>
 
-          <button id="download-model-btn" class="sigil-btn" style="margin-top: 0.5rem;">Download & Load Persona</button>
-          
-          <div id="download-progress-container" class="hidden">
-            <div class="progress-bar"><div id="download-progress-fill" class="progress-fill" style="width:0%"></div></div>
-            <span id="download-progress-text" class="small-text">0%</span>
+          <!-- Brain Settings Modal -->
+          <div id="brain-settings-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+              <h2>Brain Setup</h2>
+              <div class="form-group">
+                <label>AI Engine</label>
+                <select id="engine-select">
+                  <option value="lmstudio">Local Network (LM Studio)</option>
+                  <option value="offline">Offline (WebGPU Browser)</option>
+                </select>
+              </div>
+              <div id="offline-download-section" class="hidden">
+                <p class="small-text">Download the model (~700MB) to run AI completely offline in your browser.</p>
+                <button id="download-model-btn" class="btn btn-secondary">Download Offline Brain</button>
+                <div id="download-progress-container" class="hidden">
+                  <div class="progress-bar"><div id="download-progress-fill" class="progress-fill" style="width:0%"></div></div>
+                  <span id="download-progress-text" class="small-text">0%</span>
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button id="close-brain-settings" class="btn btn-secondary">Close</button>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="modal-actions">
-          <button id="close-brain-settings" class="sigil-btn">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
       </section>
 
     </main>
   </div>
 
-  <script src="js/data/constants.js?v=4"></script>
-  <script src="js/data/i18n.js?v=4"></script>
-  <script src="js/i18n.js?v=4"></script>
+  <script src="js/data/constants.js?v=5"></script>
+  <script src="js/data/i18n.js?v=5"></script>
+  <script src="js/i18n.js?v=5"></script>
   <script src="js/webllm-manager.js"></script>
-  <script src="js/gguf-manager.js"></script>
-  <script src="js/vaam.js?v=4"></script>
-  <script src="js/state.js?v=4"></script>
-  <script src="js/pearl.js?v=4"></script>
-  <script src="js/hardware.js?v=4"></script>
-  <script src="js/ai.js?v=4"></script>
-  <script src="js/voice.js?v=4"></script>
-  <script src="js/chat.js?v=4"></script>
-  <script src="js/breath.js?v=4"></script>
-  <script src="js/recycle.js?v=4"></script>
-  <script src="js/bridge.js?v=4"></script>
-  <script src="js/sync.js?v=4"></script>
-  <script src="js/docs.js?v=4"></script>
-  <script src="js/radar.js?v=4"></script>
-  <script src="js/dashboard.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/vaam.js?v=5"></script>
+  <script src="js/state.js?v=5"></script>
+  <script src="js/pearl.js?v=5"></script>
+  <script src="js/hardware.js?v=5"></script>
+  <script src="js/ai.js?v=5"></script>
+  <script src="js/voice.js?v=5"></script>
+  <script src="js/chat.js?v=5"></script>
+  <script src="js/breath.js?v=5"></script>
+  <script src="js/recycle.js?v=5"></script>
+  <script src="js/bridge.js?v=5"></script>
+  <script src="js/sync.js?v=5"></script>
+  <script src="js/docs.js?v=5"></script>
+  <script src="js/radar.js?v=5"></script>
+  <script src="js/dashboard.js?v=5"></script>
+  <script src="js/onboarding.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
 </body>
 </html>

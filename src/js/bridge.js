@@ -23,55 +23,46 @@ const PhoneBridge = (() => {
   }
 
   function getSimulatedClients() {
-    // Returns 3 simulated clients
     return [
       {
         id: "sim-client-1",
-        name: "Sarah Jenkins (Spouse)",
-        story: "Transitioning military spouse seeking administrative employment",
+        name: "Sarah Jenkins",
+        story: "Military spouse, seeking admin work after relocation",
         roots: { own: 0.85, bond: 0.90, skill: 0.75 },
-        walk: {
-          path: {
-            steps: [
-              { done: true },
-              { done: true },
-              { done: true }
-            ]
-          }
-        },
+        walk: { path: { steps: [{ done: true }, { done: true }, { done: true }] } },
         pulse: { focus: 0.95, guard: 0.80 }
       },
       {
         id: "sim-client-2",
-        name: "Marcus Aurelius (Veteran)",
-        story: "Combat veteran struggling with PTSD and severe focus dysregulation",
+        name: "Marcus Rivera",
+        story: "Combat veteran, PTSD, struggling with focus and isolation",
         roots: { own: 0.30, bond: 0.20, skill: 0.40 },
-        walk: {
-          path: {
-            steps: [
-              { done: false },
-              { done: false },
-              { done: false }
-            ]
-          }
-        },
+        walk: { path: { steps: [{ done: false }, { done: false }, { done: false }] } },
         pulse: { focus: 0.35, guard: 0.20 }
       },
       {
         id: "sim-client-3",
-        name: "David Choi (Recovery)",
-        story: "Transitioning veteran in recovery seeking IT certification",
+        name: "David Choi",
+        story: "In recovery, pursuing IT certification, 6 months sober",
         roots: { own: 0.60, bond: 0.50, skill: 0.55 },
-        walk: {
-          path: {
-            steps: [
-              { done: true },
-              { done: false },
-              { done: false }
-            ]
-          }
-        },
+        walk: { path: { steps: [{ done: true }, { done: false }, { done: false }] } },
         pulse: { focus: 0.70, guard: 0.50 }
+      },
+      {
+        id: "sim-client-4",
+        name: "Alicia Thompson",
+        story: "Single mom, 2 kids, needs evening-shift work and childcare",
+        roots: { own: 0.55, bond: 0.75, skill: 0.35 },
+        walk: { path: { steps: [{ done: true }, { done: true }, { done: false }] } },
+        pulse: { focus: 0.60, guard: 0.55 }
+      },
+      {
+        id: "sim-client-5",
+        name: "James Whitfield",
+        story: "Recently released, rebuilding, needs ID docs and housing",
+        roots: { own: 0.25, bond: 0.15, skill: 0.30 },
+        walk: { path: { steps: [{ done: false }, { done: false }, { done: false }] } },
+        pulse: { focus: 0.40, guard: 0.25 }
       }
     ];
   }
@@ -128,12 +119,6 @@ const PhoneBridge = (() => {
     sortedCaseload.forEach(client => {
       const row = document.createElement('div');
       row.className = 'caseload-row';
-      row.style.display = 'grid';
-      row.style.gridTemplateColumns = '2.5fr 1fr 1fr 1fr';
-      row.style.padding = '1.2rem 1.5rem';
-      row.style.borderBottom = '1px solid var(--color-border)';
-      row.style.alignItems = 'center';
-      row.style.fontSize = '0.9rem';
 
       // Badge styling
       let badgeBg = 'hsla(43, 55%, 50%, 0.15)';

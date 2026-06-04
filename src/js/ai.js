@@ -44,7 +44,7 @@ const PhoneAI = (() => {
       if (response.ok) {
         activeBackend = 'sidecar';
         activeModel = 'Local-Agentic';
-        console.log(`[phone-ai] Connected to Phonethagoras Sidecar on port 3000`);
+        console.log(`[phone-ai] Connected to Phonethagoras Sidecar on port 3001`);
         return;
       }
     } catch {}
@@ -65,6 +65,12 @@ const PhoneAI = (() => {
     activeBackend = 'offline';
     activeModel = `Offline`;
     console.log(`[phone-ai] Operating in offline mode. Missing Sidecar/LM Studio.`);
+  }
+
+  // ─── Set Active Backend (called from Brain Settings modal) ───
+  function setActiveBackend(backend) {
+    activeBackend = backend;
+    console.log(`[phone-ai] Backend manually set to: ${backend}`);
   }
 
   // ─── 4. Build Prompts ───
@@ -147,30 +153,8 @@ ${vaamSummary}
         return { message: { content: "[WebGPU Error] Failed to generate response offline. Please check your device." } };
       }
     }
-    
-    // 5. GGUF offline mode (The 4 Personas)
-    if (activeBackend === 'gguf') {
-      try {
-        if (typeof GGUFManager === 'undefined' || !GGUFManager.isReady()) {
-          return { message: { content: "[System] The GGUF Persona is still downloading or failed to initialize." } };
-        }
-        
-        let systemPrompt = buildSystemPrompt(state, vaamSummary);
-        const messages = [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
-        ];
 
-        console.log(`[phone-ai] Routing chat to GGUF Persona...`);
-        let fullResponse = await GGUFManager.chat(messages);
-        return { message: { content: fullResponse } };
-      } catch (err) {
-        console.error(err);
-        return { message: { content: "[GGUF Error] Failed to generate response." } };
-      }
-    }
-
-    // 6. Online API request
+    // 5. Online API request
     const url = activeBackend === 'sidecar' 
       ? 'http://localhost:3001/api/chat'
       : 'http://localhost:1234/v1/chat/completions';
@@ -355,25 +339,129 @@ ${vaamSummary}
   }
 
   // ─── 6. Offline Heuristics Engine ───
+  // This IS the app for most users. Make it feel like a real guided conversation.
   function getOfflineResponse(message) {
-    const cleanMsg = message.toLowerCase().trim();
-    let responseText = '';
+    const m = message.toLowerCase().trim();
+    const state = typeof PhoneState !== 'undefined' ? PhoneState.load() : {};
+    const name = state.name || 'Traveler';
+    const phase = typeof PEARL !== 'undefined' ? PEARL.getState() : 'assessment';
 
-    if (cleanMsg.includes('job') || cleanMsg.includes('work') || cleanMsg.includes('apply')) {
-      responseText = "Quest Accepted! Job hunting is a high-level raid. Do you have your Character Sheet (Resume) ready in your Inventory (Google Drive)?";
-    } else if (cleanMsg.includes('resume') || cleanMsg.includes('skills')) {
-      responseText = "Let's update your Character Sheet! What's a new skill you've leveled up recently? Even small tasks count as XP.";
-    } else if (cleanMsg.includes('schedule') || cleanMsg.includes('time') || cleanMsg.includes('calendar')) {
-      responseText = "Time management is your most important buff. Let's add a new Daily to your Quest Log (Google Calendar). What time are you grinding tomorrow?";
-    } else if (cleanMsg.includes('overwhelmed') || cleanMsg.includes('stressed') || cleanMsg.includes('hard')) {
-      responseText = "Whoa there, Traveler. Your HP is running low. It's time to visit the Inn. Rest is a required game mechanic. Take a breather.";
-    } else if (cleanMsg.includes('hello') || cleanMsg.includes('hi')) {
-      responseText = "Welcome to the Guild, Traveler! I'm Zen Zuse. Ready to grind some Dailies or update your Character Sheet today?";
-    } else {
-      responseText = "I see. Every action gives XP if you track it right. What's the next step on your Quest?";
+    // ─── CRISIS DETECTION (always check first) ───
+    if (m.match(/\b(suicide|kill myself|end it|don't want to live|want to die|self.?harm|hurt myself)\b/)) {
+      return `${name}, I hear you, and I need you to know: you matter. Right now, please reach out to the 988 Suicide & Crisis Lifeline — call or text 988. They're available 24/7. If you're a veteran, press 1 after dialing for the Veterans Crisis Line. I'm here when you're ready to talk, but a real human needs to hear your voice right now.`;
     }
 
-    return responseText;
+    if (m.match(/\b(homeless|no.*place.*live|sleeping.*car|evict|shelter)\b/)) {
+      return `Housing is the foundation — everything else gets harder without it. If you're in crisis, dial 211 (works nationwide) to find local shelters and emergency assistance. If you're a veteran, the VA's National Call Center for Homeless Veterans is 1-877-424-3838. Let's make sure you're safe first, then we build from there.`;
+    }
+
+    // ─── EMOTIONAL STATE RESPONSES ───
+    if (m.match(/\b(overwhelm|can't handle|too much|breaking|falling apart|drown|panic)\b/)) {
+      return `I hear you, ${name}. When everything feels like too much, your body is telling you something important. Let's do one thing right now: switch to the Breathe tab and do one round of box breathing with me. 16 seconds. That's it. Your nervous system will thank you. Then we come back and pick ONE thing — just one.`;
+    }
+
+    if (m.match(/\b(worthless|useless|failure|loser|stupid|dumb|can't do anything|broken)\b/)) {
+      return `${name}, I want to push back on that — gently. What you're describing is a feeling, not a fact. Learned helplessness is a real thing, and it's a lie your brain tells you after enough hard hits. The fact that you're HERE, talking to me, means you're not giving up. That takes more courage than most people will ever know. What's one small thing you did today — even tiny?`;
+    }
+
+    if (m.match(/\b(angry|furious|pissed|hate|rage|mad as hell)\b/)) {
+      return `Anger is information, ${name}. It usually means a boundary got crossed or something you care about is being threatened. That energy is actually useful — it's fuel. The question is: what do you want to DO with it? Channel it toward something that moves your life forward. What boundary needs protecting right now?`;
+    }
+
+    if (m.match(/\b(scared|afraid|terrified|anxious|nervous|worry|fear)\b/)) {
+      return `Fear shows up when something matters to you, ${name}. If you didn't care, you wouldn't be scared. That's actually a signal we can use — it points at what you value. What's the fear about specifically? Let's name it, because naming it takes away some of its power.`;
+    }
+
+    if (m.match(/\b(lonely|alone|no.*friends|isolated|nobody.*cares|disconnected)\b/)) {
+      return `Loneliness is one of the hardest things, ${name}, and it's way more common than people admit. Connection is a basic human need — not a luxury. Here's something I've seen work: start small. One person. One real conversation this week. It doesn't have to be deep — just genuine. Who's someone you haven't talked to in a while?`;
+    }
+
+    if (m.match(/\b(tired|exhausted|burned out|no energy|can't sleep|insomnia)\b/)) {
+      return `Rest isn't weakness, ${name} — it's maintenance. You can't grind on an empty tank. Your body is sending you a signal. Before we work on anything else: are you eating? Sleeping? Moving your body at all? Those three things are the foundation. Everything else is built on top. What's the one that's slipping the most?`;
+    }
+
+    if (m.match(/\b(sad|depressed|down|hopeless|numb|empty|lost)\b/)) {
+      return `I appreciate you being honest about that, ${name}. When everything feels gray, it's hard to see the point of doing anything. But here's what I know: feelings are weather, not climate. They pass. And the small things you do while it's raining still count. What's the smallest action that would make tomorrow 1% better than today?`;
+    }
+
+    if (m.match(/\b(proud|good day|accomplished|did it|made it|progress|better)\b/)) {
+      return `YES, ${name}. That's real progress and I want you to sit with that feeling for a second. Don't rush past it. Your brain needs to register wins just as much as it registers setbacks. What specifically made it good? Let's record this in your character sheet so we can look back on it later.`;
+    }
+
+    // ─── TOPIC-BASED RESPONSES ───
+    if (m.match(/\b(job|work|employ|career|hire|interview|apply|application)\b/)) {
+      return `Job search is a campaign, not a single battle. Here's the strategy: 1) Get your character sheet (resume) tight — try the Reflection tab to reframe your experience. 2) Pick ONE industry and go deep. 3) Apply to 3 places this week, not 30. Quality over quantity. What industry are you targeting?`;
+    }
+
+    if (m.match(/\b(resume|cv|cover letter|character sheet)\b/)) {
+      return `Your resume is your character sheet — it tells people what class you play and what skills you've unlocked. Head to the "Turn Stories Into Skills" tab and write about your experience. The engine will extract the professional language for you. What experience do you want to start with?`;
+    }
+
+    if (m.match(/\b(learn|school|education|class|degree|certif|training|study)\b/)) {
+      return `Leveling up your skills — that's the right move. There are a lot of free paths: Khan Academy, Coursera free courses, your local library's resources, and if you're a veteran, your GI Bill is a massive resource. What skill would open the most doors for you right now?`;
+    }
+
+    if (m.match(/\b(money|broke|debt|bills|rent|financial|budget|afford)\b/)) {
+      return `Money stress is real and it affects everything else. First: do you know your exact numbers? Total income vs. total expenses? Seeing it clearly (even if it's ugly) is the first step. If you're in immediate crisis, 211 connects you with local financial assistance. What's the most urgent bill?`;
+    }
+
+    if (m.match(/\b(relationship|partner|wife|husband|divorce|family|kids|children)\b/)) {
+      return `Relationships affect everything — they're the "bond" stat in your character sheet. Whether it's good or hard right now, the key is boundaries and communication. You can't pour from an empty cup. Are you taking care of yourself well enough to show up for the people who matter?`;
+    }
+
+    if (m.match(/\b(ptsd|trauma|flashback|trigger|nightmare|combat|service|deploy)\b/)) {
+      return `${name}, what you're carrying is real, and you don't have to carry it alone. If you haven't connected with the VA or a Vet Center, they offer free counseling — no strings. The Veterans Crisis Line is 988 (press 1). For day-to-day: the Breathe tab here uses box breathing, which is the same technique combat medics use. Want to try it?`;
+    }
+
+    if (m.match(/\b(breathe?|breath|calm|relax|ground|meditat)\b/)) {
+      return `Good call. Switch to the Breathe tab — it'll walk you through box breathing with a visual guide. Inhale 4 seconds, hold 4, exhale 4, hold 4. Even one round changes your nervous system state. Your "guard" stat goes up every time you practice. Your body remembers.`;
+    }
+
+    if (m.match(/\b(goal|plan|next step|where.*start|what.*do|direction)\b/)) {
+      return `Let's break it down. A good goal has three parts: 1) Specific — not "get better" but "apply to 2 IT jobs this week." 2) Small enough to start today. 3) Something YOU control, not dependent on other people. What's one thing you can do in the next 24 hours that moves you forward?`;
+    }
+
+    if (m.match(/\b(thank|thanks|helpful|appreciate|grateful)\b/)) {
+      return `That means a lot, ${name}. But you're doing the hard part — I'm just the guide. Every time you show up and talk about what's real, you're building your character. Keep going. What do you want to work on next?`;
+    }
+
+    if (m.match(/\b(who are you|what are you|what is this|how.*work|help me understand)\b/)) {
+      return `I'm Zen Zuse — your AI guide in this tool called Phonethagoras. Think of me as a guild NPC in a game. I help you organize your life using character sheet mechanics: Mind (thinking), Heart (feeling), Body (health), and Act (doing). Everything stays on YOUR device — I can't see your data and nobody else can either. It's free, forever. What would you like to work on?`;
+    }
+
+    if (m.match(/\b(hello|hey|hi|good morning|good evening|what's up|sup)\b/)) {
+      return `Hey ${name}! Good to see you back in the Guild. How's your energy today — ready to grind, or do you need to visit the Inn (Breathe tab) first?`;
+    }
+
+    if (m.match(/\b(bye|goodbye|see you|leaving|gotta go|later)\b/)) {
+      return `Take care, ${name}. Remember: showing up counts as XP. You came, you talked, that matters. See you next time. ◆`;
+    }
+
+    // ─── PEARL PHASE-AWARE FALLBACKS ───
+    if (phase === 'assessment') {
+      return `I'm listening, ${name}. Tell me more about what's going on. I'm trying to understand where you're at so I can be the most helpful. What's the biggest challenge you're facing right now?`;
+    } else if (phase === 'character_sheet') {
+      return `Good — we're building your character sheet. Think about your strengths: what are you naturally good at? What have people thanked you for? Even things that feel small to you might be real skills. Tell me one.`;
+    } else if (phase === 'quest_log') {
+      return `Now let's set your next quest. What's one concrete thing you want to accomplish this week? Make it specific enough that you'll know when it's done.`;
+    } else if (phase === 'inventory') {
+      return `Let's look at what tools you have available. Do you have a resume? A computer? Access to transportation? Internet? Let's inventory your real-world resources.`;
+    } else if (phase === 'level_up') {
+      return `You've put in the work, ${name}. Let's look at what you've accomplished. What feels different now compared to when we started talking?`;
+    }
+
+    // ─── GENERAL FALLBACK (make it Socratic, not generic) ───
+    const fallbacks = [
+      `Tell me more about that, ${name}. What does that look like in your day-to-day life?`,
+      `That's real. When did you first start noticing that? Understanding the pattern helps us figure out what to do about it.`,
+      `I hear you. If you could change one thing about that situation, what would it be?`,
+      `${name}, what would it look like if that problem was solved? Paint me a picture.`,
+      `Let's zoom out for a second. On a scale of 1-10, how much is this affecting your ability to move forward? That helps me know where to focus.`,
+      `That takes courage to talk about. What have you tried so far? Even things that didn't work — they still tell us something.`,
+      `Interesting. And how does that connect to what you're trying to build for yourself?`
+    ];
+
+    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
   }
 
   // ─── 7. Custom Completion API ───

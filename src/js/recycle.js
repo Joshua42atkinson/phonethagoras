@@ -42,11 +42,11 @@ const PhoneRecycle = (() => {
   async function runRecycler() {
     const text = rawInput.value.trim();
     if (!text) {
-      alert('Please enter a raw experience or journal entry to alchemize.');
+      alert('Write about what happened — messy is fine. The engine will find the skills.');
       return;
     }
 
-    runBtn.textContent = 'Alchemizing...';
+    runBtn.textContent = 'Finding your skills...';
     runBtn.disabled = true;
 
     // Load current state for prompt context
@@ -97,7 +97,7 @@ A 2-3 sentence summary framing their reframed experience as an unlocked "Class" 
       console.error('[phone-recycle] Alchemize failed:', e);
       alert('Failed to alchemize raw input. Check console.');
     } finally {
-      runBtn.textContent = 'Reframe Experience';
+      runBtn.textContent = 'Find the Skills in My Story';
       runBtn.disabled = false;
     }
   }
@@ -106,7 +106,8 @@ A 2-3 sentence summary framing their reframed experience as an unlocked "Class" 
     if (!resultText) return;
     const text = resultText.textContent;
     navigator.clipboard.writeText(text).then(() => {
-      alert('Recycled output copied to clipboard!');
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => copyBtn.textContent = 'Copy Text', 2000);
     }).catch(err => {
       console.error('Failed to copy text:', err);
     });

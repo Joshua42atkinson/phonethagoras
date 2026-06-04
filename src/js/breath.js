@@ -104,7 +104,7 @@ const PhoneBreath = (() => {
     isActive = true;
     toggleBtn.textContent = 'Stop Exercise';
     toggleBtn.classList.add('btn-danger');
-    toggleBtn.classList.remove('btn-secondary');
+    toggleBtn.classList.remove('btn-accent');
 
     // Mute speech/TTS to avoid collision
     if (typeof PhoneVoice !== 'undefined') {
@@ -132,7 +132,7 @@ const PhoneBreath = (() => {
     if (toggleBtn) {
       toggleBtn.textContent = 'Start Exercise';
       toggleBtn.classList.remove('btn-danger');
-      toggleBtn.classList.add('btn-secondary');
+      toggleBtn.classList.add('btn-accent');
     }
 
     if (visualizerEl) {

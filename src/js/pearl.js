@@ -34,25 +34,43 @@ const PEARL = (() => {
     return currentState;
   }
 
+  // Readiness signals — user is explicitly saying "I'm done with this phase"
+  const READINESS_PATTERN = /\b(yes|yeah|sure|okay|ok|accept|do it|next|done|ready|let's go|move on|continue)\b/;
+
   function advanceState(userInput = "") {
-    const text = userInput.toLowerCase();
+    const text = userInput.toLowerCase().trim();
+    
+    // Don't advance on very short or empty input
+    if (text.length < 3) return currentState;
     
     switch (currentState) {
       case PHASES.ASSESSMENT: 
         if (assessmentStep < 2) {
-          assessmentStep++;
+          // Only advance sub-steps when the user gives a substantive response (>10 chars)
+          if (text.length > 10) {
+            assessmentStep++;
+          }
         } else {
-          // If we are at the proposal step, wait for them to accept
-          if (text.match(/\b(yes|yeah|sure|okay|ok|accept|do it)\b/)) {
+          // At the proposal step — wait for explicit acceptance
+          if (READINESS_PATTERN.test(text)) {
             currentState = PHASES.CHARACTER_SHEET; 
             assessmentStep = 0;
           }
         }
         break;
-      case PHASES.CHARACTER_SHEET: currentState = PHASES.QUEST_LOG; break;
-      case PHASES.QUEST_LOG: currentState = PHASES.INVENTORY; break;
-      case PHASES.INVENTORY: currentState = PHASES.LEVEL_UP; break;
-      case PHASES.LEVEL_UP: currentState = PHASES.ASSESSMENT; break; // loop back for next milestone
+      // Post-assessment phases require user to signal readiness before advancing
+      case PHASES.CHARACTER_SHEET:
+        if (READINESS_PATTERN.test(text)) currentState = PHASES.QUEST_LOG;
+        break;
+      case PHASES.QUEST_LOG:
+        if (READINESS_PATTERN.test(text)) currentState = PHASES.INVENTORY;
+        break;
+      case PHASES.INVENTORY:
+        if (READINESS_PATTERN.test(text)) currentState = PHASES.LEVEL_UP;
+        break;
+      case PHASES.LEVEL_UP:
+        if (READINESS_PATTERN.test(text)) currentState = PHASES.ASSESSMENT; // loop back
+        break;
     }
     document.dispatchEvent(new CustomEvent('pearl-state-changed', { detail: currentState }));
     return currentState;
@@ -66,14 +84,16 @@ const PEARL = (() => {
   }
 
   function checkCoachRouting(userInput) {
-    // Basic heuristic to detect high emotional load or trauma dumping
-    const triggerWords = [
-      'overwhelmed', 'depressed', 'anxious', 'trauma', 'abuse', 'hopeless',
-      'panic', 'breakdown', 'suicide', 'hurt', 'therapy'
+    // Only route to coach for genuine crisis/danger signals.
+    // Everyday emotional words (overwhelmed, anxious, stressed) are normal coaching topics
+    // and should be handled by the AI, not dismissed to a coach.
+    const crisisWords = [
+      'suicide', 'kill myself', 'want to die', 'self harm', 'self-harm',
+      'abuse', 'domestic violence', 'molest', 'trafficking'
     ];
     const text = userInput.toLowerCase();
-    for (const word of triggerWords) {
-      if (text.includes(word)) {
+    for (const phrase of crisisWords) {
+      if (text.includes(phrase)) {
         return true;
       }
     }
