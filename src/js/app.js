@@ -248,6 +248,9 @@
       modal.classList.add('hidden');
     });
 
+    const personaSelect = document.getElementById('persona-select');
+    const personaDesc = document.getElementById('persona-description');
+
     engineSelect.addEventListener('change', (e) => {
       if (e.target.value === 'offline') {
         offlineSection.classList.remove('hidden');
@@ -256,29 +259,44 @@
       }
     });
 
+    if (personaSelect && personaDesc) {
+      personaSelect.addEventListener('change', (e) => {
+        if (typeof GGUFManager !== 'undefined') {
+          const personas = GGUFManager.getPersonas();
+          if (personas[e.target.value]) {
+            personaDesc.textContent = personas[e.target.value].description;
+          }
+        }
+      });
+    }
+
     btnDownload.addEventListener('click', async () => {
-      if (typeof WebLLMManager === 'undefined') {
-        alert("WebLLM offline engine failed to load.");
+      if (typeof GGUFManager === 'undefined') {
+        alert("GGUF offline engine failed to load.");
         return;
       }
       
+      const selectedPersona = personaSelect ? personaSelect.value : 'professor';
       btnDownload.disabled = true;
       progressContainer.classList.remove('hidden');
+      progressText.textContent = "Loading WebAssembly engine...";
       
       try {
-        await WebLLMManager.init((progress, text) => {
+        await GGUFManager.init(selectedPersona, (progress, text) => {
           progressFill.style.width = `${progress}%`;
           progressText.textContent = `${progress}% - ${text}`;
         });
         
         btnDownload.textContent = "Downloaded & Ready!";
-        // Switch PhoneAI to offline WebLLM mode globally
+        btnDownload.disabled = false;
+        
+        // Switch PhoneAI to offline GGUF mode globally
         if (typeof PhoneAI !== 'undefined') {
-          PhoneAI.setActiveBackend('webllm');
+          PhoneAI.setActiveBackend('gguf');
         }
       } catch (err) {
         console.error(err);
-        progressText.textContent = "Error downloading model.";
+        progressText.textContent = "Error loading GGUF persona.";
         btnDownload.disabled = false;
       }
     });
