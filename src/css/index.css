@@ -1298,3 +1298,47 @@ body::before {
   display: flex;
   justify-content: flex-end;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS OVERRIDES
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  :root {
+    --space-xl: 1.5rem;
+    --space-lg: 1rem;
+    --space-md: 0.75rem;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  /* Iron Road Quest Map horizontal scroll */
+  .iron-road-container {
+    overflow-x: auto;
+    padding-bottom: var(--space-md);
+    justify-content: flex-start;
+  }
+  
+  .pearl-path {
+    min-width: 400px; /* Keep nodes spaced out, allow scrolling container */
+    padding: 0 var(--space-md);
+  }
+
+  /* Chat wrapper uses dynamic viewport height */
+  .chat-wrapper {
+    height: calc(100dvh - 110px);
+  }
+
+  /* Document Viewer takes 100% width and slides from right */
+  .document-viewer {
+    width: 100%;
+    border-left: none;
+    z-index: 100;
+  }
+  
+  /* Make sure header adjusts slightly */
+  .app-title {
+    font-size: 1rem;
+  }
+}
