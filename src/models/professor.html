@@ -273,5 +273,47 @@
 
   </div>
 
+  <script>
+    const input = document.querySelector('.chat-input');
+    const chatFeed = document.querySelector('.chat-feed');
+    const citFeed = document.querySelector('.citation-feed');
+    
+    input.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') {
+        if(!input.value.trim()) return;
+        
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-msg user';
+        userMsg.textContent = input.value;
+        chatFeed.appendChild(userMsg);
+        input.value = '';
+        chatFeed.scrollTop = chatFeed.scrollHeight;
+        
+        setTimeout(() => {
+          const newCit = document.createElement('div');
+          newCit.className = 'citation-card';
+          newCit.style.borderLeft = '3px solid var(--prof-neon)';
+          newCit.innerHTML = `
+            <div class="cit-title">
+              <span>Vector Match: Local DB</span>
+              <span class="cit-score">92% Match</span>
+            </div>
+            <div class="cit-text">
+              "We found strong semantic correlation concerning the exact behavioral adaptation strategies you referenced."
+            </div>
+          `;
+          citFeed.prepend(newCit);
+        }, 500);
+
+        setTimeout(() => {
+          const profMsg = document.createElement('div');
+          profMsg.className = 'chat-msg prof';
+          profMsg.innerHTML = `"Indeed. The data suggests your hypothesis holds weight. As seen in the recent vector match, behavioral adaptation is heavily influenced by prior structural conditions."`;
+          chatFeed.appendChild(profMsg);
+          chatFeed.scrollTop = chatFeed.scrollHeight;
+        }, 1500);
+      }
+    });
+  </script>
 </body>
 </html>

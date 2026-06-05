@@ -672,12 +672,12 @@
                   <p style="font-size: var(--text-sm); opacity: 0.8; margin-bottom: var(--space-2);">
                     Download a 1.3GB Liquid Foundation Model to your browser cache. 5x more memory efficient than Llama.
                   </p>
-                  <button id="btn-enable-webllm" class="btn btn-secondary" style="width: 100%;">Download Liquid Brain</button>
-                  <div id="webllm-progress-container" style="display: none; margin-top: var(--space-2);">
+                  <button id="btn-modal-enable-webllm" class="btn btn-secondary" style="width: 100%;">Download Liquid Brain</button>
+                  <div id="webllm-progress-container-modal" style="display: none; margin-top: var(--space-2);">
                     <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-                      <div id="webllm-progress-bar" style="width: 0%; height: 100%; background: var(--color-primary); transition: width 0.3s ease;"></div>
+                      <div id="webllm-progress-bar-modal" style="width: 0%; height: 100%; background: var(--color-primary); transition: width 0.3s ease;"></div>
                     </div>
-                    <p id="webllm-progress-text" style="font-size: 12px; margin-top: 4px; opacity: 0.7;">0%</p>
+                    <p id="webllm-progress-text-modal" style="font-size: 12px; margin-top: 4px; opacity: 0.7;">0%</p>
                   </div>
                 </div>
 
@@ -707,6 +707,7 @@
     </main>
   </div>
 
+  <script type="module" src="js/ai-core-widget.js?v=1"></script>
   <script type="module" src="js/app.js?v=6"></script>
 </body>
 </html>

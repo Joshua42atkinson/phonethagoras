@@ -207,5 +207,31 @@
     </div>
   </div>
 
+  <script>
+    const sendBtn = document.querySelector('.send-btn');
+    const input = document.querySelector('.chat-input');
+    const chatContainer = document.querySelector('.chat-container');
+    
+    function addMessage(text, type) {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${type}`;
+      bubble.innerHTML = `<p>${text}</p>`;
+      chatContainer.appendChild(bubble);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    sendBtn.addEventListener('click', () => {
+      if(!input.value.trim()) return;
+      addMessage(input.value, 'user');
+      input.value = '';
+      
+      setTimeout(() => {
+        addMessage("I hear you. Let's take a deep breath. Can you tell me a little more about how that is affecting your body right now?", 'nurse');
+      }, 1000);
+    });
+    input.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') sendBtn.click();
+    });
+  </script>
 </body>
 </html>

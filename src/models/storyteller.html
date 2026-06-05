@@ -170,5 +170,32 @@
     </div>
   </div>
 
+  <script>
+    const input = document.querySelector('.story-input');
+    const feed = document.getElementById('story-feed');
+    
+    input.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if(!input.value.trim()) return;
+        
+        const p = document.createElement('p');
+        p.textContent = input.value;
+        p.style.color = '#fff';
+        feed.appendChild(p);
+        input.value = '';
+        
+        setTimeout(() => {
+          const p2 = document.createElement('p');
+          p2.textContent = "The winds shifted then, carrying the scent of ancient pine and impending storms. The shadows deepened along the edges of the path, whispering secrets forgotten by time...";
+          p2.style.opacity = '0';
+          p2.style.transition = 'opacity 2s ease';
+          feed.appendChild(p2);
+          
+          setTimeout(() => { p2.style.opacity = '1'; feed.parentElement.scrollTop = feed.parentElement.scrollHeight; }, 100);
+        }, 1500);
+      }
+    });
+  </script>
 </body>
 </html>

@@ -258,5 +258,36 @@
     </div>
   </div>
 
+  <script>
+    const captureBtn = document.querySelector('.btn-tactical');
+    const logFeed = document.querySelector('.analysis-log');
+    captureBtn.addEventListener('click', () => {
+      // Flash effect
+      const flash = document.createElement('div');
+      flash.style.position = 'absolute';
+      flash.style.inset = '0';
+      flash.style.backgroundColor = 'white';
+      flash.style.zIndex = '999';
+      flash.style.opacity = '1';
+      flash.style.transition = 'opacity 0.5s ease-out';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.style.opacity = '0', 50);
+      setTimeout(() => flash.remove(), 550);
+      
+      // Add log
+      const timeStr = `[00:0${Math.floor(Math.random()*9)+4}]`;
+      const msgs = [
+        "Image captured. Scanning for known flora...",
+        "Object detected: Fungi (Confidence 88%). Warning: Do not consume.",
+        "Terrain mapped. Elevation change ahead.",
+        "Analyzing ambient light levels..."
+      ];
+      const newLog = document.createElement('div');
+      newLog.className = 'log-entry';
+      newLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="log-text">${msgs[Math.floor(Math.random()*msgs.length)]}</span>`;
+      logFeed.appendChild(newLog);
+      logFeed.scrollTop = logFeed.scrollHeight;
+    });
+  </script>
 </body>
 </html>
