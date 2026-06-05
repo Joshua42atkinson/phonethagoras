@@ -20,6 +20,7 @@ const ASSETS = [
   './js/pearl.js',
   './js/radar.js',
   './js/recycle.js',
+  './js/settings.js',
   './js/state.js',
   './js/sync.js',
   './js/vaam.js',

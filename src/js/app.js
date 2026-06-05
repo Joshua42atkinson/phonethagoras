@@ -24,6 +24,7 @@ import { PhoneSync } from './sync.js';
 import { PhoneDocs } from './docs.js';
 import { PhoneOnboarding } from './onboarding.js';
 import { PhoneQuest } from './quest.js';
+import { PhoneSettings } from './settings.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -78,6 +79,7 @@ if ('serviceWorker' in navigator) {
   if (typeof PhoneSync !== 'undefined') PhoneSync.init();
   if (typeof PhoneDocs !== 'undefined') PhoneDocs.init();
   if (typeof PhoneQuest !== 'undefined') PhoneQuest.init();
+  if (typeof PhoneSettings !== 'undefined') PhoneSettings.init();
 
   // ─── 4. Navigation (Clean Tab Switching) ───
   const navButtons = document.querySelectorAll('.sigil-btn[data-panel]');
