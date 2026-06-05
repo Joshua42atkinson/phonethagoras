@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,13 @@
   },
   "homepage": "https://github.com/Joshua42atkinson/phonethagoras#readme",
   "devDependencies": {
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.2",
     "jsdom": "^29.1.1",
     "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "@tauri-apps/plugin-fs": "^2.5.1",
+    "puppeteer": "^25.1.0"
   }
 }

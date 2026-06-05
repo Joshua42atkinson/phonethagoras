@@ -8,6 +8,7 @@
  */
 
 import { ZEN_CONST } from './data/constants.js';
+import { Vault } from './vault.js';
 
   const STORAGE_KEY = 'zen_book';
   
@@ -39,26 +40,26 @@ import { ZEN_CONST } from './data/constants.js';
     return {
       id: generateUUID(),
       zenMode: true,
-      language: 'en',              // Current user language
-      name: 'newcomer',           // was archetype_build / 'Unawakened'
-      story: '',                   // was demographics_private.narrative_context
-      shape: {                     // was attribute_matrix
-        mind:  10,                 // was intelligence_sage
-        heart: 10,                 // was courage_hero
-        body:  10,                 // was empathy_caregiver
-        act:   10,                 // was eloquence_jester
+      language: 'en',
+      name: 'newcomer',
+      story: '',
+      shape: {
+        mind:  10,
+        heart: 10,
+        body:  10,
+        act:   10,
       },
-      roots: {                     // was virtue_topology_gravity
-        own:   0.20,               // was autonomy_sovereignty
-        bond:  0.20,               // was relatedness_tribe
-        skill: 0.20,               // was competence_mastery
+      roots: {
+        own:   0.20,
+        bond:  0.20,
+        skill: 0.20,
       },
-      walk: {                      // was active_campaign
-        depth: 'seen',             // was current_level (now uses DEPTH enum)
-        dare: 'Begin',             // was current_quest
-        fret: 1,                   // active fret (1 to 12)
-        gate: 'be',                // active gate ('be', 'do', 'play')
-        sandboxMode: false,        // sandbox bypass
+      walk: {
+        depth: 'seen',
+        dare: 'Begin',
+        fret: 1,
+        gate: 'be',
+        sandboxMode: false,
         gatesCompleted: {
           1: { be: false, do: false, play: false },
           2: { be: false, do: false, play: false },
@@ -73,7 +74,7 @@ import { ZEN_CONST } from './data/constants.js';
           11: { be: false, do: false, play: false },
           12: { be: false, do: false, play: false }
         },
-        path: {                    // was commitment_contract
+        path: {
           id: 'path-init',
           goal: 'Observe yourself for one week.',
           steps: [
@@ -83,17 +84,21 @@ import { ZEN_CONST } from './data/constants.js';
           ]
         }
       },
-      pulse: {                     // was local_sensor_telemetry
-        focus: 0.50,               // was attention_stewardship_score
-        guard: 0.50,               // was armor_density_vulnerability
+      pulse: {
+        focus: 0.50,
+        guard: 0.50,
+      },
+      mentorship: {
+        coachEmail: '',
+        lastSitRep: null,
       },
 
-      pearlState: 'perspective',   // Current PEARL phase (Perspective -> Engineering -> Aesthetic -> Research -> Alignment)
-      face: null,                  // was prestige_class
+      pearlState: 'perspective',
+      face: null,
       _meta: {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        version: '0.3.0'
+        version: '0.4.0'
       }
     };
   }
@@ -117,98 +122,53 @@ import { ZEN_CONST } from './data/constants.js';
     const { mind, heart, body, act } = state.shape;
     const maxVal = Math.max(mind, heart, body, act);
     
-    // Simplistic assignment based on max
     if (mind === maxVal) state.face = ZEN_CONST.FACE.SEER;
     else if (heart === maxVal) state.face = ZEN_CONST.FACE.SINGER;
     else if (body === maxVal) state.face = ZEN_CONST.FACE.GARDENER;
     else if (act === maxVal) state.face = ZEN_CONST.FACE.MAKER;
     
-    // If all are perfectly balanced and high, they become WEAVER
     if (mind > 75 && heart > 75 && body > 75 && act > 75) {
        state.face = ZEN_CONST.FACE.WEAVER;
     }
   }
 
-  // ─── Persistence (IndexedDB + Cache) ───
+  // ─── Persistence (Vault) ───
   let currentStateCache = null;
-
-  function openDB() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open('PhonethagorasDB', 1);
-      request.onupgradeneeded = (e) => {
-        e.target.result.createObjectStore('store');
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async function dbGet(key) {
-    try {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('store', 'readonly');
-        const store = tx.objectStore('store');
-        const req = store.get(key);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
-    } catch (e) {
-      console.warn('IndexedDB blocked or unavailable:', e);
-      return null;
-    }
-  }
-
-  async function dbSet(key, val) {
-    try {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('store', 'readwrite');
-        const store = tx.objectStore('store');
-        const req = store.put(val, key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-    } catch (e) {
-      console.warn('IndexedDB blocked or unavailable:', e);
-    }
-  }
-
-  async function dbRemove(key) {
-    try {
-      const db = await openDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction('store', 'readwrite');
-        const store = tx.objectStore('store');
-        const req = store.delete(key);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-    } catch (e) {
-      console.warn('IndexedDB blocked or unavailable:', e);
-    }
-  }
 
   async function init() {
     try {
-      const dbState = await dbGet(STORAGE_KEY);
+      await Vault.init();
+      const vaultData = await Vault.read('Character.md');
+      
+      let dbState = null;
+      if (vaultData) {
+        // Extract JSON from markdown code block
+        const match = vaultData.match(/```json\\n([\\s\\S]*?)\\n```/);
+        if (match && match[1]) {
+          dbState = JSON.parse(match[1]);
+        } else {
+          try { dbState = JSON.parse(vaultData); } catch(e){} // Fallback if plain JSON
+        }
+      }
+
       if (dbState) {
         currentStateCache = deepMerge(createDefaultState(), dbState);
       } else {
-        // Migration from localStorage
+        // Migration from legacy localStorage
         const lsRaw = localStorage.getItem(STORAGE_KEY);
         if (lsRaw) {
           const parsed = JSON.parse(lsRaw);
           currentStateCache = deepMerge(createDefaultState(), parsed);
-          await dbSet(STORAGE_KEY, currentStateCache);
+          // Auto-save to Vault
+          save(currentStateCache);
           localStorage.removeItem(STORAGE_KEY);
         } else {
           currentStateCache = createDefaultState();
-          await dbSet(STORAGE_KEY, currentStateCache);
+          save(currentStateCache);
         }
       }
     } catch (err) {
-      console.error('[PhoneState] DB Init failed, falling back to memory', err);
+      console.error('[PhoneState] Vault Init failed, falling back to memory', err);
       currentStateCache = createDefaultState();
     }
     return currentStateCache;
@@ -227,8 +187,9 @@ import { ZEN_CONST } from './data/constants.js';
     state._meta.updated_at = new Date().toISOString();
     currentStateCache = JSON.parse(JSON.stringify(state));
     
-    dbSet(STORAGE_KEY, currentStateCache).catch(e => {
-      console.error('[PhoneState] Failed to save state to DB:', e);
+    const content = `\`\`\`json\\n${JSON.stringify(currentStateCache, null, 2)}\\n\`\`\``;
+    Vault.write('Character.md', content).catch(e => {
+      console.error('[PhoneState] Failed to save state to Vault:', e);
     });
     
     emit('state:changed', currentStateCache);
@@ -237,7 +198,7 @@ import { ZEN_CONST } from './data/constants.js';
 
   function reset() {
     currentStateCache = createDefaultState();
-    dbRemove(STORAGE_KEY).catch(e => console.error(e));
+    Vault.remove('Character.md').catch(e => console.error(e));
     localStorage.removeItem(STORAGE_KEY);
     return load();
   }
@@ -302,3 +263,5 @@ export const PhoneState = {
   createDefaultState,
   emit
 };
+
+export default PhoneState;

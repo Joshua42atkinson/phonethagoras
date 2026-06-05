@@ -85,9 +85,29 @@ export const PhoneVision = (() => {
     }
   }
 
+  /**
+   * Performs OCR on a base64 image.
+   * @param {string} imageBase64 - Raw base64 string
+   * @returns {Promise<string>} Extracted text
+   */
+  async function performOCR(imageBase64) {
+    try {
+      console.log("[Vision] Loading Tesseract.js from CDN...");
+      const Tesseract = await import('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/+esm');
+      const dataUrl = `data:image/jpeg;base64,${imageBase64}`;
+      console.log("[Vision] Recognizing text...");
+      const result = await Tesseract.default.recognize(dataUrl, 'eng');
+      return result?.data?.text || '';
+    } catch (e) {
+      console.error("[Vision] OCR failed:", e);
+      return '';
+    }
+  }
+
   return {
     init,
     describeImage,
+    performOCR,
     isReady: () => isReady,
     isDownloading: () => isDownloading,
     getProgress: () => downloadProgress

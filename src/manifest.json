@@ -2,15 +2,26 @@
   "name": "Phonethagoras",
   "short_name": "Phonethagoras",
   "start_url": ".",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0a0f19",
   "theme_color": "#0a0f19",
-  "description": "A private, local-first pedagogical engine.",
+  "description": "A private, offline-first life management engine with AI-powered coaching, resume building, and self-mastery tools.",
+  "categories": ["education", "lifestyle", "productivity", "health"],
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ]
+  ],
+  "screenshots": []
 }

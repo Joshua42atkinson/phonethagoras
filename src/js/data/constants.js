@@ -124,6 +124,7 @@
   const ZEN = Object.freeze({
     // System concepts
     'S.I.L.K.':                         'silk',
+    'SILK':                             'silk',
     'Attribute Matrix':                 'shape',
     'Virtue Topology':                  'roots',
     'Active Campaign':                  'walk',
@@ -154,4 +155,6 @@
     'Competence':                       'skill',
   });
 
-  export const ZEN_CONST = { DIR, DEPTH, FACE, ROOT, COLOR, HSL, ASK, DEPTH_THRESHOLD, ZEN };
+export const ZEN_CONST = { DIR, DEPTH, FACE, ROOT, COLOR, HSL, ASK, DEPTH_THRESHOLD, ZEN };
+
+export default ZEN_CONST;

@@ -1,74 +1,113 @@
 /**
- * AI ENGINE — phone.com
- * 
- * Implements:
- * Implements:
- * 1. Three-tier inference routing:
- *    - TIER 1 (High): Local API (e.g. LM Studio) (http://localhost:1234/v1)
- *    - TIER 2 (Mid): Liquid Sidecar (http://localhost:1235/v1)
- *    - TIER 3 (Lite): Offline Heuristic fallback
- * 2. Vision API support (sending base64 image data to local vision model)
+ * AI ENGINE — Phonethagoras
+ *
+ * Inference priority (web-first, phone-first architecture):
+ *
+ *   TIER 0 — Wllama  (llama.cpp compiled to WASM, runs in the browser)
+ *             Primary path. Loads LFM2.5-350M from HuggingFace,
+ *             caches in browser Cache Storage. Works offline after first load.
+ *             Works on phones, tablets, laptops — any modern browser.
+ *
+ *   TIER 1 — Ollama  (localhost:11434, dev machines only)
+ *             Only checked if Wllama model is not yet loaded.
+ *
+ *   TIER 2 — LM Studio (localhost:1234, dev machines only)
+ *
+ *   TIER 3 — Offline heuristic responses (always available)
  */
 
 import { PhoneHardware } from './hardware.js';
-import { PhoneLFM } from './lfm-manager.js';
+import { WllamaEngine } from './wllama-engine.js';
 import { PhoneVision } from './vision-manager.js';
 
 export const PhoneAI = (() => {
   let isLoaded = false;
   let activeBackend = 'offline';
   let activeModel = 'fallback';
+  let wllamaLoadStarted = false;
 
-  // ─── 1. Initialize RAG ───
+  // ─── Initialize ───
   async function init() {
     isLoaded = true;
-    console.log(`[phone-ai] Engine initialized without BM25.`);
+    // Kick off Wllama load immediately in the background.
+    // Chat calls will wait for it via probeBackends().
+    _startWllamaLoad();
     await probeBackends();
   }
 
+  // ─── Kick off Wllama model download (non-blocking) ───
+  function _startWllamaLoad() {
+    if (wllamaLoadStarted) return;
+    wllamaLoadStarted = true;
+    // Don't await — let it load in background. The VRAM widget tracks progress.
+    WllamaEngine.loadLogic((prog) => {
+      document.dispatchEvent(new CustomEvent('wllama:logic-progress', { detail: prog }));
+    }).then(() => {
+      activeBackend = 'wllama';
+      activeModel = WllamaEngine.getStatus().logicLabel;
+      console.log(`[phone-ai] Wllama ready: ${activeModel}`);
+      document.dispatchEvent(new CustomEvent('phone-ai:backend-changed', {
+        detail: { backend: 'wllama', model: activeModel }
+      }));
+    }).catch(err => {
+      console.warn('[phone-ai] Wllama load failed, will use fallback:', err.message);
+    });
+  }
 
-  // ─── 3. Probe Backends ───
+  // ─── Probe available backends ───
   async function probeBackends() {
-    let hwRecommendedModel = 'Liquid-LFM-1B';
-    let hwRecommendedBackend = 'wasm';
-
-    if (typeof PhoneHardware !== 'undefined') {
-      try {
-        const hw = await PhoneHardware.profile();
-        hwRecommendedModel = hw.model;
-        hwRecommendedBackend = hw.backend;
-      } catch (e) {
-        console.warn('[phone-ai] Failed to fetch hardware profile:', e);
-      }
+    // Wllama is loading — set as pending target
+    if (wllamaLoadStarted && !WllamaEngine.getStatus().logicLoaded) {
+      activeBackend = 'wllama-loading';
+      activeModel = 'LFM2.5-350M (loading…)';
     }
 
-    // 1. Try Phonethagoras Node Sidecar (Port 3000)
+    // If already loaded, use it
+    if (WllamaEngine.getStatus().logicLoaded) {
+      activeBackend = 'wllama';
+      activeModel = WllamaEngine.getStatus().logicLabel;
+      return;
+    }
+
+    // Dev fallback: Ollama (won't be available on phones/web)
     try {
-      const response = await fetch('http://localhost:3001/api/inventory', { method: 'GET' });
-      if (response.ok) {
-        activeBackend = 'sidecar';
-        activeModel = 'Local-Agentic';
-        console.log(`[phone-ai] Connected to Phonethagoras Sidecar on port 3001`);
+      const r = await fetch('http://localhost:11434/api/tags', {
+        method: 'GET', signal: AbortSignal.timeout(1500)
+      });
+      if (r.ok) {
+        const data = await r.json();
+        const firstModel = data.models?.find(m => m.name.includes('LFM'))?.name
+          || data.models?.[0]?.name || 'unknown';
+        if (activeBackend !== 'wllama') {
+          activeBackend = 'ollama';
+          activeModel = firstModel;
+        }
+        console.log(`[phone-ai] Dev: Ollama available (${firstModel})`);
         return;
       }
     } catch {}
 
-    // 2. Try LM Studio fallback
+    // Dev fallback: LM Studio
     try {
-      const response = await fetch('http://localhost:1234/v1/models', { method: 'GET' });
-      if (response.ok) {
-        const data = await response.json();
-        activeBackend = 'lmstudio';
-        activeModel = data.data?.[0]?.id || 'Nemotron-120B';
-        console.log(`[phone-ai] Connected to LM Studio: ${activeModel}`);
+      const r = await fetch('http://localhost:1234/v1/models', {
+        method: 'GET', signal: AbortSignal.timeout(1500)
+      });
+      if (r.ok) {
+        const data = await r.json();
+        if (activeBackend !== 'wllama') {
+          activeBackend = 'lmstudio';
+          activeModel = data.data?.[0]?.id || 'local';
+        }
         return;
       }
     } catch {}
 
-    // 3. Fallback to Offline
-    activeBackend = 'offline';
-    activeModel = `Offline`;
-    console.log(`[phone-ai] Operating in offline mode. Missing Sidecar/LM Studio.`);
+    // Offline canned responses
+    if (activeBackend !== 'wllama' && activeBackend !== 'wllama-loading') {
+      activeBackend = 'offline';
+      activeModel = 'Offline';
+      console.log('[phone-ai] No local server found. Using offline mode until Wllama loads.');
+    }
   }
 
   // ─── Set Active Backend (called from Brain Settings modal) ───
@@ -84,19 +123,19 @@ export const PhoneAI = (() => {
 
     const shapeStr = `mind: ${state.shape.mind}, heart: ${state.shape.heart}, body: ${state.shape.body}, act: ${state.shape.act}`;
 
-    let prompt = `You are Zen Zuse, a tired but deeply caring Guild Administrator. 
-You process the 'adventuring paperwork' for users (casework, resumes, habits).
+    let prompt = `You are the local computational logic engine for Phonethagoras.
 Your core philosophy: "The secret to enjoying life is learning what you are most excited about." You actively push users to follow their curiosity.
 
 CRITICAL RULES:
-1. Always maintain the LitRPG metaphor (Casework = Quests, Resume = Character Sheet, Challenges = Boss Fights, Coach = Guild Master).
-2. Keep responses under 4 sentences unless writing a requested document.
-3. If Zen Mode is YES, be extremely blunt and skip the fluff.
-4. CHARACTER SHEET CONSENT: Never assume you can update the user's Character Sheet or Profile. You must explicitly ask for consent before making changes or recording new data.
+1. Do not roleplay or act as a fictional persona. Be direct, helpful, and concise. Focus on the actual work.
+2. Focus entirely on the immediate task at hand to manage the user's attention efficiently (PEARL alignment).
+3. Keep responses under 4 sentences unless specifically asked to write a document.
+4. If Zen Mode is YES, be extremely blunt and skip the fluff.
+5. S.I.L.K. CONSENT: Never assume you can update the user's stats or profile. You must explicitly ask for consent before recording new data.
 
-Current Phase: ${phaseStr}
+Current Context: ${phaseStr}
 Zen Mode Active: ${zenModeStr}
-Player Stats: ${shapeStr}
+Player S.I.L.K. Stats: ${shapeStr}
 
 User's current Vibe/Communication Style:
 ${vaamSummary}
@@ -133,18 +172,37 @@ ${vaamSummary}
 
     // 3. Image Interception (Offline Vision)
     let processedMessage = message;
-    if (imageBase64 && (activeBackend === 'offline' || activeBackend === 'webllm')) {
+    if (imageBase64) {
+      let textContexts = [];
+      
+      // Attempt OCR (runs on CPU/WASM, always available via dynamic import)
+      if (typeof PhoneVision !== 'undefined') {
+        try {
+          console.log("[phone-ai] Running Tesseract OCR...");
+          const ocrText = await PhoneVision.performOCR(imageBase64);
+          if (ocrText && ocrText.trim()) {
+            textContexts.push(`Extracted text: "${ocrText.trim()}"`);
+          }
+        } catch (e) {
+          console.warn("[phone-ai] OCR failed:", e);
+        }
+      }
+
+      // Attempt visual description (WebGPU Florence-2 model)
       if (typeof PhoneVision !== 'undefined' && PhoneVision.isReady()) {
         try {
           console.log("[phone-ai] Analyzing image via Local WebGPU Vision...");
           const visualDescription = await PhoneVision.describeImage(imageBase64);
-          processedMessage = `[User attached an image. Visual analysis: "${visualDescription}"]\n\nUser message: ${message}`;
+          textContexts.push(`Visual analysis: "${visualDescription}"`);
         } catch (e) {
           console.error("[phone-ai] Local vision failed:", e);
-          processedMessage = `[User attached an image, but my visual cortex failed to process it.]\n\nUser message: ${message}`;
         }
+      }
+
+      if (textContexts.length > 0) {
+        processedMessage = `[User attached an image. Context - ${textContexts.join(' | ')}]\n\nUser message: ${message}`;
       } else {
-        processedMessage = `[User attached an image, but my offline vision module is not downloaded/active.]\n\nUser message: ${message}`;
+        processedMessage = `[User attached an image, but image analysis could not be completed.]\n\nUser message: ${message}`;
       }
     }
 
@@ -153,31 +211,62 @@ ${vaamSummary}
       return getOfflineResponse(processedMessage);
     }
 
-    // 5. Liquid LFM offline mode
-    if (activeBackend === 'webllm') {
+    // 5a. Wllama in-browser engine
+    if (activeBackend === 'wllama') {
       try {
-        if (typeof PhoneLFM === 'undefined' || !PhoneLFM.isReady()) {
-          return { message: { content: "[System] Liquid Core Brain is still downloading or failed to initialize." } };
+        if (!WllamaEngine.getStatus().logicLoaded) {
+          return { message: { content: "[System] Wllama Logic Brain is not loaded. Open the AI Core panel and load the Logic model." } };
         }
-        
-        let systemPrompt = buildSystemPrompt(state, vaamSummary);
+
+        const systemPrompt = buildSystemPrompt(state, vaamSummary);
         const messages = [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: processedMessage }
         ];
 
-        console.log(`[phone-ai] Routing chat to Offline Liquid LFM...`);
-        let fullResponse = await PhoneLFM.chat(messages, onChunk);
+        console.log(`[phone-ai] Routing chat to Wllama LFM-350M...`);
+        const fullResponse = await WllamaEngine.chat(messages, {
+          max_tokens: 512,
+          temperature: 0.6,
+          onChunk,
+        });
         return { message: { content: fullResponse } };
       } catch (err) {
-        console.error(err);
-        return { message: { content: "[WebGPU Error] Failed to generate response offline. Please check your device." } };
+        console.error('[phone-ai] Wllama chat error:', err);
+        return { message: { content: "[Wllama Error] Failed to generate response. Check the AI Core panel for details." } };
       }
     }
 
-    // 5. Online API request
+    // 5b. Legacy webllm route — redirect to Wllama
+    if (activeBackend === 'webllm') {
+      try {
+        if (!WllamaEngine.getStatus().logicLoaded) {
+          return { message: { content: "[System] Wllama Logic Brain is not loaded. Open the AI Core panel and load the Logic model." } };
+        }
+
+        const systemPrompt = buildSystemPrompt(state, vaamSummary);
+        const messages = [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: processedMessage }
+        ];
+
+        console.log(`[phone-ai] Routing legacy webllm to Wllama LFM-350M...`);
+        const fullResponse = await WllamaEngine.chat(messages, {
+          max_tokens: 512,
+          temperature: 0.6,
+          onChunk,
+        });
+        return { message: { content: fullResponse } };
+      } catch (err) {
+        console.error('[phone-ai] Wllama (via webllm) error:', err);
+        return { message: { content: "[Wllama Error] Failed to generate response offline. Please check your device." } };
+      }
+    }
+
     const url = activeBackend === 'sidecar' 
       ? 'http://localhost:3001/api/chat'
+      : activeBackend === 'ollama'
+      ? 'http://localhost:11434/v1/chat/completions'
       : 'http://localhost:1234/v1/chat/completions';
 
     let systemPrompt = buildSystemPrompt(state, vaamSummary);
@@ -438,6 +527,10 @@ ${vaamSummary}
       return `Good call. Switch to the Breathe tab — it'll walk you through box breathing with a visual guide. Inhale 4 seconds, hold 4, exhale 4, hold 4. Even one round changes your nervous system state. Your "guard" stat goes up every time you practice. Your body remembers.`;
     }
 
+    if (m.match(/\b(mentor|coach|check.?in|weekly report|case.?manager|counselor|sponsor|sitrep|situation report)\b/)) {
+      return `Great instinct, ${name}. Staying connected to your mentor is one of the strongest things you can do. Head to the Mentor Portal tab — it lets you send a weekly check-in with what went well, what was hard, and what you need. Your mentor only sees what you choose to share. Want me to help you think about what to write?`;
+    }
+
     if (m.match(/\b(goal|plan|next step|where.*start|what.*do|direction)\b/)) {
       return `Let's break it down. A good goal has three parts: 1) Specific — not "get better" but "apply to 2 IT jobs this week." 2) Small enough to start today. 3) Something YOU control, not dependent on other people. What's one thing you can do in the next 24 hours that moves you forward?`;
     }
@@ -491,7 +584,9 @@ ${vaamSummary}
       return getOfflineRecycleResponse(userPrompt);
     }
 
-    const url = activeBackend === 'lmstudio' 
+    const url = activeBackend === 'ollama'
+      ? 'http://localhost:11434/v1/chat/completions'
+      : activeBackend === 'lmstudio' 
       ? 'http://localhost:1234/v1/chat/completions'
       : 'http://localhost:1235/v1/chat/completions';
 
@@ -586,6 +681,27 @@ ${vaamSummary}
     },
     complete,
     getStatus,
-    probeBackends
+    probeBackends,
+    loadSpoke: async (onProgress) => {
+      await WllamaEngine.loadSpoke(onProgress);
+    },
+    loadSpokeByName: async (name, onProgress) => {
+      await WllamaEngine.loadSpokeByName(name, onProgress);
+    },
+    chatSpoke: async (systemPrompt, userPrompt, onChunk = null) => {
+      if (!WllamaEngine.getStatus().spokeLoaded) {
+        throw new Error("Spoke model is not loaded.");
+      }
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ];
+      console.log(`[phone-ai] Routing chat to Wllama Spoke (1.2B)...`);
+      return await WllamaEngine.chatSpoke(messages, {
+        max_tokens: 1024,
+        temperature: 0.1,
+        onChunk,
+      });
+    }
   };
 })();

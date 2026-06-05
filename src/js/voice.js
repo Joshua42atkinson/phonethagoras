@@ -3,11 +3,14 @@
  * 
  * Implements:
  * 1. Web Speech API Speech-to-Text (STT) for hands-free voice commands
- * 2. Kokoro neural Text-to-Speech (TTS) with fallbacks:
+ * 2. Kokoro neural Text-to-Speech (TTS) with tiered fallbacks:
+ *    - TIER 0: In-browser Kokoro via ONNX Runtime (kokoro-engine.js)
  *    - TIER 1: Local Python Kokoro sidecar (http://localhost:8200/tts)
  *    - TIER 2: Browser-based SpeechSynthesis (fast, lightweight fallback)
  * 3. Hands-free loop: automatically restarts listening when agent stops speaking
  */
+
+import { KokoroEngine } from './kokoro-engine.js';
 
 export const PhoneVoice = (() => {
   let recognition = null;
@@ -211,14 +214,16 @@ export const PhoneVoice = (() => {
   }
 
   function cancel() {
-    // Stop active audio buffer source
+    // Stop in-browser Kokoro playback (Tier 0)
+    KokoroEngine.stop();
+    // Stop active audio buffer source (Tier 1 sidecar playback)
     if (activeAudioSource) {
       try {
         activeAudioSource.stop();
       } catch (e) {}
       activeAudioSource = null;
     }
-    // Stop native speech synthesis
+    // Stop native speech synthesis (Tier 2)
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
@@ -270,6 +275,26 @@ export const PhoneVoice = (() => {
     // Stop listening while speaking to prevent echo/feedback loops
     stopListening();
     isSpeaking = true;
+
+    // TIER 0: In-Browser Kokoro (highest priority — no network, fully private)
+    if (KokoroEngine.isLoaded()) {
+      try {
+        await KokoroEngine.speak(text, {
+          voice: 'af_sky',
+          onEnd: () => {
+            isSpeaking = false;
+            if (handsFree && !isListening) {
+              startListening();
+            }
+          }
+        });
+        console.log('[phone-voice] Neural TTS: Spoke via in-browser Kokoro');
+        return;
+      } catch (e) {
+        console.warn('[phone-voice] In-browser Kokoro failed, falling through:', e.message);
+        // Fall through to Tier 1
+      }
+    }
 
     // TIER 1: Try Local Python Kokoro Sidecar (Port 8200)
     try {
@@ -351,6 +376,38 @@ export const PhoneVoice = (() => {
     onFinalTranscriptCallback = onFinal;
   }
 
+  // ── Kokoro in-browser model management (called by AI Core Widget) ────────
+
+  /**
+   * Load the in-browser Kokoro TTS model.
+   * @param {(progress: number) => void} [onProgress] 0-100 callback
+   * @returns {Promise<void>}
+   */
+  async function loadKokoro(onProgress) {
+    return KokoroEngine.load(onProgress);
+  }
+
+  /** Unload the Kokoro model and free WASM/GPU memory. */
+  function unloadKokoro() {
+    KokoroEngine.stop();
+    KokoroEngine.unload();
+  }
+
+  /** @returns {boolean} */
+  function isKokoroLoaded() {
+    return KokoroEngine.isLoaded();
+  }
+
+  /** @returns {boolean} */
+  function isKokoroLoading() {
+    return KokoroEngine.isLoading();
+  }
+
+  /** @returns {number} 0-100 */
+  function getKokoroProgress() {
+    return KokoroEngine.getProgress();
+  }
+
   return {
     init,
     startListening,
@@ -364,6 +421,12 @@ export const PhoneVoice = (() => {
     isListening: () => isListening,
     isSpeaking: () => isSpeaking,
     getVocalStressScore,
-    resetVocalStressScore
+    resetVocalStressScore,
+    // Kokoro in-browser TTS management
+    loadKokoro,
+    unloadKokoro,
+    isKokoroLoaded,
+    isKokoroLoading,
+    getKokoroProgress
   };
 })();

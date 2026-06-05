@@ -144,8 +144,8 @@
             </svg>
           </button>
 
-          <!-- Coach's Bridge -->
-          <button class="sigil-btn" data-panel="bridge" id="nav-bridge" title="Coach View">
+          <!-- Mentorship Portal -->
+          <button class="sigil-btn" data-panel="bridge" id="nav-bridge" title="Mentor Portal">
             <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
@@ -160,6 +160,16 @@
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
+          </button>
+
+          <!-- Beta Feedback -->
+          <button class="sigil-btn" id="nav-beta-feedback" title="Beta Feedback" style="position: relative;">
+            <svg viewBox="0 0 24 24" class="sigil-icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span style="position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: hsl(38, 92%, 56%); border-radius: 50%; animation: pulse-dot 2s infinite;"></span>
           </button>
         </nav>
         <div class="header-status">
@@ -326,23 +336,32 @@
               <span class="card-subtitle">AI subsystem management</span>
             </div>
             <div class="ai-core-body" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-              <div class="hardware-stats">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-text-dim); margin-bottom: 0.5rem; font-family: var(--font-mono); text-transform: uppercase;">
-                  <span>Est. Memory Load</span>
-                  <span id="vram-usage-text">0 / 4000 MB</span>
+              <div class="hardware-stats" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: 1px dashed var(--color-accent);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--color-accent); margin-bottom: 0.5rem; font-family: var(--font-mono); text-transform: uppercase; font-weight: bold;">
+                  <span>Global RAM Budget</span>
+                  <span id="vram-usage-text">0 / 4096 MB MAX</span>
                 </div>
                 <div class="progress-track" style="height: 12px; border-radius: 6px; background: rgba(0,0,0,0.5); border: 1px solid var(--color-border-subtle); overflow: hidden;">
                   <div class="progress-fill" id="vram-progress-bar" style="width: 0%; background: var(--color-accent); transition: width 0.3s ease; box-shadow: 0 0 10px var(--color-accent);"></div>
                 </div>
+                <div style="font-size: 0.7rem; color: var(--color-text-muted); margin-top: 5px; text-align: center;">* 6GB VRAM Budget: Swapping personas unloads previous models.</div>
               </div>
 
               <div class="trinity-toggles" style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="trinity-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--color-border-subtle); transition: background 0.3s;">
                   <div style="display: flex; flex-direction: column;">
                     <span style="font-weight: 600; font-size: 0.95rem; color: var(--color-text);">Logic (Liquid 350M)</span>
-                    <span style="font-size: 0.75rem; color: var(--color-text-muted); font-family: var(--font-mono);">~320MB GGUF</span>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); font-family: var(--font-mono);">~219MB GGUF</span>
                   </div>
                   <button class="btn btn-secondary btn-toggle-trinity" id="toggle-logic" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Load</button>
+                </div>
+
+                <div class="trinity-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--color-border-subtle); transition: background 0.3s;">
+                  <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 600; font-size: 0.95rem; color: var(--color-text);">Spoke (Liquid 1.2B)</span>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); font-family: var(--font-mono);">~850MB GGUF</span>
+                  </div>
+                  <button class="btn btn-secondary btn-toggle-trinity" id="toggle-spoke" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Load</button>
                 </div>
 
                 <div class="trinity-item" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--color-border-subtle); transition: background 0.3s;">
@@ -380,6 +399,9 @@
                   <span class="identity-label" data-i18n="dashboard.self.face">class</span>
                   <span class="identity-value" id="identity-face">none</span>
                 </div>
+              </div>
+              <div style="margin-top: 1rem; border-top: 1px solid var(--color-border); padding-top: 1rem; text-align: center;">
+                <button class="btn btn-secondary sigil-btn" data-panel="bridge" style="width: 100%;">🛡️ Mentorship Bridge</button>
               </div>
             </div>
           </div>
@@ -505,26 +527,110 @@
         </div>
       </section>
 
-      <!-- ═══ COACH'S BRIDGE ═══ -->
+      <!-- ═══ MENTORSHIP PORTAL ═══ -->
       <section id="panel-bridge" class="panel">
-        <div class="bridge-container">
-          <div class="card">
+        <div class="bridge-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+          <!-- Mentor Connection Card -->
+          <div class="card" id="card-mentor-connection">
             <div class="card-header">
-              <h2 class="card-title">coach view</h2>
-              <span class="card-subtitle">Your caseload sorted by who needs help vs. who's ready to advance.</span>
+              <h2 class="card-title">my mentor</h2>
+              <span class="card-subtitle">Your guide on the other side. Everything you share is by your choice.</span>
             </div>
-            <div class="bridge-body" style="padding: 1rem 0;">
-              <div class="caseload-header" style="display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr; padding: 0.8rem 1.5rem; font-size: 0.75rem; color: var(--color-text-dim); text-transform: uppercase; font-family: var(--font-mono); border-bottom: 1px solid var(--color-border); font-weight: 600;">
-                <span>Client</span>
-                <span style="text-align: center;">Ready</span>
-                <span style="text-align: center;">Focus</span>
-                <span style="text-align: right;">Action</span>
+            <div class="settings-body" id="mentor-info-body">
+              <div class="setting-row">
+                <span class="setting-label">Mentor Name</span>
+                <input type="text" id="mentor-name-input" class="mentor-input" placeholder="e.g. Coach Rodriguez" maxlength="60" autocomplete="off" style="background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 4px; padding: 0.4rem 0.6rem; color: var(--color-text); font-family: inherit; font-size: 0.85rem; width: 55%; text-align: right;">
               </div>
-              <div class="caseload-list" id="caseload-list" style="display: flex; flex-direction: column;">
-                <!-- Populated by bridge.js -->
+              <div class="setting-row">
+                <span class="setting-label">Mentor Email</span>
+                <input type="email" id="mentor-email-input" class="mentor-input" placeholder="coach@example.org" maxlength="80" autocomplete="off" style="background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 4px; padding: 0.4rem 0.6rem; color: var(--color-text); font-family: inherit; font-size: 0.85rem; width: 55%; text-align: right;">
+              </div>
+              <div class="setting-row">
+                <span class="setting-label">Relationship</span>
+                <select id="mentor-relationship-select" style="background: var(--color-surface-2); border: 1px solid var(--color-border); color: var(--color-text); padding: 0.4rem; border-radius: 4px; font-family: inherit; font-size: 0.8rem;">
+                  <option value="career_coach">Career Coach</option>
+                  <option value="case_manager">Case Manager</option>
+                  <option value="peer_mentor">Peer Mentor</option>
+                  <option value="therapist">Therapist / Counselor</option>
+                  <option value="sponsor">Sponsor (Recovery)</option>
+                  <option value="family">Family Support</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div style="padding: 0.5rem 1.5rem;">
+                <button class="btn btn-secondary" id="btn-save-mentor" style="width: 100%; padding: 0.6rem;">Save Mentor Info</button>
               </div>
             </div>
           </div>
+
+          <!-- Weekly Situation Report -->
+          <div class="card" id="card-sitrep">
+            <div class="card-header">
+              <h2 class="card-title">weekly check-in</h2>
+              <span class="card-subtitle">What happened this week? Your mentor sees only what you send.</span>
+            </div>
+            <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem;">
+
+              <!-- Auto-populated context -->
+              <div style="background: var(--color-surface-2); border-radius: 8px; padding: 1rem; border: 1px solid var(--color-border-subtle);">
+                <div style="font-size: 0.75rem; text-transform: uppercase; font-family: var(--font-mono); color: var(--color-accent); margin-bottom: 0.5rem; font-weight: 600;">Auto-populated from your character sheet</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem;">
+                  <div><span style="color: var(--color-text-muted);">Mind:</span> <span id="sitrep-mind" style="font-weight: 600;">—</span></div>
+                  <div><span style="color: var(--color-text-muted);">Heart:</span> <span id="sitrep-heart" style="font-weight: 600;">—</span></div>
+                  <div><span style="color: var(--color-text-muted);">Body:</span> <span id="sitrep-body" style="font-weight: 600;">—</span></div>
+                  <div><span style="color: var(--color-text-muted);">Act:</span> <span id="sitrep-act" style="font-weight: 600;">—</span></div>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.8rem;">
+                  <span style="color: var(--color-text-muted);">Current Quest:</span> <span id="sitrep-quest" style="font-weight: 600;">—</span>
+                </div>
+              </div>
+
+              <!-- Wins -->
+              <div>
+                <label style="font-size: 0.85rem; color: var(--color-text-dim); font-weight: 500; display: block; margin-bottom: 0.3rem;">What went well this week?</label>
+                <textarea id="sitrep-wins" style="width: 100%; min-height: 70px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="Even small things count. Did you show up? Did you try?"></textarea>
+              </div>
+
+              <!-- Struggles -->
+              <div>
+                <label style="font-size: 0.85rem; color: var(--color-text-dim); font-weight: 500; display: block; margin-bottom: 0.3rem;">What was hard?</label>
+                <textarea id="sitrep-struggles" style="width: 100%; min-height: 70px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="What got in the way? What drained your energy?"></textarea>
+              </div>
+
+              <!-- Help Request -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.3rem;">
+                  <label style="font-size: 0.85rem; color: var(--color-text-dim); font-weight: 500;">What do you need from your mentor?</label>
+                  <button id="btn-ai-draft-help" class="btn btn-icon" style="font-size: 0.75rem; color: var(--color-primary); display: flex; align-items: center; gap: 0.3rem;" title="Draft with AI">
+                    <span>✨</span> Draft
+                  </button>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;" id="help-tags-container">
+                  <button class="help-tag-btn" data-tag="accountability" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Accountability</button>
+                  <button class="help-tag-btn" data-tag="resources" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Resources</button>
+                  <button class="help-tag-btn" data-tag="emotional" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Emotional Support</button>
+                  <button class="help-tag-btn" data-tag="direction" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Direction</button>
+                  <button class="help-tag-btn" data-tag="referral" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Referral</button>
+                  <button class="help-tag-btn" data-tag="nothing" style="padding: 0.3rem 0.7rem; font-size: 0.75rem; border-radius: 20px; border: 1px solid var(--color-border); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: all 0.2s;">Nothing Right Now</button>
+                </div>
+                <textarea id="sitrep-help" style="width: 100%; min-height: 50px; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: 6px; padding: 0.8rem; color: var(--color-text); font-family: inherit; font-size: 0.9rem; resize: vertical;" placeholder="Anything specific? (optional)"></textarea>
+              </div>
+
+              <!-- Actions -->
+              <div style="display: flex; gap: 0.8rem;">
+                <button class="btn btn-accent" id="btn-send-sitrep" style="flex: 1; padding: 0.7rem;">Send to Mentor</button>
+                <button class="btn btn-secondary" id="btn-download-sitrep" style="flex: 0.6; padding: 0.7rem;">Save as File</button>
+              </div>
+
+              <!-- History -->
+              <div id="sitrep-history-container" style="display: none;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; font-family: var(--font-mono); color: var(--color-text-dim); margin-bottom: 0.5rem; font-weight: 600; border-top: 1px solid var(--color-border); padding-top: 0.8rem;">Previous Check-ins</div>
+                <div id="sitrep-history-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 200px; overflow-y: auto;"></div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -706,6 +812,359 @@
 
     </main>
   </div>
+
+  <!-- ═══ BETA FEEDBACK MODAL ═══ -->
+  <div id="beta-feedback-modal" class="hidden" style="
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+    opacity: 0; transition: opacity 0.3s ease;
+  ">
+    <div style="
+      background: #12172a; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px hsla(38, 92%, 56%, 0.1);
+    ">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin: 0;">🧪 Beta Feedback</h2>
+        <button id="close-beta-feedback" style="background: none; border: none; color: var(--color-text-muted); font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.4;">How does this feel? Your honest reaction helps me build something real.</p>
+
+      <!-- Reaction Buttons -->
+      <div id="beta-reactions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.2rem;">
+        <button class="beta-reaction-btn" data-reaction="confused" style="
+          padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); color: var(--color-text); font-size: 0.85rem;
+          cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+        ">😕 Confused</button>
+        <button class="beta-reaction-btn" data-reaction="interested" style="
+          padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); color: var(--color-text); font-size: 0.85rem;
+          cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+        ">🤔 Interested</button>
+        <button class="beta-reaction-btn" data-reaction="impressed" style="
+          padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); color: var(--color-text); font-size: 0.85rem;
+          cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+        ">🤩 Impressed</button>
+        <button class="beta-reaction-btn" data-reaction="disappointed" style="
+          padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03); color: var(--color-text); font-size: 0.85rem;
+          cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; justify-content: center;
+        ">😞 Disappointed</button>
+      </div>
+
+      <!-- What page? -->
+      <label style="font-size: 0.75rem; color: var(--color-text-dim); font-weight: 600; text-transform: uppercase; font-family: var(--font-mono); display: block; margin-bottom: 0.3rem;">What were you looking at?</label>
+      <select id="beta-page-select" style="
+        width: 100%; padding: 0.5rem; margin-bottom: 1rem;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px; color: var(--color-text); font-family: inherit; font-size: 0.85rem;
+      ">
+        <option value="general">General / Overall</option>
+        <option value="chat">Chat with Zen Zuse</option>
+        <option value="character-sheet">Character Sheet / Dashboard</option>
+        <option value="breathe">Breathing Exercise</option>
+        <option value="recycler">S.I.L.K. Skill Extraction</option>
+        <option value="mentor-portal">Mentor Portal</option>
+        <option value="professor">Professor (Mind)</option>
+        <option value="nurse">Nurse (Body)</option>
+        <option value="storyteller">Storyteller (Heart)</option>
+        <option value="scout">Scout (Spirit)</option>
+        <option value="onboarding">Onboarding / First Run</option>
+        <option value="settings">Settings</option>
+      </select>
+
+      <!-- Comments -->
+      <label style="font-size: 0.75rem; color: var(--color-text-dim); font-weight: 600; text-transform: uppercase; font-family: var(--font-mono); display: block; margin-bottom: 0.3rem;">Tell me more (optional)</label>
+      <textarea id="beta-comment" style="
+        width: 100%; min-height: 80px; padding: 0.8rem;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px; color: var(--color-text); font-family: inherit; font-size: 0.9rem;
+        resize: vertical; margin-bottom: 1rem;
+      " placeholder="What worked? What broke? What's missing?"></textarea>
+
+      <!-- Send -->
+      <button id="btn-send-beta-feedback" style="
+        width: 100%; padding: 0.75rem; border-radius: 10px; border: none;
+        background: hsl(38, 92%, 56%); color: #000; font-weight: 700;
+        font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+      ">Send Feedback</button>
+      <p style="font-size: 0.7rem; color: var(--color-text-dim); text-align: center; margin-top: 0.6rem;">Opens your email app → sends directly to the developer. No data stored on any server.</p>
+    </div>
+  </div>
+
+  <style>
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+    .beta-reaction-btn:hover {
+      background: rgba(255,255,255,0.08) !important;
+      border-color: rgba(255,255,255,0.2) !important;
+    }
+    .beta-reaction-btn.selected {
+      background: hsla(38, 92%, 56%, 0.15) !important;
+      border-color: hsl(38, 92%, 56%) !important;
+      color: hsl(38, 92%, 56%) !important;
+      font-weight: 600;
+    }
+    #btn-send-beta-feedback:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+  </style>
+
+  <script>
+    // Beta Feedback — standalone error reporter + feedback system
+    // No module dependencies. Captures DOM errors automatically.
+    (function() {
+      // ─── 1. Global Error Trap ───
+      // Captures JS errors into a rolling buffer (max 20)
+      const MAX_ERRORS = 20;
+      const errorLog = [];
+
+      function pushError(entry) {
+        errorLog.push(entry);
+        if (errorLog.length > MAX_ERRORS) errorLog.shift();
+        updateErrorBadge();
+      }
+
+      // Catch synchronous JS errors
+      window.onerror = function(message, source, lineno, colno, error) {
+        pushError({
+          type: 'error',
+          message: String(message),
+          source: (source || '').split('/').pop(), // just filename
+          line: lineno,
+          col: colno,
+          stack: error?.stack ? error.stack.split('\n').slice(0, 3).join(' | ') : '',
+          time: new Date().toLocaleTimeString()
+        });
+        // Don't suppress — let it still appear in console
+        return false;
+      };
+
+      // Catch unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(event) {
+        const reason = event.reason;
+        pushError({
+          type: 'promise',
+          message: reason?.message || String(reason),
+          stack: reason?.stack ? reason.stack.split('\n').slice(0, 3).join(' | ') : '',
+          time: new Date().toLocaleTimeString()
+        });
+      });
+
+      // Catch console.error calls (non-destructive intercept)
+      const originalConsoleError = console.error;
+      console.error = function() {
+        const args = Array.from(arguments);
+        const msg = args.map(a => {
+          if (a instanceof Error) return `${a.message}`;
+          if (typeof a === 'object') { try { return JSON.stringify(a).substring(0, 200); } catch(e) { return String(a); } }
+          return String(a);
+        }).join(' ');
+        pushError({
+          type: 'console',
+          message: msg.substring(0, 300),
+          time: new Date().toLocaleTimeString()
+        });
+        originalConsoleError.apply(console, arguments);
+      };
+
+      // ─── 2. Error Badge on Feedback Button ───
+      function updateErrorBadge() {
+        const btn = document.getElementById('nav-beta-feedback');
+        if (!btn) return;
+
+        let badge = document.getElementById('beta-error-badge');
+        if (errorLog.length === 0) {
+          if (badge) badge.style.display = 'none';
+          return;
+        }
+
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.id = 'beta-error-badge';
+          badge.style.cssText = `
+            position: absolute; top: -2px; left: -2px;
+            min-width: 16px; height: 16px; padding: 0 4px;
+            background: #ef4444; color: #fff; border-radius: 8px;
+            font-size: 0.6rem; font-weight: 700; font-family: var(--font-mono, monospace);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+            pointer-events: none;
+          `;
+          btn.appendChild(badge);
+        }
+        badge.style.display = 'flex';
+        badge.textContent = errorLog.length;
+      }
+
+      // ─── 3. Modal Logic ───
+      const modal = document.getElementById('beta-feedback-modal');
+      const openBtn = document.getElementById('nav-beta-feedback');
+      const closeBtn = document.getElementById('close-beta-feedback');
+      const sendBtn = document.getElementById('btn-send-beta-feedback');
+      const reactionBtns = document.querySelectorAll('.beta-reaction-btn');
+      const commentEl = document.getElementById('beta-comment');
+      const pageSelect = document.getElementById('beta-page-select');
+
+      let selectedReaction = '';
+
+      if (!modal || !openBtn) return;
+
+      openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => { modal.style.opacity = '1'; });
+        renderErrorSummary();
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      function closeModal() {
+        modal.style.opacity = '0';
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      }
+
+      reactionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          reactionBtns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedReaction = btn.dataset.reaction;
+        });
+      });
+
+      // ─── 4. Render Error Summary Inside Modal ───
+      function renderErrorSummary() {
+        let container = document.getElementById('beta-error-summary');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'beta-error-summary';
+          // Insert before the send button
+          sendBtn.parentNode.insertBefore(container, sendBtn);
+        }
+
+        if (errorLog.length === 0) {
+          container.innerHTML = `
+            <div style="padding: 0.6rem; margin-bottom: 0.8rem; border-radius: 8px;
+              background: rgba(74, 222, 128, 0.06); border: 1px solid rgba(74, 222, 128, 0.15);
+              font-size: 0.8rem; color: #4ade80;">
+              ✓ No errors detected this session
+            </div>`;
+          return;
+        }
+
+        const errorItems = errorLog.slice(-5).reverse().map(e => {
+          const loc = e.source ? ` (${e.source}:${e.line})` : '';
+          return `<div style="padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.75rem;">
+            <span style="color: #ef4444; font-family: var(--font-mono, monospace);">${e.type}</span>
+            <span style="color: var(--color-text-dim);">${e.time}${loc}</span>
+            <div style="color: var(--color-text-muted); margin-top: 0.15rem; word-break: break-word;">${escapeHTML(e.message.substring(0, 150))}</div>
+          </div>`;
+        }).join('');
+
+        container.innerHTML = `
+          <div style="padding: 0.8rem; margin-bottom: 0.8rem; border-radius: 8px;
+            background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.15);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; font-family: var(--font-mono, monospace);
+              color: #ef4444; font-weight: 600; margin-bottom: 0.4rem;">
+              ⚠ ${errorLog.length} error${errorLog.length > 1 ? 's' : ''} captured (auto-attached to email)
+            </div>
+            ${errorItems}
+            ${errorLog.length > 5 ? `<div style="font-size: 0.7rem; color: var(--color-text-dim); margin-top: 0.3rem;">+ ${errorLog.length - 5} more (all included in email)</div>` : ''}
+          </div>`;
+      }
+
+      // ─── 5. Send with Error Log ───
+      sendBtn.addEventListener('click', () => {
+        if (!selectedReaction) {
+          alert('Pick a reaction first — it only takes one click!');
+          return;
+        }
+
+        const comment = commentEl ? commentEl.value.trim() : '';
+        const page = pageSelect ? pageSelect.value : 'general';
+        const timestamp = new Date().toLocaleString();
+
+        // Device info
+        const ua = navigator.userAgent;
+        const screenSize = `${window.screen.width}x${window.screen.height}`;
+        const viewport = `${window.innerWidth}x${window.innerHeight}`;
+        const memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'unknown';
+        const cores = navigator.hardwareConcurrency || 'unknown';
+        const online = navigator.onLine ? 'online' : 'OFFLINE';
+
+        // Build error log section
+        let errorSection = '';
+        if (errorLog.length > 0) {
+          const errorLines = errorLog.map((e, i) => {
+            const loc = e.source ? ` @ ${e.source}:${e.line}` : '';
+            const stack = e.stack ? `\n     Stack: ${e.stack.substring(0, 200)}` : '';
+            return `  ${i + 1}. [${e.type}] ${e.time}${loc}\n     ${e.message.substring(0, 250)}${stack}`;
+          }).join('\n\n');
+
+          errorSection = [
+            ``,
+            `── ERROR LOG (${errorLog.length} errors) ──`,
+            errorLines,
+            ``
+          ].join('\n');
+        } else {
+          errorSection = `\n── No JS errors this session ──\n`;
+        }
+
+        const subject = `[Phonethagoras Beta] ${selectedReaction.toUpperCase()} — ${page}${errorLog.length > 0 ? ` [${errorLog.length} errors]` : ''}`;
+        const body = [
+          `BETA FEEDBACK`,
+          `═══════════════`,
+          `Reaction: ${selectedReaction}`,
+          `Page: ${page}`,
+          `Time: ${timestamp}`,
+          ``,
+          `Comment:`,
+          comment || '(no comment)',
+          errorSection,
+          `── Device Info ──`,
+          `Screen: ${screenSize}`,
+          `Viewport: ${viewport}`,
+          `RAM: ${memory}`,
+          `CPU Cores: ${cores}`,
+          `Network: ${online}`,
+          `UA: ${ua}`,
+          ``,
+          `── Sent from Phonethagoras Beta ──`
+        ].join('\n');
+
+        const mailto = `mailto:joshua42atkinson@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+
+        // Reset & close
+        sendBtn.textContent = 'Thank you! ✓';
+        sendBtn.style.background = 'var(--color-success, #4caf50)';
+        setTimeout(() => {
+          sendBtn.textContent = 'Send Feedback';
+          sendBtn.style.background = 'hsl(38, 92%, 56%)';
+          selectedReaction = '';
+          reactionBtns.forEach(b => b.classList.remove('selected'));
+          if (commentEl) commentEl.value = '';
+          if (pageSelect) pageSelect.value = 'general';
+          closeModal();
+        }, 1500);
+      });
+
+      function escapeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+    })();
+  </script>
 
   <script type="module" src="js/ai-core-widget.js?v=1"></script>
   <script type="module" src="js/app.js?v=6"></script>

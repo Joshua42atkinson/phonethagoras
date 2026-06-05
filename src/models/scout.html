@@ -3,291 +3,1237 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Scout | Phonethagoras</title>
+  <meta name="theme-color" content="#0a0f19">
+  <title>The Scout — Skills & Readiness | Phonethagoras</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/base.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --scout-green: #2ecc71;
-      --scout-green-glow: rgba(46, 204, 113, 0.4);
-      --scout-dark: #0a1410;
+      --color-bg: #0a0f19;
+      --color-accent: hsl(38, 92%, 56%);
+      --color-scout: hsl(145, 60%, 45%);
+      --color-scout-glow: hsla(145, 60%, 45%, 0.3);
+      --color-scout-dim: hsla(145, 60%, 45%, 0.12);
+      --color-text: #e8e6e3;
+      --color-text-muted: rgba(232, 230, 227, 0.6);
+      --color-text-dim: rgba(232, 230, 227, 0.4);
+      --color-surface: rgba(255, 255, 255, 0.04);
+      --color-surface-2: rgba(255, 255, 255, 0.06);
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-subtle: rgba(255, 255, 255, 0.05);
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--scout-dark);
-      background-image: radial-gradient(circle at center, #11221a 0%, #050a08 100%);
-      color: var(--scout-green);
-      font-family: 'JetBrains Mono', monospace;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 5rem;
     }
 
-    /* Mock Camera Feed Background */
-    .camera-feed {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.15) 1px,
-        transparent 1px,
-        transparent 2px
-      );
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140%;
+      height: 60%;
+      background: radial-gradient(ellipse at center, hsla(145, 60%, 45%, 0.06) 0%, transparent 70%);
+      pointer-events: none;
       z-index: 0;
     }
 
-    .camera-feed::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 60vw; height: 60vw;
-      max-width: 400px; max-height: 400px;
-      border: 2px solid rgba(46, 204, 113, 0.3);
-      border-radius: 50%;
-      box-shadow: 0 0 50px rgba(46, 204, 113, 0.1) inset;
-    }
-
-    /* HUD Elements */
-    .hud-header {
+    /* ─── Header ─── */
+    .page-header {
       position: relative;
       z-index: 10;
-      padding: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(to bottom, rgba(10,20,16,0.9), transparent);
-    }
-
-    .nav-back {
-      color: var(--scout-green);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 0 5px var(--scout-green-glow);
-    }
-
-    .hud-status {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      font-size: 0.8rem;
-    }
-    
-    .status-dot {
-      width: 8px; height: 8px;
-      background-color: var(--scout-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--scout-green);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; box-shadow: 0 0 8px var(--scout-green); }
-      50% { opacity: 0.4; box-shadow: 0 0 2px var(--scout-green); }
-      100% { opacity: 1; box-shadow: 0 0 8px var(--scout-green); }
-    }
-
-    /* Viewfinder Reticle */
-    .reticle {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 300px; height: 300px;
-      z-index: 5;
-      pointer-events: none;
-    }
-    
-    .reticle::before, .reticle::after {
-      content: '';
-      position: absolute;
-      background: var(--scout-green);
-      box-shadow: 0 0 5px var(--scout-green-glow);
-    }
-    
-    .reticle::before { top: 50%; left: 40%; right: 40%; height: 1px; }
-    .reticle::after { left: 50%; top: 40%; bottom: 40%; width: 1px; }
-    
-    .reticle-corner {
-      position: absolute;
-      width: 30px; height: 30px;
-      border-color: var(--scout-green);
-      border-style: solid;
-      box-shadow: 0 0 10px var(--scout-green-glow) inset;
-    }
-    .corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
-    .corner-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
-    .corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
-    .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
-
-    /* Analysis Panel */
-    .analysis-panel {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: rgba(10, 20, 16, 0.85);
+      padding: 1.5rem 1.5rem 1rem 4.5rem;
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(to bottom, rgba(10, 15, 25, 0.95), rgba(10, 15, 25, 0.8));
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(46, 204, 113, 0.3);
-      padding: 1.5rem;
-      z-index: 10;
-      transform: translateY(0);
-      transition: transform 0.4s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
     }
 
-    .panel-header {
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: 'Orbitron', sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 1px dashed rgba(46, 204, 113, 0.3);
-      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
 
-    .analysis-log {
-      height: 120px;
-      overflow-y: auto;
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--color-scout);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 0 20px var(--color-scout-glow);
+    }
+
+    .page-title .icon { font-size: 1.2rem; }
+
+    .act-stat-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background: var(--color-scout-dim);
+      border: 1px solid hsla(145, 60%, 45%, 0.25);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-scout);
+    }
+
+    .act-stat-badge .value {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .page-subtitle {
       font-size: 0.85rem;
-      color: #a8ccb6;
-      line-height: 1.6;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      color: var(--color-text-muted);
+      max-width: 500px;
     }
 
-    .log-entry {
-      display: flex;
-      gap: 10px;
-    }
-    .log-time { color: var(--scout-green); opacity: 0.7; }
-
-    .action-bar {
-      display: flex;
-      gap: 1rem;
-      margin-top: 0.5rem;
+    /* ─── Search Bar ─── */
+    .search-bar {
+      position: relative;
+      z-index: 10;
+      padding: 1rem 1.5rem;
     }
 
-    .btn-tactical {
+    .search-input {
+      width: 100%;
+      padding: 0.7rem 1rem 0.7rem 2.5rem;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: hsla(145, 60%, 45%, 0.4);
+      box-shadow: 0 0 0 3px hsla(145, 60%, 45%, 0.08);
+    }
+
+    .search-input::placeholder { color: var(--color-text-dim); }
+
+    .search-icon {
+      position: absolute;
+      left: 2.3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-dim);
+      pointer-events: none;
+    }
+
+    /* ─── Tab Navigation ─── */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      padding: 0 1.5rem;
+      border-bottom: 1px solid var(--color-border);
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab-btn {
       flex: 1;
-      background: rgba(46, 204, 113, 0.1);
-      border: 1px solid var(--scout-green);
-      color: var(--scout-green);
-      padding: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
+      padding: 0.7rem 0.5rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--color-text-dim);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .tab-btn:hover { color: var(--color-text-muted); }
+
+    .tab-btn.active {
+      color: var(--color-scout);
+      border-bottom-color: var(--color-scout);
+    }
+
+    /* ─── Tab Panels ─── */
+    .tab-panel {
+      display: none;
+      position: relative;
+      z-index: 5;
+      padding: 1.5rem;
+    }
+
+    .tab-panel.active { display: block; }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+
+    .card:hover {
+      box-shadow: 0 0 20px hsla(145, 60%, 45%, 0.06);
+    }
+
+    .card-header {
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .card-header:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title .emoji { font-size: 1.1rem; }
+
+    .card-count {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-text-dim);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.5rem;
+      border-radius: 10px;
+    }
+
+    .card-toggle {
+      width: 20px;
+      height: 20px;
+      color: var(--color-text-dim);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .card.expanded .card-toggle { transform: rotate(180deg); }
+
+    .card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding: 0 1.2rem;
+    }
+
+    .card.expanded .card-body {
+      max-height: 2000px;
+      padding: 0 1.2rem 1.2rem;
+    }
+
+    .skill-item {
+      padding: 0.4rem 0;
       font-size: 0.85rem;
-      border-radius: 4px;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .skill-bullet {
+      color: var(--color-scout);
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── Field Notes ─── */
+    .notes-textarea {
+      width: 100%;
+      min-height: 100px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .notes-textarea:focus {
+      border-color: hsla(145, 60%, 45%, 0.4);
+    }
+
+    .notes-textarea::placeholder { color: var(--color-text-dim); }
+
+    .btn-scout {
+      padding: 0.6rem 1.2rem;
+      background: var(--color-scout-dim);
+      border: 1px solid hsla(145, 60%, 45%, 0.3);
+      border-radius: var(--radius);
+      color: var(--color-scout);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 0 10px rgba(46, 204, 113, 0.1) inset;
     }
 
-    .btn-tactical:hover {
-      background: var(--scout-green);
-      color: var(--scout-dark);
-      box-shadow: 0 0 15px var(--scout-green-glow);
+    .btn-scout:hover {
+      background: hsla(145, 60%, 45%, 0.2);
+      box-shadow: 0 0 15px var(--color-scout-glow);
     }
 
+    .btn-scout:active { transform: scale(0.97); }
+
+    .note-entry {
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2px solid hsla(145, 60%, 45%, 0.3);
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 0.6rem;
+    }
+
+    .note-date {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-scout);
+      opacity: 0.7;
+      margin-bottom: 0.3rem;
+    }
+
+    .note-text {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .note-delete {
+      background: none;
+      border: none;
+      color: var(--color-text-dim);
+      font-size: 0.7rem;
+      cursor: pointer;
+      float: right;
+      padding: 0.2rem;
+      transition: color 0.2s;
+    }
+    .note-delete:hover { color: #e74c3c; }
+
+    /* ─── Checklist ─── */
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid var(--color-border-subtle);
+      transition: background 0.2s;
+    }
+
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-item:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .checklist-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid hsla(145, 60%, 45%, 0.3);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .checklist-item input[type="checkbox"]:checked {
+      background: var(--color-scout);
+      border-color: var(--color-scout);
+    }
+
+    .checklist-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--color-bg);
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .checklist-label {
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .checklist-item.checked .checklist-label {
+      color: var(--color-text-dim);
+      text-decoration: line-through;
+    }
+
+    .checklist-progress {
+      text-align: center;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-scout);
+    }
+
+    .progress-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 3px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-scout);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 8px var(--color-scout-glow);
+    }
+
+    /* ─── Back to Hub ─── */
+    .back-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      padding: 0.7rem 1.2rem;
+      background: rgba(10, 15, 25, 0.9);
+      border: 1px solid var(--color-border);
+      border-radius: 25px;
+      color: var(--color-accent);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .back-btn:hover {
+      background: rgba(10, 15, 25, 1);
+      border-color: var(--color-accent);
+      box-shadow: 0 0 15px hsla(38, 92%, 56%, 0.15);
+    }
+
+    /* ─── XP Popup ─── */
+    @keyframes float-up {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      70% { opacity: 1; transform: translateY(-40px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-70px) scale(0.9); }
+    }
+
+    .xp-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      padding: 0.6rem 1.4rem;
+      background: var(--color-scout-dim);
+      border: 1px solid var(--color-scout);
+      border-radius: 25px;
+      color: var(--color-scout);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      pointer-events: none;
+      animation: float-up 1.5s ease forwards;
+      box-shadow: 0 0 25px var(--color-scout-glow);
+    }
+
+    /* ─── Empty State ─── */
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-text-dim);
+      font-size: 0.85rem;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-text-dim);
+      margin-bottom: 0.8rem;
+    }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: hsla(145, 60%, 45%, 0.2); border-radius: 2px; }
+
+    @media (max-width: 600px) {
+      .page-header { padding: 1rem 1rem 1rem 4.5rem; }
+      .tab-panel { padding: 1rem; }
+      .tab-btn { font-size: 0.7rem; padding: 0.6rem 0.3rem; }
+      .ranger-input-group { flex-direction: column; }
+    }
+
+    /* ── Ask The Ranger (AI) ── */
+    .ranger-section {
+      padding: 1rem 1.5rem;
+    }
+    .ranger-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+    }
+    .ranger-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .ranger-card-title {
+      font-weight: 600; font-size: 0.95rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ranger-card-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--color-scout);
+      box-shadow: 0 0 8px var(--color-scout-glow);
+    }
+    .ranger-badge {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--color-scout); opacity: 0.7;
+    }
+    .ranger-desc {
+      font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 1rem;
+    }
+    .ranger-input-group {
+      display: flex; gap: 8px;
+    }
+    .ranger-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .ranger-input:focus {
+      border-color: var(--color-scout);
+      box-shadow: 0 0 0 3px var(--color-scout-dim);
+    }
+    .ranger-input::placeholder { color: var(--color-text-dim); }
+    .btn-ranger {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--color-scout); border: none;
+      color: #0a0f19; padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.25s;
+      white-space: nowrap;
+    }
+    .btn-ranger:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 20px var(--color-scout-glow);
+    }
+    .btn-ranger:disabled {
+      opacity: 0.5; cursor: not-allowed;
+      filter: none; box-shadow: none;
+    }
+    .ranger-loading {
+      text-align: center; padding: 1.5rem; display: none;
+    }
+    .ranger-loading-emoji {
+      font-size: 2rem;
+      animation: compass-spin 2s linear infinite;
+    }
+    @keyframes compass-spin {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(45deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-45deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .ranger-loading-text {
+      font-size: 0.9rem; color: var(--color-scout);
+      margin-top: 0.5rem; font-weight: 600;
+    }
+    .ranger-loading-detail {
+      font-size: 0.75rem; color: var(--color-text-dim); margin-top: 0.25rem;
+    }
+    .ranger-progress-bar {
+      width: 100%; height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px; margin-top: 0.75rem; overflow: hidden;
+    }
+    .ranger-progress-fill {
+      height: 100%; width: 0%;
+      background: var(--color-scout);
+      border-radius: 2px; transition: width 0.3s ease;
+      box-shadow: 0 0 8px var(--color-scout-glow);
+    }
+    .ranger-response {
+      display: none;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
+      font-size: 0.88rem; line-height: 1.7;
+      color: var(--color-text);
+      white-space: pre-wrap; word-wrap: break-word;
+    }
+    .ranger-response-label {
+      font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--color-scout);
+      margin-bottom: 0.5rem; font-weight: 600;
+    }
   </style>
 </head>
 <body>
+  <!-- ═══ HUB NAVIGATION ═══ -->
+  <a href="../index.html" style="position: fixed; top: 1rem; left: 1rem; z-index: 10000; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--color-text); box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(10px);" aria-label="Back to Hub">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  </a>
 
-  <!-- Mock Environment Feed -->
-  <div class="camera-feed"></div>
-
-  <!-- HUD Header -->
-  <header class="hud-header">
-    <a href="../models.html" class="nav-back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      Abort
-    </a>
-    <div class="hud-status">
-      <span style="font-family: 'Orbitron';">JANUS-PRO 1B (GGUF)</span>
-      <div class="status-dot"></div>
-      <span>SYS.ONLINE</span>
+  <!-- ═══ Header ═══ -->
+  <header class="page-header">
+    <div class="header-top">
+      <h1 class="page-title">
+        <span class="icon">🧭</span>
+        The Scout
+      </h1>
+      <div class="act-stat-badge">
+        <span>ACT</span>
+        <span class="value" id="act-stat-value">—</span>
+      </div>
     </div>
+    <p class="page-subtitle">Your offline skills library, field notes, and readiness checklist. Everything here works without a connection.</p>
   </header>
 
-  <!-- Center Viewfinder -->
-  <div class="reticle">
-    <div class="reticle-corner corner-tl"></div>
-    <div class="reticle-corner corner-tr"></div>
-    <div class="reticle-corner corner-bl"></div>
-    <div class="reticle-corner corner-br"></div>
+  <!-- ═══ Search ═══ -->
+  <div class="search-bar">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" class="search-input" id="skill-search" placeholder="Search skills library...">
   </div>
 
-  <!-- Bottom Analysis Panel -->
-  <div class="analysis-panel">
-    <div class="panel-header">
-      <span>Target Analysis Log</span>
-      <span style="font-size: 0.7rem;">MEM: 1024MB ALLOCATED</span>
-    </div>
-    
-    <div class="analysis-log">
-      <div class="log-entry">
-        <span class="log-time">[00:01]</span>
-        <span class="log-text">Initializing Vision Systems...</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-time">[00:02]</span>
-        <span class="log-text">Hardware target acquired. Awaiting visual input.</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-time">[00:03]</span>
-        <span class="log-text">Ready to identify flora, terrain hazards, or resources.</span>
-      </div>
-    </div>
+  <!-- ═══ Tab Navigation ═══ -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="skills">Skills Library</button>
+    <button class="tab-btn" data-tab="notes">Field Notes</button>
+    <button class="tab-btn" data-tab="checklist">Readiness</button>
+  </nav>
 
-    <div class="action-bar">
-      <button class="btn-tactical">Capture Frame</button>
-      <button class="btn-tactical" style="flex: 0.5;">Toggle IR</button>
+  <!-- ═══ Skills Library Tab ═══ -->
+  <div class="tab-panel active" id="tab-skills"></div>
+
+  <!-- ═══ Field Notes Tab ═══ -->
+  <div class="tab-panel" id="tab-notes">
+    <div class="section-label">New Observation</div>
+    <textarea class="notes-textarea" id="note-input" placeholder="Log an observation, a skill you practiced, or something you learned today..."></textarea>
+    <div style="display: flex; justify-content: flex-end; margin-top: 0.6rem;">
+      <button class="btn-scout" id="btn-save-note">Save Note</button>
+    </div>
+    <div style="margin-top: 1.5rem;">
+      <div class="section-label">Recent Notes</div>
+      <div id="notes-list"></div>
     </div>
   </div>
 
-  <script>
-    const captureBtn = document.querySelector('.btn-tactical');
-    const logFeed = document.querySelector('.analysis-log');
-    captureBtn.addEventListener('click', () => {
-      // Flash effect
-      const flash = document.createElement('div');
-      flash.style.position = 'absolute';
-      flash.style.inset = '0';
-      flash.style.backgroundColor = 'white';
-      flash.style.zIndex = '999';
-      flash.style.opacity = '1';
-      flash.style.transition = 'opacity 0.5s ease-out';
-      document.body.appendChild(flash);
-      setTimeout(() => flash.style.opacity = '0', 50);
-      setTimeout(() => flash.remove(), 550);
+  <!-- ═══ Readiness Checklist Tab ═══ -->
+  <div class="tab-panel" id="tab-checklist">
+    <div class="section-label">Emergency Preparedness</div>
+    <div class="card" style="margin-bottom: 1rem;">
+      <div class="checklist-progress">
+        <span id="checklist-count">0 / 10</span> items ready
+        <div class="progress-track">
+          <div class="progress-fill" id="checklist-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      <div id="checklist-container"></div>
+    </div>
+  </div>
+
+  <!-- ═══ Ask The Ranger (AI) ═══ -->
+  <section class="ranger-section">
+    <div class="ranger-card">
+      <div class="ranger-card-header">
+        <span class="ranger-card-title"><span class="dot"></span> Ask The Ranger</span>
+        <span class="ranger-badge" id="ranger-status">OFFLINE</span>
+      </div>
+      <p class="ranger-desc">Consult the Ranger for survival tactics, navigation protocols, and emergency guidance. Runs locally on your device (first load downloads ~698MB).</p>
       
-      // Add log
-      const timeStr = `[00:0${Math.floor(Math.random()*9)+4}]`;
-      const msgs = [
-        "Image captured. Scanning for known flora...",
-        "Object detected: Fungi (Confidence 88%). Warning: Do not consume.",
-        "Terrain mapped. Elevation change ahead.",
-        "Analyzing ambient light levels..."
-      ];
-      const newLog = document.createElement('div');
-      newLog.className = 'log-entry';
-      newLog.innerHTML = `<span class="log-time">${timeStr}</span> <span class="log-text">${msgs[Math.floor(Math.random()*msgs.length)]}</span>`;
-      logFeed.appendChild(newLog);
-      logFeed.scrollTop = logFeed.scrollHeight;
+      <div class="ranger-input-group">
+        <input type="text" class="ranger-input" id="ranger-input" placeholder="e.g. How do I start a fire in the rain?">
+        <button class="btn-ranger" id="ranger-ask-btn">🧭 Ask</button>
+      </div>
+
+      <div class="ranger-loading" id="ranger-loading">
+        <div class="ranger-loading-emoji">🧭</div>
+        <div class="ranger-loading-text" id="ranger-loading-text">🗺️ The Ranger charts the wilderness...</div>
+        <div class="ranger-loading-detail" id="ranger-loading-detail">Preparing the Scout's reasoning model...</div>
+        <div class="ranger-progress-bar">
+          <div class="ranger-progress-fill" id="ranger-progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="ranger-response" id="ranger-response">
+        <div class="ranger-response-label">🧭 The Ranger responds</div>
+        <div id="ranger-response-text"></div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    import { PhoneState } from '../js/state.js';
+    import { PhoneAI } from '../js/ai.js';
+    
+    (async function() {
+      'use strict';
+      
+      await PhoneState.init();
+      const state = PhoneState.load();
+      const actStatEl = document.getElementById('act-stat-value');
+      if (actStatEl) {
+        actStatEl.textContent = state.shape?.act || 0;
+      }
+
+    // ─── Skills Database (hardcoded offline knowledge) ───
+    const SKILLS_DB = [
+      {
+        id: 'first-aid',
+        title: 'First Aid',
+        emoji: '🩹',
+        items: [
+          'Check the scene for safety before helping — you cannot help if you become a victim too.',
+          'For heavy bleeding: apply direct pressure with a clean cloth, elevate the wound above the heart if possible.',
+          'CPR rhythm: 30 chest compressions (2 inches deep, 100-120/min), then 2 rescue breaths. Push hard and fast.',
+          'Burns: cool with running water for at least 10 minutes. Never apply ice, butter, or toothpaste.',
+          'Signs of shock: pale/cold skin, rapid breathing, confusion. Lay person flat, elevate legs, keep warm.'
+        ]
+      },
+      {
+        id: 'navigation',
+        title: 'Navigation',
+        emoji: '🧭',
+        items: [
+          'The sun rises in the east and sets in the west. At midday in the Northern Hemisphere, it is due south.',
+          'Point the hour hand of an analog watch at the sun. Halfway between the hour hand and 12 is roughly south.',
+          'Polaris (North Star) sits at the end of the Little Dipper\'s handle. Follow the two pointer stars of the Big Dipper to find it.',
+          'Moss tends to grow on the shadier (north) side of trees in the Northern Hemisphere, but don\'t rely on it alone.',
+          'Pace counting: average adult stride is about 2.5 feet. 2,000 steps ≈ 1 mile on flat ground.'
+        ]
+      },
+      {
+        id: 'water',
+        title: 'Water Purification',
+        emoji: '💧',
+        items: [
+          'Boiling is the most reliable method. Bring water to a rolling boil for at least 1 minute (3 minutes above 6,500 ft elevation).',
+          'Household bleach (unscented, 6-8% sodium hypochlorite): add 8 drops per gallon, stir, wait 30 minutes.',
+          'Never drink stagnant water without treatment. Flowing, clear water from upstream is the safest starting point.',
+          'A basic sand/charcoal filter removes sediment but NOT bacteria or viruses — still needs boiling or chemical treatment.',
+          'You can survive about 3 days without water. Dehydration symptoms: dark urine, dizziness, headache, dry mouth.'
+        ]
+      },
+      {
+        id: 'fire',
+        title: 'Fire Starting',
+        emoji: '🔥',
+        items: [
+          'The fire triangle: heat + fuel + oxygen. Remove any one element and the fire goes out.',
+          'Tinder → Kindling → Fuel. Start small: dry grass/bark (tinder), pencil-thick sticks (kindling), wrist-thick wood (fuel).',
+          'Ferro rod + steel striker creates sparks at 3,000°F. Carry one as a reliable backup to matches and lighters.',
+          'Cotton balls coated in petroleum jelly make excellent emergency tinder — waterproof and burns for 3-5 minutes.',
+          'Build a fire lay before igniting: teepee style for quick heat, log cabin for sustained burn, lean-to for windy conditions.'
+        ]
+      },
+      {
+        id: 'shelter',
+        title: 'Shelter Building',
+        emoji: '🏕️',
+        items: [
+          'The Rule of 3: you can survive 3 hours in harsh weather without shelter. Priority #1 after immediate danger.',
+          'A debris hut: lean a ridgepole against a tree, add ribs on both sides, pile leaves/brush 2-3 feet thick for insulation.',
+          'Location: avoid low spots (cold air sinks, water collects), hilltops (wind exposure), and dead trees (widow-makers).',
+          'Insulate from the ground — the earth will drain your heat fast. Use branches, leaves, pine needles, or a sleeping pad.',
+          'A simple tarp shelter (A-frame) takes 5 minutes with paracord and provides immediate rain protection.'
+        ]
+      },
+      {
+        id: 'foraging',
+        title: 'Foraging',
+        emoji: '🌿',
+        items: [
+          'The Universal Edibility Test: test on skin (8 hrs), then lip (15 min), then tongue (15 min), then chew and wait (15 min), then swallow a small amount and wait 8 hours.',
+          'Never eat mushrooms unless you are 100% certain of identification. Many deadly species look like edible ones.',
+          'Dandelions are fully edible: leaves (salad), flowers (fritters), roots (roasted coffee substitute).',
+          'Avoid plants with white or yellow berries, milky sap, thorns on stems with shiny leaves, or an almond scent.',
+          'Cattails are called "the supermarket of the swamp" — shoots, roots, pollen, and flower heads are all edible.'
+        ]
+      },
+      {
+        id: 'tools',
+        title: 'Tool Use',
+        emoji: '🔧',
+        items: [
+          'A fixed-blade knife is the most versatile survival tool. Learn to baton (split wood by hammering the spine).',
+          'Paracord (550 cord) has 7 inner strands. Each strand holds ~50 lbs. Uses: lashing, snares, fishing line, repairs.',
+          'Sharpen a knife at 15-20° angle per side. Use smooth stone with water if no sharpener is available.',
+          'A multi-tool with pliers, knife, saw, and screwdriver covers 90% of repair situations in the field.',
+          'Always cut away from your body. "A dull knife is more dangerous than a sharp one" — it requires more force and slips.'
+        ]
+      },
+      {
+        id: 'knots',
+        title: 'Knot Tying',
+        emoji: '🪢',
+        items: [
+          'Bowline: creates a fixed loop that won\'t slip under load. "The rabbit comes out of the hole, around the tree, and back down the hole."',
+          'Clove hitch: quick to tie around a pole or stake. Good for starting lashings, but can slip under varying loads.',
+          'Taut-line hitch: adjustable tension knot, perfect for tent guy lines. Slides to tighten, holds under load.',
+          'Figure-eight: stopper knot that\'s easy to untie even after heavy loading. Foundation of climbing knots.',
+          'Square (reef) knot: joins two ropes of equal diameter. Remember: right over left, then left over right.'
+        ]
+      },
+      {
+        id: 'weather',
+        title: 'Weather Reading',
+        emoji: '⛅',
+        items: [
+          'Red sky at morning, sailors take warning. Red sky at night, sailors\' delight — valid in mid-latitudes with westerly winds.',
+          'Cumulonimbus (tall, anvil-shaped) clouds signal thunderstorms. If you see them building, seek shelter within 30 minutes.',
+          'Sudden drop in barometric pressure = storm approaching. If ears pop or joints ache, weather is changing.',
+          'Wind shifting clockwise (in Northern Hemisphere) usually means clearing weather. Counter-clockwise means deterioration.',
+          'If you can count less than 30 seconds between lightning and thunder, the storm is within 6 miles — seek shelter immediately.'
+        ]
+      },
+      {
+        id: 'maps',
+        title: 'Map Reading',
+        emoji: '🗺️',
+        items: [
+          'Contour lines show elevation. Lines close together = steep slope. Lines far apart = gentle terrain.',
+          'Orient the map: align the map\'s north arrow with compass north. Now the map matches the landscape around you.',
+          'Scale: 1:24,000 means 1 inch on the map = 24,000 inches (2,000 feet) in reality. Common for USGS topo maps.',
+          'Triangulation: take bearings on 2-3 known landmarks. Draw lines on the map — your position is where they intersect.',
+          'UTM grid coordinates are easier to use than latitude/longitude for ground navigation. Give the easting first, then northing.'
+        ]
+      }
+    ];
+
+    const CHECKLIST_ITEMS = [
+      { id: 'water', label: 'Water — 1 gallon per person per day (3-day supply)', emoji: '💧' },
+      { id: 'food', label: 'Non-perishable food (3-day supply)', emoji: '🥫' },
+      { id: 'firstaid', label: 'First Aid Kit', emoji: '🩹' },
+      { id: 'flashlight', label: 'Flashlight with extra batteries', emoji: '🔦' },
+      { id: 'radio', label: 'Battery-powered or crank radio', emoji: '📻' },
+      { id: 'batteries', label: 'Extra batteries / power bank', emoji: '🔋' },
+      { id: 'documents', label: 'Copies of important documents (in waterproof bag)', emoji: '📄' },
+      { id: 'cash', label: 'Cash in small bills', emoji: '💵' },
+      { id: 'medications', label: 'Prescription medications (7-day supply)', emoji: '💊' },
+      { id: 'whistle', label: 'Whistle (to signal for help)', emoji: '📣' }
+    ];
+
+    // ─── Utility: localStorage helpers ───
+    function safeGetJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        console.warn('Scout: failed to read', key, e);
+        return fallback;
+      }
+    }
+
+    function safeSetJSON(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        console.warn('Scout: failed to write', key, e);
+      }
+    }
+
+    function showXP(text) {
+      const el = document.createElement('div');
+      el.className = 'xp-popup';
+      el.textContent = text;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1600);
+    }
+
+    // ─── Character Sheet Integration ───
+    function loadActStat() {
+      const book = safeGetJSON('zen_book', null);
+      const el = document.getElementById('act-stat-value');
+      if (book && book.stats && typeof book.stats.act !== 'undefined') {
+        el.textContent = book.stats.act;
+      } else if (book && typeof book.act !== 'undefined') {
+        el.textContent = book.act;
+      } else {
+        el.textContent = '—';
+      }
+    }
+
+    // ─── Skills Library ───
+    function renderSkills(filter) {
+      const container = document.getElementById('tab-skills');
+      const query = (filter || '').toLowerCase().trim();
+      container.innerHTML = '';
+
+      let visibleCount = 0;
+
+      SKILLS_DB.forEach(cat => {
+        const matchesCategory = !query || cat.title.toLowerCase().includes(query);
+        const matchingItems = cat.items.filter(item => item.toLowerCase().includes(query));
+
+        if (!matchesCategory && matchingItems.length === 0) return;
+
+        visibleCount++;
+        const card = document.createElement('div');
+        card.className = 'card' + (query && matchingItems.length > 0 ? ' expanded' : '');
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="card-title"><span class="emoji">${cat.emoji}</span> ${cat.title}</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span class="card-count">${cat.items.length} tips</span>
+              <svg class="card-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="card-body">
+            ${(query ? matchingItems : cat.items).map(item => `
+              <div class="skill-item">
+                <span class="skill-bullet">›</span>
+                <span>${item}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        card.querySelector('.card-header').addEventListener('click', () => {
+          card.classList.toggle('expanded');
+        });
+
+        container.appendChild(card);
+      });
+
+      if (visibleCount === 0) {
+        container.innerHTML = '<div class="empty-state">No skills match your search.</div>';
+      }
+    }
+
+    // ─── Field Notes ───
+    function renderNotes() {
+      const notes = safeGetJSON('zen_scout_notes', []);
+      const container = document.getElementById('notes-list');
+
+      if (notes.length === 0) {
+        container.innerHTML = '<div class="empty-state">No field notes yet. Write your first observation above.</div>';
+        return;
+      }
+
+      container.innerHTML = notes.slice(0, 20).map((note, idx) => `
+        <div class="note-entry">
+          <button class="note-delete" data-idx="${idx}" title="Delete note">✕</button>
+          <div class="note-date">${new Date(note.ts).toLocaleString()}</div>
+          <div class="note-text">${escapeHtml(note.text)}</div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.note-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = parseInt(btn.dataset.idx);
+          const current = safeGetJSON('zen_scout_notes', []);
+          current.splice(i, 1);
+          safeSetJSON('zen_scout_notes', current);
+          renderNotes();
+        });
+      });
+    }
+
+    function saveNote() {
+      const input = document.getElementById('note-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const notes = safeGetJSON('zen_scout_notes', []);
+      notes.unshift({ text, ts: Date.now() });
+      safeSetJSON('zen_scout_notes', notes);
+      input.value = '';
+      renderNotes();
+      showXP('+10 Scout XP — Note Logged');
+    }
+
+    // ─── Checklist ───
+    function renderChecklist() {
+      const saved = safeGetJSON('zen_scout_checklist', {});
+      const container = document.getElementById('checklist-container');
+
+      container.innerHTML = CHECKLIST_ITEMS.map(item => {
+        const checked = !!saved[item.id];
+        return `
+          <div class="checklist-item${checked ? ' checked' : ''}">
+            <input type="checkbox" id="chk-${item.id}" data-id="${item.id}" ${checked ? 'checked' : ''}>
+            <span style="font-size: 1.1rem;">${item.emoji}</span>
+            <label class="checklist-label" for="chk-${item.id}">${item.label}</label>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const current = safeGetJSON('zen_scout_checklist', {});
+          const itemId = chk.dataset.id;
+          current[itemId] = chk.checked;
+          safeSetJSON('zen_scout_checklist', current);
+
+          const row = chk.closest('.checklist-item');
+          row.classList.toggle('checked', chk.checked);
+
+          updateChecklistProgress();
+          if (chk.checked) showXP('+5 Readiness XP');
+        });
+      });
+
+      updateChecklistProgress();
+    }
+
+    function updateChecklistProgress() {
+      const saved = safeGetJSON('zen_scout_checklist', {});
+      const done = CHECKLIST_ITEMS.filter(item => saved[item.id]).length;
+      const total = CHECKLIST_ITEMS.length;
+      const pct = Math.round((done / total) * 100);
+
+      document.getElementById('checklist-count').textContent = `${done} / ${total}`;
+      document.getElementById('checklist-bar').style.width = pct + '%';
+    }
+
+    // ─── Tab Navigation ───
+    function initTabs() {
+      const btns = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          btns.forEach(b => b.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('tab-' + target).classList.add('active');
+        });
+      });
+    }
+
+    // ─── Search ───
+    function initSearch() {
+      const input = document.getElementById('skill-search');
+      input.addEventListener('input', () => {
+        // Switch to skills tab when searching
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelector('[data-tab="skills"]').classList.add('active');
+        document.getElementById('tab-skills').classList.add('active');
+
+        renderSkills(input.value);
+      });
+    }
+
+    // ─── Escape HTML ───
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ─── Init ───
+    document.addEventListener('DOMContentLoaded', () => {
+      loadActStat();
+      renderSkills('');
+      renderNotes();
+      renderChecklist();
+      initTabs();
+      initSearch();
+
+      document.getElementById('btn-save-note').addEventListener('click', saveNote);
+
+      // Allow Ctrl+Enter to save notes
+      document.getElementById('note-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          saveNote();
+        }
+      });
+
+      // Check for Pending Quest
+      const pendingQuestStr = localStorage.getItem('zen_pending_quest');
+      if (pendingQuestStr) {
+        try {
+          const quest = JSON.parse(pendingQuestStr);
+          if (quest.route === 'scout' && quest.prompt) {
+            document.getElementById('ranger-input').value = quest.prompt;
+            localStorage.removeItem('zen_pending_quest');
+            showXP('🧭 Quest received: Ranger inquiry initialized');
+            setTimeout(() => {
+              askRanger(quest.prompt);
+              document.getElementById('ranger-input').value = '';
+            }, 1000);
+          }
+        } catch (e) {
+          console.warn('[Scout] Failed to parse pending quest:', e);
+        }
+      }
     });
+    // ─── Ask The Ranger (AI Integration) ───
+    let rangerSpokeReady = false;
+
+    const RANGER_SYSTEM_PROMPT = `You are The Ranger, a resourceful survival strategist in the Phonethagoras guild. You think deeply before acting, using <think> tags to reason through problems step by step. You help users plan practical actions, prepare for emergencies, and navigate real-world challenges. You speak with calm confidence and prioritize actionable advice.
+
+When answering:
+1. Think through the problem step by step inside <think>...</think> tags
+2. Then provide your clear, actionable advice
+3. Use bullet points for action items
+4. Prioritize safety above all else
+5. Keep answers under 250 words`;
+
+    async function ensureRangerSpoke() {
+      if (rangerSpokeReady) return;
+      const loadingEl = document.getElementById('ranger-loading');
+      const progressFill = document.getElementById('ranger-progress-fill');
+      const statusBadge = document.getElementById('ranger-status');
+
+      loadingEl.style.display = 'block';
+      statusBadge.textContent = 'LOADING…';
+
+      try {
+        await PhoneAI.loadSpokeByName('scout', (progress) => {
+          const pct = Math.round((progress.loaded / progress.total) * 100) || 0;
+          progressFill.style.width = pct + '%';
+          if (pct > 60) {
+            document.getElementById('ranger-loading-text').textContent = '🧭 The Ranger finds true north...';
+          }
+          if (pct > 90) {
+            document.getElementById('ranger-loading-text').textContent = '🗺️ The Ranger is ready.';
+          }
+        });
+        rangerSpokeReady = true;
+        statusBadge.textContent = 'READY';
+      } catch (err) {
+        console.error('[Scout] Failed to load Ranger spoke:', err);
+        statusBadge.textContent = 'ERROR';
+        throw err;
+      } finally {
+        loadingEl.style.display = 'none';
+      }
+    }
+
+    async function askRanger(question) {
+      const askBtn = document.getElementById('ranger-ask-btn');
+      const responseEl = document.getElementById('ranger-response');
+      const responseText = document.getElementById('ranger-response-text');
+      const loadingEl = document.getElementById('ranger-loading');
+
+      if (!question.trim()) return;
+
+      askBtn.disabled = true;
+      responseEl.style.display = 'none';
+
+      try {
+        await ensureRangerSpoke();
+
+        // Show thinking state
+        loadingEl.style.display = 'block';
+        document.getElementById('ranger-loading-text').textContent = '🧭 The Ranger is thinking deeply...';
+        document.getElementById('ranger-loading-detail').textContent = 'Deep reasoning in progress...';
+
+        // Build context from field notes and checklist
+        let contextNote = '';
+        const notes = safeGetJSON('zen_scout_notes', []);
+        if (notes.length > 0) {
+          const recentNotes = notes.slice(0, 3).map(n => n.text).join(' | ');
+          contextNote += `\n\n[Context: User's recent field notes — ${recentNotes}]`;
+        }
+        const checklist = safeGetJSON('zen_scout_checklist', {});
+        const readyItems = CHECKLIST_ITEMS.filter(i => checklist[i.id]).map(i => i.label);
+        if (readyItems.length > 0) {
+          contextNote += `\n[Readiness: User has prepared — ${readyItems.join(', ')}]`;
+        }
+
+        const userPrompt = question + contextNote;
+        const response = await PhoneAI.chatSpoke(RANGER_SYSTEM_PROMPT, userPrompt);
+        const text = typeof response === 'string' ? response : (response?.message?.content ?? response);
+
+        // Strip <think>...</think> for display, but could show it in a toggle later
+        const displayText = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+
+        responseText.textContent = displayText || text;
+        responseEl.style.display = 'block';
+        showXP('+15 Scout XP — Ranger Consulted');
+      } catch (err) {
+        console.error('[Scout] Ranger AI error:', err);
+        responseText.textContent = '⚠️ The Ranger could not respond. Please try again later.';
+        responseEl.style.display = 'block';
+      } finally {
+        loadingEl.style.display = 'none';
+        askBtn.disabled = false;
+      }
+    }
+
+    // Wire up the Ask button and Enter key
+    document.getElementById('ranger-ask-btn').addEventListener('click', () => {
+      const input = document.getElementById('ranger-input');
+      askRanger(input.value);
+      input.value = '';
+    });
+
+    document.getElementById('ranger-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const input = document.getElementById('ranger-input');
+        askRanger(input.value);
+        input.value = '';
+      }
+    });
+
+    })();
   </script>
+  <script type="module" src="../js/ai-core-widget.js?v=1"></script>
 </body>
 </html>

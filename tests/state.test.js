@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import PhoneState from '../src/js/state.js';
 import Constants from '../src/js/data/constants.js';
 
@@ -6,17 +6,19 @@ import Constants from '../src/js/data/constants.js';
 global.ZEN_CONST = Constants;
 
 describe('PhoneState Engine', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
+    await PhoneState.init();
+    PhoneState.reset();
   });
 
   it('should initialize with default state', () => {
     const state = PhoneState.load();
     expect(state).toBeDefined();
-    expect(state.shape.mind).toBe(50);
-    expect(state.shape.heart).toBe(50);
-    expect(state.shape.body).toBe(50);
-    expect(state.shape.act).toBe(50);
+    expect(state.shape.mind).toBe(10);
+    expect(state.shape.heart).toBe(10);
+    expect(state.shape.body).toBe(10);
+    expect(state.shape.act).toBe(10);
     expect(state.face).toBe(null); // Below 60 threshold
   });
 
@@ -25,10 +27,17 @@ describe('PhoneState Engine', () => {
     state.shape.mind = 90;
     PhoneState.save(state);
     
-    const raw = localStorage.getItem('zen_book');
+    // Vault saves to localStorage as vault_Character.md in web mode fallback
+    const raw = localStorage.getItem('vault_Character.md');
     expect(raw).toBeTruthy();
     
-    const parsed = JSON.parse(raw);
+    // Extract JSON substring between the first { and the last }
+    const startIdx = raw.indexOf('{');
+    const endIdx = raw.lastIndexOf('}');
+    expect(startIdx).toBeGreaterThan(-1);
+    expect(endIdx).toBeGreaterThan(-1);
+    
+    const parsed = JSON.parse(raw.substring(startIdx, endIdx + 1));
     expect(parsed.shape.mind).toBe(90);
   });
 

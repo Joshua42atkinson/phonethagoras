@@ -6,7 +6,7 @@
 import { PhoneState } from './state.js';
 import { PhoneI18n } from './i18n.js';
 import { PhoneAI } from './ai.js';
-import { PhoneLFM } from './lfm-manager.js';
+import { WllamaEngine } from './wllama-engine.js';
 import { PhoneVision } from './vision-manager.js';
 
 export const PhoneSettings = (() => {
@@ -40,26 +40,32 @@ export const PhoneSettings = (() => {
 
     if (btnWebLLM) {
       btnWebLLM.addEventListener('click', async () => {
-        if (typeof PhoneLFM === 'undefined') {
-          alert("Liquid LFM Manager not loaded.");
+        if (WllamaEngine.getStatus().logicLoaded) {
+          btnWebLLM.textContent = "Brain Already Loaded";
           return;
         }
 
         btnWebLLM.disabled = true;
         btnWebLLM.textContent = "Downloading/Loading...";
-        webllmProgressContainer.style.display = 'block';
+        if (webllmProgressContainer) webllmProgressContainer.style.display = 'block';
 
         try {
-          await PhoneLFM.init((progress, text) => {
-            webllmProgressBar.style.width = `${progress}%`;
-            webllmProgressText.textContent = text || `${progress}%`;
+          await WllamaEngine.loadLogic(({ loaded, total, pct }) => {
+            if (webllmProgressBar) webllmProgressBar.style.width = `${pct}%`;
+            if (webllmProgressText) {
+              const loadedMB = (loaded / (1024 * 1024)).toFixed(1);
+              const totalMB = (total / (1024 * 1024)).toFixed(1);
+              webllmProgressText.textContent = `${loadedMB} / ${totalMB} MB (${pct}%)`;
+            }
           });
           btnWebLLM.textContent = "Brain Ready";
-          webllmProgressText.textContent = "Download complete. Liquid LFM engine loaded.";
+          if (webllmProgressText) webllmProgressText.textContent = "Wllama LFM-350M loaded. Chat is now powered by local AI.";
+          // Re-probe backends so ai.js picks up the loaded model
+          PhoneAI.probeBackends();
         } catch (e) {
           btnWebLLM.disabled = false;
           btnWebLLM.textContent = "Retry Download";
-          webllmProgressText.textContent = "Error: " + e.message;
+          if (webllmProgressText) webllmProgressText.textContent = "Error: " + e.message;
         }
       });
     }

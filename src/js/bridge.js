@@ -1,158 +1,507 @@
 /**
- * COACH BRIDGE CONTROLLER — phone.com
+ * MENTORSHIP PORTAL — Phonethagoras
  * 
- * Implements the caseload dashboard and the "Help/Up" sorting algorithm.
- * Dynamically evaluates player states based on Self-Determination Theory (autonomy, relatedness, competence)
- * and cognitive metrics to determine caseload priorities.
+ * Replaces the old simulated caseload dashboard with a REAL
+ * client-driven mentorship bridge.
+ * 
+ * How it works:
+ * 1. Client saves mentor contact info (name, email, relationship type)
+ * 2. Client composes a weekly "Situation Report" (SitRep) with:
+ *    - Auto-populated character sheet stats (mind/heart/body/act, current quest)
+ *    - Free-text: wins, struggles, help request
+ *    - Selectable help-request tags (accountability, resources, emotional, etc.)
+ * 3. Client sends the SitRep via:
+ *    - mailto: link (opens their email client with a pre-composed message)
+ *    - JSON file download (for offline or privacy-first sharing)
+ * 4. SitRep history is saved locally so clients can review what they've shared.
+ * 
+ * Design principle: The client controls 100% of what the mentor sees.
+ * Nothing is sent without an explicit user action.
  */
 
 import { PhoneState } from './state.js';
+import { WllamaEngine } from './wllama-engine.js';
+import { Vault } from './vault.js';
 
 export const PhoneBridge = (() => {
-  let caseloadListEl;
+  const MENTOR_KEY = 'zen_mentor';
+  const SITREP_HISTORY_KEY = 'zen_sitrep_history';
+
+  // DOM refs
+  let mentorNameInput, mentorEmailInput, mentorRelSelect, btnSaveMentor;
+  let sitrepMind, sitrepHeart, sitrepBody, sitrepAct, sitrepQuest;
+  let sitrepWins, sitrepStruggles, sitrepHelp;
+  let helpTagsContainer;
+  let btnSendSitrep, btnDownloadSitrep;
+  let historyContainer, historyList;
+
+  let selectedHelpTags = new Set();
 
   function init() {
-    caseloadListEl = document.getElementById('caseload-list');
-    if (!caseloadListEl) return;
+    // Mentor connection
+    mentorNameInput = document.getElementById('mentor-name-input');
+    mentorEmailInput = document.getElementById('mentor-email-input');
+    mentorRelSelect = document.getElementById('mentor-relationship-select');
+    btnSaveMentor = document.getElementById('btn-save-mentor');
 
-    renderCaseload();
+    // SitRep auto-populated fields
+    sitrepMind = document.getElementById('sitrep-mind');
+    sitrepHeart = document.getElementById('sitrep-heart');
+    sitrepBody = document.getElementById('sitrep-body');
+    sitrepAct = document.getElementById('sitrep-act');
+    sitrepQuest = document.getElementById('sitrep-quest');
 
-    // Re-render when the user switches to this panel to show live state updates
-    const navBridgeBtn = document.getElementById('nav-bridge');
-    if (navBridgeBtn) {
-      navBridgeBtn.addEventListener('click', renderCaseload);
+    // SitRep free-text
+    sitrepWins = document.getElementById('sitrep-wins');
+    sitrepStruggles = document.getElementById('sitrep-struggles');
+    sitrepHelp = document.getElementById('sitrep-help');
+
+    // Help tags
+    helpTagsContainer = document.getElementById('help-tags-container');
+
+    // Actions
+    btnSendSitrep = document.getElementById('btn-send-sitrep');
+    btnDownloadSitrep = document.getElementById('btn-download-sitrep');
+
+    // History
+    historyContainer = document.getElementById('sitrep-history-container');
+    historyList = document.getElementById('sitrep-history-list');
+
+    if (!btnSaveMentor) return; // Not on this page
+
+    // Load saved mentor info
+    loadMentorInfo();
+
+    // Populate character sheet stats
+    populateStats();
+
+    // Wire events
+    btnSaveMentor.addEventListener('click', saveMentorInfo);
+    btnSendSitrep.addEventListener('click', sendSitrep);
+    btnDownloadSitrep.addEventListener('click', downloadSitrep);
+
+    // Help tag toggle buttons
+    if (helpTagsContainer) {
+      helpTagsContainer.querySelectorAll('.help-tag-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleHelpTag(btn));
+      });
+    }
+
+    // AI Drafting
+    const btnDraftHelp = document.getElementById('btn-ai-draft-help');
+    if (btnDraftHelp) {
+      btnDraftHelp.addEventListener('click', draftHelpRequest);
+    }
+
+    // Render history
+    renderHistory();
+
+    // Listen for state changes to keep stats live
+    if (typeof PhoneState !== 'undefined') {
+      PhoneState.on('state:changed', populateStats);
     }
   }
 
-  function getSimulatedClients() {
-    return [
-      {
-        id: "sim-client-1",
-        name: "Sarah Jenkins",
-        story: "Military spouse, seeking admin work after relocation",
-        roots: { own: 0.85, bond: 0.90, skill: 0.75 },
-        walk: { path: { steps: [{ done: true }, { done: true }, { done: true }] } },
-        pulse: { focus: 0.95, guard: 0.80 }
-      },
-      {
-        id: "sim-client-2",
-        name: "Marcus Rivera",
-        story: "Combat veteran, PTSD, struggling with focus and isolation",
-        roots: { own: 0.30, bond: 0.20, skill: 0.40 },
-        walk: { path: { steps: [{ done: false }, { done: false }, { done: false }] } },
-        pulse: { focus: 0.35, guard: 0.20 }
-      },
-      {
-        id: "sim-client-3",
-        name: "David Choi",
-        story: "In recovery, pursuing IT certification, 6 months sober",
-        roots: { own: 0.60, bond: 0.50, skill: 0.55 },
-        walk: { path: { steps: [{ done: true }, { done: false }, { done: false }] } },
-        pulse: { focus: 0.70, guard: 0.50 }
-      },
-      {
-        id: "sim-client-4",
-        name: "Alicia Thompson",
-        story: "Single mom, 2 kids, needs evening-shift work and childcare",
-        roots: { own: 0.55, bond: 0.75, skill: 0.35 },
-        walk: { path: { steps: [{ done: true }, { done: true }, { done: false }] } },
-        pulse: { focus: 0.60, guard: 0.55 }
-      },
-      {
-        id: "sim-client-5",
-        name: "James Whitfield",
-        story: "Recently released, rebuilding, needs ID docs and housing",
-        roots: { own: 0.25, bond: 0.15, skill: 0.30 },
-        walk: { path: { steps: [{ done: false }, { done: false }, { done: false }] } },
-        pulse: { focus: 0.40, guard: 0.25 }
+  // ─── Mentor Info ───
+
+  function loadMentorInfo() {
+    try {
+      const saved = localStorage.getItem(MENTOR_KEY);
+      if (saved) {
+        const mentor = JSON.parse(saved);
+        if (mentorNameInput) mentorNameInput.value = mentor.name || '';
+        if (mentorEmailInput) mentorEmailInput.value = mentor.email || '';
+        if (mentorRelSelect) mentorRelSelect.value = mentor.relationship || 'career_coach';
+        updateSaveButton(true);
       }
-    ];
+    } catch (e) {
+      console.warn('[bridge] Failed to load mentor info:', e);
+    }
   }
 
-  function sortCaseload(players) {
-    return players.map(player => {
-      const autonomy = player.roots.own;
-      const competence = player.roots.skill;
-      const attention = player.pulse.focus;
-      const milestones = player.walk.path.steps;
-      
-      const completedSteps = milestones.filter(m => m.done).length;
-      const complianceRate = completedSteps / milestones.length;
-
-      // Readiness Score Formula from Spec: (autonomy * 0.4) + (competence * 0.3) + (complianceRate * 0.3)
-      const readinessScore = (autonomy * 0.4) + (competence * 0.3) + (complianceRate * 0.3);
-
-      let actionRequired = "HOLD";
-      if (readinessScore >= 0.75) {
-        actionRequired = "UP"; // Promotion challenge
-      } else if (readinessScore < 0.40 || attention < 0.5) {
-        actionRequired = "HELP"; // Immediate intervention needed
-      }
-
-      return {
-        ...player,
-        readinessScore,
-        actionRequired
-      };
-    }).sort((a, b) => b.readinessScore - a.readinessScore);
-  }
-
-  function renderCaseload() {
-    if (!caseloadListEl) return;
-
-    // Load actual user state
-    const userState = PhoneState.load();
-    const formattedUser = {
-      id: userState.id,
-      name: `YOU (${userState.name})`,
-      story: userState.story || "Active client in transition",
-      roots: userState.roots,
-      walk: userState.walk,
-      pulse: userState.pulse
+  function saveMentorInfo() {
+    const mentor = {
+      name: mentorNameInput?.value.trim() || '',
+      email: mentorEmailInput?.value.trim() || '',
+      relationship: mentorRelSelect?.value || 'career_coach',
+      savedAt: new Date().toISOString()
     };
 
-    // Combine with simulated database entries
-    const rawCaseload = [formattedUser, ...getSimulatedClients()];
-    const sortedCaseload = sortCaseload(rawCaseload);
+    localStorage.setItem(MENTOR_KEY, JSON.stringify(mentor));
+    updateSaveButton(true);
 
-    // Clear output
-    caseloadListEl.innerHTML = '';
+    // Flash confirmation
+    btnSaveMentor.textContent = 'Saved ✓';
+    btnSaveMentor.style.borderColor = 'var(--color-success)';
+    btnSaveMentor.style.color = 'var(--color-success)';
+    setTimeout(() => {
+      btnSaveMentor.textContent = 'Save Mentor Info';
+      btnSaveMentor.style.borderColor = '';
+      btnSaveMentor.style.color = '';
+    }, 2000);
+  }
 
-    sortedCaseload.forEach(client => {
-      const row = document.createElement('div');
-      row.className = 'caseload-row';
+  function updateSaveButton(hasMentor) {
+    if (!btnSaveMentor) return;
+    if (hasMentor) {
+      btnSaveMentor.textContent = 'Update Mentor Info';
+    }
+  }
 
-      // Badge styling
-      let badgeBg = 'hsla(43, 55%, 50%, 0.15)';
-      let badgeColor = 'var(--color-act)';
-      if (client.actionRequired === 'UP') {
-        badgeBg = 'hsla(150, 38%, 46%, 0.15)';
-        badgeColor = 'var(--color-mind)';
-      } else if (client.actionRequired === 'HELP') {
-        badgeBg = 'hsla(25, 65%, 53%, 0.15)';
-        badgeColor = 'var(--color-heart)';
+  function getMentor() {
+    try {
+      const raw = localStorage.getItem(MENTOR_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ─── Character Sheet Stats ───
+
+  function populateStats() {
+    const state = PhoneState.load();
+    if (!state) return;
+
+    if (sitrepMind) sitrepMind.textContent = state.shape?.mind ?? '—';
+    if (sitrepHeart) sitrepHeart.textContent = state.shape?.heart ?? '—';
+    if (sitrepBody) sitrepBody.textContent = state.shape?.body ?? '—';
+    if (sitrepAct) sitrepAct.textContent = state.shape?.act ?? '—';
+    if (sitrepQuest) sitrepQuest.textContent = state.walk?.dare || state.walk?.path?.goal || 'None set';
+  }
+
+  // ─── Help Tag Toggles ───
+
+  function toggleHelpTag(btn) {
+    const tag = btn.dataset.tag;
+    if (selectedHelpTags.has(tag)) {
+      selectedHelpTags.delete(tag);
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--color-text-muted)';
+      btn.style.borderColor = 'var(--color-border)';
+    } else {
+      selectedHelpTags.add(tag);
+      btn.style.background = 'var(--color-accent)';
+      btn.style.color = '#000';
+      btn.style.borderColor = 'var(--color-accent)';
+    }
+  }
+
+  // ─── Build SitRep Object ───
+
+  function buildSitrep() {
+    const state = PhoneState.load();
+    const mentor = getMentor();
+
+    return {
+      timestamp: new Date().toISOString(),
+      week: getWeekString(),
+      client: {
+        name: state.name || 'Anonymous',
+        id: state.id
+      },
+      mentor: mentor ? {
+        name: mentor.name,
+        relationship: mentor.relationship
+      } : null,
+      characterSheet: {
+        mind: state.shape?.mind,
+        heart: state.shape?.heart,
+        body: state.shape?.body,
+        act: state.shape?.act,
+        currentQuest: state.walk?.dare || state.walk?.path?.goal || 'None'
+      },
+      wins: sitrepWins?.value.trim() || '',
+      struggles: sitrepStruggles?.value.trim() || '',
+      helpNeeded: {
+        tags: Array.from(selectedHelpTags),
+        details: sitrepHelp?.value.trim() || ''
       }
+    };
+  }
 
-      row.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 0.2rem;">
-          <span style="font-weight: 600; color: var(--color-text);">${escapeHTML(client.name)}</span>
-          <span style="font-size: 0.75rem; color: var(--color-text-dim); line-height: 1.2;">${escapeHTML(client.story)}</span>
-        </div>
-        <div style="text-align: center; font-family: var(--font-mono); font-weight: 500;">
-          ${Math.round(client.readinessScore * 100)}%
-        </div>
-        <div style="text-align: center; font-family: var(--font-mono); font-weight: 500; color: ${client.pulse.focus < 0.5 ? 'var(--color-heart)' : 'var(--color-text)'}">
-          ${Math.round(client.pulse.focus * 100)}%
-        </div>
-        <div style="text-align: right;">
-          <span style="display: inline-block; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; font-family: var(--font-mono); background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeColor}40;">
-            ${client.actionRequired}
-          </span>
-        </div>
+  function getWeekString() {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+    return `${now.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+  }
+
+  // ─── Format SitRep as Human-Readable Text ───
+
+  function formatSitrepAsText(sitrep) {
+    const relationshipLabels = {
+      career_coach: 'Career Coach',
+      case_manager: 'Case Manager',
+      peer_mentor: 'Peer Mentor',
+      therapist: 'Therapist / Counselor',
+      sponsor: 'Sponsor (Recovery)',
+      family: 'Family Support',
+      other: 'Mentor'
+    };
+
+    const mentorTitle = sitrep.mentor
+      ? relationshipLabels[sitrep.mentor.relationship] || 'Mentor'
+      : 'Mentor';
+
+    let text = `WEEKLY CHECK-IN — ${sitrep.week}\n`;
+    text += `From: ${sitrep.client.name}\n`;
+    text += `To: ${sitrep.mentor?.name || 'My ' + mentorTitle}\n`;
+    text += `Date: ${new Date(sitrep.timestamp).toLocaleDateString()}\n`;
+    text += `\n`;
+    text += `── CHARACTER SHEET ──\n`;
+    text += `Mind: ${sitrep.characterSheet.mind} | Heart: ${sitrep.characterSheet.heart} | Body: ${sitrep.characterSheet.body} | Act: ${sitrep.characterSheet.act}\n`;
+    text += `Current Quest: ${sitrep.characterSheet.currentQuest}\n`;
+    text += `\n`;
+
+    if (sitrep.wins) {
+      text += `── WHAT WENT WELL ──\n`;
+      text += `${sitrep.wins}\n\n`;
+    }
+
+    if (sitrep.struggles) {
+      text += `── WHAT WAS HARD ──\n`;
+      text += `${sitrep.struggles}\n\n`;
+    }
+
+    if (sitrep.helpNeeded.tags.length > 0 || sitrep.helpNeeded.details) {
+      text += `── WHAT I NEED ──\n`;
+      if (sitrep.helpNeeded.tags.length > 0) {
+        text += `Tags: ${sitrep.helpNeeded.tags.join(', ')}\n`;
+      }
+      if (sitrep.helpNeeded.details) {
+        text += `${sitrep.helpNeeded.details}\n`;
+      }
+      text += `\n`;
+    }
+
+    text += `──\n`;
+    text += `Sent via Phonethagoras — local-first, private, yours.\n`;
+
+    return text;
+  }
+
+  // ─── AI Drafting ───
+  
+  async function draftHelpRequest() {
+    const btn = document.getElementById('btn-ai-draft-help');
+    if (!btn) return;
+    
+    // Check if Wllama is loaded
+    const status = WllamaEngine.getStatus();
+    if (!status.logicLoaded) {
+      alert('The Liquid Brain (AI Logic) is not currently loaded. Please load it from the Dashboard settings first.');
+      return;
+    }
+
+    const wins = sitrepWins?.value.trim() || '';
+    const struggles = sitrepStruggles?.value.trim() || '';
+    
+    if (!struggles && !wins) {
+      alert('Please write down some wins or struggles first so the AI has context to draft a request.');
+      return;
+    }
+
+    btn.innerHTML = '<span>⏳</span> Thinking...';
+    btn.disabled = true;
+
+    try {
+      const state = PhoneState.load();
+      const currentQuest = state.walk?.dare || state.walk?.path?.goal || 'None';
+      
+      const prompt = `Draft a concise, polite 2-3 sentence request for help or guidance addressed to a mentor based on the following context. Keep it realistic, vulnerable but proactive. Do not include greetings or sign-offs, just the core message.
+Context:
+- User's Current Goal: ${currentQuest}
+- What went well this week: ${wins || 'Nothing specific.'}
+- Struggles this week: ${struggles || 'Nothing specific.'}
+- Selected Help Tags: ${Array.from(selectedHelpTags).join(', ') || 'None'}`;
+
+      const response = await WllamaEngine.chat([
+        { role: 'system', content: 'Follow the instructions exactly.' },
+        { role: 'user', content: prompt }
+      ], {
+        max_tokens: 100,
+        temperature: 0.7
+      });
+
+      if (response && response.trim()) {
+        sitrepHelp.value = response.trim();
+        sitrepHelp.style.borderColor = 'var(--color-primary)';
+        setTimeout(() => { sitrepHelp.style.borderColor = ''; }, 2000);
+      }
+    } catch (err) {
+      console.error('[bridge] Draft failed:', err);
+      alert('Failed to draft request. Make sure the AI logic is running.');
+    } finally {
+      btn.innerHTML = '<span>✨</span> Draft';
+      btn.disabled = false;
+    }
+  }
+
+  // ─── Send via Email (mailto:) ───
+
+  function sendSitrep() {
+    const sitrep = buildSitrep();
+
+    // Validate minimum content
+    if (!sitrep.wins && !sitrep.struggles) {
+      alert('Write at least one thing about your week — wins or struggles — before sending.');
+      return;
+    }
+
+    const mentor = getMentor();
+    const email = mentor?.email || '';
+    const subject = `Weekly Check-in — ${sitrep.client.name} — ${sitrep.week}`;
+    const body = formatSitrepAsText(sitrep);
+
+    // Save to local history before sending
+    saveToHistory(sitrep);
+
+    // Build mailto link
+    const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Open the user's email client
+    window.location.href = mailtoUrl;
+
+    // XP feedback
+    showXpPopup('+25 XP (Weekly Bridge Report)');
+
+    // Clear the form
+    clearForm();
+
+    // Refresh history
+    renderHistory();
+  }
+
+  // ─── Download as File ───
+
+  async function downloadSitrep() {
+    const sitrep = buildSitrep();
+
+    if (!sitrep.wins && !sitrep.struggles) {
+      alert('Write at least one thing about your week before saving.');
+      return;
+    }
+
+    // Save to local history
+    saveToHistory(sitrep);
+
+    // Save using Vault abstraction (either Tauri native FS or LocalStorage)
+    const jsonContent = JSON.stringify(sitrep, null, 2);
+    const textContent = formatSitrepAsText(sitrep);
+    
+    const safeName = sitrep.client.name.replace(/\\s+/g, '_') || 'user';
+    
+    try {
+      await Vault.write(`SITREPS/sitrep_${sitrep.week}_${safeName}.json`, jsonContent);
+      await Vault.write(`SITREPS/checkin_${sitrep.week}.md`, textContent);
+      showXpPopup('+15 XP (Check-in Saved to Vault)');
+    } catch (err) {
+      console.error('[bridge] Failed to save SitRep to Vault', err);
+      alert('Failed to save to Vault. Please check logs.');
+    }
+
+    clearForm();
+    renderHistory();
+  }
+
+  // ─── History ───
+
+  function getHistory() {
+    try {
+      const raw = localStorage.getItem(SITREP_HISTORY_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveToHistory(sitrep) {
+    const history = getHistory();
+    // Keep only the last 12 check-ins to avoid bloating localStorage
+    history.unshift({
+      week: sitrep.week,
+      timestamp: sitrep.timestamp,
+      winsPreview: (sitrep.wins || '').substring(0, 80),
+      strugglesPreview: (sitrep.struggles || '').substring(0, 80),
+      helpTags: sitrep.helpNeeded.tags,
+      mentorName: sitrep.mentor?.name || 'Unknown'
+    });
+    if (history.length > 12) history.pop();
+    localStorage.setItem(SITREP_HISTORY_KEY, JSON.stringify(history));
+  }
+
+  function renderHistory() {
+    if (!historyContainer || !historyList) return;
+
+    const history = getHistory();
+    if (history.length === 0) {
+      historyContainer.style.display = 'none';
+      return;
+    }
+
+    historyContainer.style.display = 'block';
+    historyList.innerHTML = '';
+
+    history.forEach(entry => {
+      const div = document.createElement('div');
+      div.style.cssText = `
+        padding: 0.6rem 0.8rem;
+        background: var(--color-surface-2);
+        border: 1px solid var(--color-border-subtle);
+        border-radius: 6px;
+        font-size: 0.8rem;
       `;
 
-      caseloadListEl.appendChild(row);
+      const dateStr = new Date(entry.timestamp).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      });
+
+      let tagsHtml = '';
+      if (entry.helpTags && entry.helpTags.length > 0) {
+        tagsHtml = entry.helpTags.map(t =>
+          `<span style="display: inline-block; padding: 0.1rem 0.4rem; background: var(--color-accent); color: #000; border-radius: 10px; font-size: 0.65rem; font-weight: 600;">${escapeHTML(t)}</span>`
+        ).join(' ');
+      }
+
+      div.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+          <span style="font-weight: 600; color: var(--color-text);">${entry.week}</span>
+          <span style="color: var(--color-text-dim); font-size: 0.75rem;">${dateStr}</span>
+        </div>
+        ${entry.winsPreview ? `<div style="color: var(--color-success); font-size: 0.75rem;">✓ ${escapeHTML(entry.winsPreview)}${entry.winsPreview.length >= 80 ? '…' : ''}</div>` : ''}
+        ${entry.strugglesPreview ? `<div style="color: var(--color-heart); font-size: 0.75rem; margin-top: 0.2rem;">✗ ${escapeHTML(entry.strugglesPreview)}${entry.strugglesPreview.length >= 80 ? '…' : ''}</div>` : ''}
+        ${tagsHtml ? `<div style="margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 0.3rem;">${tagsHtml}</div>` : ''}
+      `;
+      historyList.appendChild(div);
     });
+  }
+
+  // ─── Helpers ───
+
+  function clearForm() {
+    if (sitrepWins) sitrepWins.value = '';
+    if (sitrepStruggles) sitrepStruggles.value = '';
+    if (sitrepHelp) sitrepHelp.value = '';
+    selectedHelpTags.clear();
+    if (helpTagsContainer) {
+      helpTagsContainer.querySelectorAll('.help-tag-btn').forEach(btn => {
+        btn.style.background = 'transparent';
+        btn.style.color = 'var(--color-text-muted)';
+        btn.style.borderColor = 'var(--color-border)';
+      });
+    }
+  }
+
+  function showXpPopup(text) {
+    const popup = document.createElement('div');
+    popup.className = 'xp-popup';
+    popup.textContent = text;
+    popup.style.left = '50%';
+    popup.style.top = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    document.body.appendChild(popup);
+    setTimeout(() => popup.remove(), 2000);
   }
 
   function escapeHTML(str) {
@@ -162,6 +511,9 @@ export const PhoneBridge = (() => {
   }
 
   return {
-    init
+    init,
+    getMentor,
+    buildSitrep,
+    getHistory
   };
 })();

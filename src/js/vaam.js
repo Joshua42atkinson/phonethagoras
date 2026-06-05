@@ -240,3 +240,5 @@ export const VAAM = {
     getProfile,
     resetProfile,
   };
+
+export default VAAM;

@@ -125,6 +125,26 @@ export const PhoneChat = (() => {
     await PhoneAI.init();
     PhoneVoice.init();
 
+    // Wire the AI Core Widget voice toggle to real Kokoro loading
+    document.addEventListener('zen:voice-toggle', async (e) => {
+      const { enabled } = e.detail;
+      if (enabled) {
+        PhoneVoice.setTTSEnabled(true);
+        if (!PhoneVoice.isKokoroLoaded() && !PhoneVoice.isKokoroLoading()) {
+          try {
+            await PhoneVoice.loadKokoro((pct) => {
+              console.log(`[chat] Kokoro loading: ${pct}%`);
+            });
+            console.log('[chat] Kokoro loaded — neural TTS active');
+          } catch (err) {
+            console.warn('[chat] Kokoro failed to load, falling back to browser TTS:', err.message);
+          }
+        }
+      } else {
+        PhoneVoice.setTTSEnabled(false);
+      }
+    });
+
     // Wire STT callbacks to Chat
     PhoneVoice.setCallbacks(
       // On interim transcript
@@ -305,11 +325,25 @@ export const PhoneChat = (() => {
       if (text.toLowerCase().match(/\b(yes|yeah|sure|okay|ok|do it|please)\b/)) {
         isAwaitingEmailDraftPermission = false;
         
-        // Generate email draft
-        const emailBody = `Hi Coach,\n\nI'm reaching out because I've been feeling a lot of emotional load recently, specifically regarding:\n\n"${cachedDistressText}"\n\nI wanted to share this with you so we can discuss it in our next session.\n\nBest,\n[Your Name]`;
-        const mailtoLink = `mailto:coach@example.com?subject=Checking In - Support Needed&body=${encodeURIComponent(emailBody)}`;
+        // Pull real mentor email from the Mentorship Portal
+        let mentorEmail = 'coach@example.com';
+        let mentorName = 'Coach';
+        try {
+          const saved = localStorage.getItem('zen_mentor');
+          if (saved) {
+            const mentor = JSON.parse(saved);
+            if (mentor.email) mentorEmail = mentor.email;
+            if (mentor.name) mentorName = mentor.name;
+          }
+        } catch (e) {}
+
+        const state = PhoneState.load();
+        const clientName = state.name || 'Your Client';
+
+        const emailBody = `Hi ${mentorName},\n\nI'm reaching out because I've been feeling a lot of emotional load recently, specifically regarding:\n\n"${cachedDistressText}"\n\nI wanted to share this with you so we can discuss it in our next session.\n\nBest,\n${clientName}`;
+        const mailtoLink = `mailto:${encodeURIComponent(mentorEmail)}?subject=Checking In - Support Needed&body=${encodeURIComponent(emailBody)}`;
         
-        const htmlMsg = `Here is a draft you can send. <a href="${mailtoLink}" target="_blank" style="color:var(--color-accent); text-decoration:underline;">Click here to open in your email client</a>, or copy it below:<br><br><pre style="white-space: pre-wrap; background: var(--color-surface); padding: var(--space-xs); border-radius: var(--radius-sm); font-size: 0.8rem; margin: 8px 0; border: 1px solid var(--color-border);">${escapeHTML(emailBody)}</pre>Are you ready to return to our work in the <strong>${PEARL.getState()}</strong> phase?`;
+        const htmlMsg = `Here is a draft for <strong>${escapeHTML(mentorName)}</strong>. <a href="${mailtoLink}" target="_blank" style="color:var(--color-accent); text-decoration:underline;">Click here to open in your email client</a>, or copy it below:<br><br><pre style="white-space: pre-wrap; background: var(--color-surface); padding: var(--space-xs); border-radius: var(--radius-sm); font-size: 0.8rem; margin: 8px 0; border: 1px solid var(--color-border);">${escapeHTML(emailBody)}</pre>You can also use the <strong>Mentor Portal</strong> tab to send a full weekly check-in. Are you ready to return to our work in the <strong>${PEARL.getState()}</strong> phase?`;
         
         appendMessage(htmlMsg, false);
       } else {

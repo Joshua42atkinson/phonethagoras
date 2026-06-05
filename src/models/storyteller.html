@@ -3,199 +3,1110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Storyteller | Phonethagoras</title>
+  <meta name="theme-color" content="#0a0f19">
+  <title>The Storyteller — The Silk Road | Phonethagoras</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/base.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --story-amber: #f39c12;
-      --story-purple: #2c0b38;
-      --story-dark: #120514;
+      --color-bg: #0a0f19;
+      --color-accent: hsl(38, 92%, 56%);
+      --color-story: hsl(35, 90%, 55%);
+      --color-story-glow: hsla(35, 90%, 55%, 0.3);
+      --color-story-dim: hsla(35, 90%, 55%, 0.12);
+      --color-text: #e8e6e3;
+      --color-text-muted: rgba(232, 230, 227, 0.6);
+      --color-text-dim: rgba(232, 230, 227, 0.4);
+      --color-surface: rgba(255, 255, 255, 0.04);
+      --color-surface-2: rgba(255, 255, 255, 0.06);
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-border-subtle: rgba(255, 255, 255, 0.05);
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 10px;
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at 50% 30%, var(--story-purple) 0%, var(--story-dark) 100%);
-      color: #fdf5e6;
-      font-family: 'Cormorant Garamond', serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 5rem;
     }
 
-    .nav-bar {
-      padding: 1.5rem 2rem;
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140%;
+      height: 60%;
+      background: radial-gradient(ellipse at center, hsla(35, 90%, 55%, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Header ─── */
+    .page-header {
+      position: relative;
+      z-index: 10;
+      padding: 1.5rem 1.5rem 1rem 4.5rem;
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(to bottom, rgba(10, 15, 25, 0.95), rgba(10, 15, 25, 0.8));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(to bottom, rgba(18,5,20,0.9), transparent);
-      z-index: 10;
+      margin-bottom: 0.8rem;
     }
 
-    .nav-back {
-      color: var(--story-amber);
-      text-decoration: none;
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--color-story);
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: opacity 0.3s;
+      gap: 0.5rem;
+      text-shadow: 0 0 20px var(--color-story-glow);
     }
-    .nav-back:hover { opacity: 0.8; }
 
-    .model-status {
-      font-family: 'Inter', sans-serif;
+    .page-title .icon { font-size: 1.2rem; }
+
+    .stats-row {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.7rem;
+      background: var(--color-story-dim);
+      border: 1px solid hsla(35, 90%, 55%, 0.2);
+      border-radius: 20px;
+      font-family: var(--font-mono);
       font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: rgba(253, 245, 230, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .status-dot {
-      width: 6px; height: 6px;
-      background: var(--story-amber);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--story-amber);
+      color: var(--color-story);
     }
 
-    .canvas-container {
-      flex: 1;
+    .stat-pill .value {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      max-width: 550px;
+    }
+
+    /* ─── Sections ─── */
+    .content-area {
+      position: relative;
+      z-index: 5;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+
+    .card:hover {
+      box-shadow: 0 0 20px hsla(35, 90%, 55%, 0.06);
+    }
+
+    .card-header {
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 2rem 1.5rem;
-      overflow-y: auto;
+      border-bottom: 1px solid var(--color-border-subtle);
     }
 
-    .story-text {
-      max-width: 700px;
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-body { padding: 1.2rem; }
+
+    /* ─── Journal ─── */
+    .journal-textarea {
       width: 100%;
-      font-size: 1.5rem;
-      line-height: 1.8;
-      margin-bottom: 2rem;
-      text-align: justify;
-    }
-
-    .story-text p {
-      margin-bottom: 1.5rem;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    .story-input-wrapper {
-      max-width: 700px;
-      width: 100%;
-      position: relative;
-      margin-top: auto;
-      padding-bottom: 2rem;
-    }
-
-    .story-input {
-      width: 100%;
-      background: rgba(44, 11, 56, 0.4);
-      border: 1px solid rgba(243, 156, 18, 0.2);
-      border-radius: 12px;
-      padding: 1.5rem;
-      color: #fdf5e6;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem;
-      resize: none;
+      min-height: 180px;
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      resize: vertical;
       outline: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .story-input:focus {
-      border-color: rgba(243, 156, 18, 0.5);
-      background: rgba(44, 11, 56, 0.6);
-      box-shadow: 0 5px 30px rgba(243, 156, 18, 0.15);
+    .journal-textarea:focus {
+      border-color: hsla(35, 90%, 55%, 0.4);
+      box-shadow: 0 0 0 3px hsla(35, 90%, 55%, 0.08);
     }
 
-    .story-input::placeholder {
-      color: rgba(253, 245, 230, 0.3);
+    .journal-textarea::placeholder {
+      color: var(--color-text-dim);
       font-style: italic;
     }
 
-    .audio-toggle {
-      position: absolute;
-      right: 1.5rem;
-      bottom: 3rem;
-      background: transparent;
-      border: none;
-      color: var(--story-amber);
-      font-size: 1.5rem;
-      cursor: pointer;
-      opacity: 0.6;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .audio-toggle:hover {
-      opacity: 1;
-      transform: scale(1.1);
+    .journal-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--color-text-dim);
     }
 
+    .word-count {
+      font-family: var(--font-mono);
+      color: var(--color-story);
+      opacity: 0.8;
+    }
+
+    .btn-story {
+      padding: 0.6rem 1.2rem;
+      background: var(--color-story-dim);
+      border: 1px solid hsla(35, 90%, 55%, 0.3);
+      border-radius: var(--radius);
+      color: var(--color-story);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-story:hover {
+      background: hsla(35, 90%, 55%, 0.2);
+      box-shadow: 0 0 15px var(--color-story-glow);
+    }
+
+    .btn-story:active { transform: scale(0.97); }
+
+    .btn-story:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-story:disabled:hover {
+      background: var(--color-story-dim);
+      box-shadow: none;
+    }
+
+    /* ─── Prompt Card ─── */
+    .prompt-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed hsla(35, 90%, 55%, 0.25);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    .prompt-text {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--color-story);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prompt-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .prompt-counter {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-text-dim);
+    }
+
+    .btn-prompt {
+      padding: 0.4rem 0.8rem;
+      background: transparent;
+      border: 1px solid hsla(35, 90%, 55%, 0.2);
+      border-radius: 20px;
+      color: var(--color-story);
+      font-family: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-prompt:hover {
+      background: var(--color-story-dim);
+    }
+
+    /* ─── History ─── */
+    .history-entry {
+      padding: 0.8rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2px solid hsla(35, 90%, 55%, 0.3);
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 0.6rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .history-entry:hover { background: rgba(255, 255, 255, 0.04); }
+
+    .history-date {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-story);
+      opacity: 0.7;
+      margin-bottom: 0.3rem;
+    }
+
+    .history-preview {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    .history-full {
+      display: none;
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--color-border-subtle);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .history-entry.expanded .history-preview { display: none; }
+    .history-entry.expanded .history-full { display: block; }
+
+    .history-word-count {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--color-text-dim);
+      float: right;
+    }
+
+    .history-delete {
+      background: none;
+      border: none;
+      color: var(--color-text-dim);
+      font-size: 0.7rem;
+      cursor: pointer;
+      float: right;
+      margin-left: 0.5rem;
+      padding: 0.2rem;
+      transition: color 0.2s;
+    }
+    .history-delete:hover { color: #e74c3c; }
+
+    /* ─── Skill Gems ─── */
+    .gems-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .skill-gem {
+      padding: 0.3rem 0.7rem;
+      background: var(--color-story-dim);
+      border: 1px solid hsla(35, 90%, 55%, 0.25);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--color-story);
+      font-weight: 500;
+    }
+
+    .gems-empty {
+      font-size: 0.85rem;
+      color: var(--color-text-dim);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* ─── Words Discovered ─── */
+    .words-discovered {
+      text-align: center;
+      padding: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    .words-count-big {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-story);
+      text-shadow: 0 0 20px var(--color-story-glow);
+    }
+
+    .words-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-text-dim);
+      margin-top: 0.2rem;
+    }
+
+    /* ─── Back to Hub ─── */
+    .back-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      padding: 0.7rem 1.2rem;
+      background: rgba(10, 15, 25, 0.9);
+      border: 1px solid var(--color-border);
+      border-radius: 25px;
+      color: var(--color-accent);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .back-btn:hover {
+      background: rgba(10, 15, 25, 1);
+      border-color: var(--color-accent);
+      box-shadow: 0 0 15px hsla(38, 92%, 56%, 0.15);
+    }
+
+    /* ─── XP Popup ─── */
+    @keyframes float-up {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      70% { opacity: 1; transform: translateY(-40px) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-70px) scale(0.9); }
+    }
+
+    .xp-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+      padding: 0.6rem 1.4rem;
+      background: var(--color-story-dim);
+      border: 1px solid var(--color-story);
+      border-radius: 25px;
+      color: var(--color-story);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      pointer-events: none;
+      animation: float-up 1.5s ease forwards;
+      box-shadow: 0 0 25px var(--color-story-glow);
+    }
+
+    /* ─── Empty State ─── */
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-text-dim);
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* ─── Two Column Layout on wider screens ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .two-col { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── AI Loading Overlay ─── */
+    .ai-loading-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(10, 15, 25, 0.92);
+      backdrop-filter: blur(16px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.2rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .ai-loading-overlay.visible { opacity: 1; pointer-events: auto; }
+    .ai-loading-icon {
+      font-size: 3rem;
+      animation: pulse-glow 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px hsla(35, 90%, 55%, 0.4)); }
+      50% { transform: scale(1.15); filter: drop-shadow(0 0 20px hsla(35, 90%, 55%, 0.8)); }
+    }
+    .ai-loading-msg {
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--color-story);
+      text-shadow: 0 0 15px var(--color-story-glow);
+    }
+    .ai-loading-detail {
+      font-size: 0.8rem; color: var(--color-text-muted);
+      max-width: 320px; text-align: center; line-height: 1.5;
+    }
+    .ai-loading-bar-track {
+      width: 220px; height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px; overflow: hidden;
+    }
+    .ai-loading-bar-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, var(--color-story), hsl(45, 95%, 65%));
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    .ai-loading-pct {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--color-story); opacity: 0.8;
+    }
+
+    /* ─── AI Results Area ─── */
+    .ai-results {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid hsla(35, 90%, 55%, 0.2);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--color-text);
+      white-space: pre-wrap;
+      display: none;
+    }
+    .ai-results.visible { display: block; }
+    .ai-results-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-story);
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+    .ai-results-label.visible { display: block; }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: hsla(35, 90%, 55%, 0.2); border-radius: 2px; }
+
+    @media (max-width: 600px) {
+      .page-header { padding: 1rem 1rem 1rem 4.5rem; }
+      .content-area { padding: 1rem; }
+      .stats-row { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
+  <!-- ═══ HUB NAVIGATION ═══ -->
+  <a href="../index.html" style="position: fixed; top: 1rem; left: 1rem; z-index: 10000; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; text-decoration: none; color: var(--color-text); box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(10px);" aria-label="Back to Hub">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  </a>
 
-  <header class="nav-bar">
-    <a href="../models.html" class="nav-back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      Leave Canvas
-    </a>
-    <div class="model-status">
-      <span>Llama-3.2-3B GGUF</span>
-      <div class="status-dot"></div>
+  <!-- ═══ Header ═══ -->
+  <header class="page-header">
+    <div class="header-top">
+      <h1 class="page-title">
+        <span class="icon">📜</span>
+        The Silk Road
+      </h1>
     </div>
+    <div class="stats-row" style="margin-bottom: 0.6rem;">
+      <div class="stat-pill">
+        <span>📝</span>
+        <span id="journal-count-pill" class="value">0</span>
+        <span>entries</span>
+      </div>
+      <div class="stat-pill">
+        <span>📖</span>
+        <span id="words-count-pill" class="value">0</span>
+        <span>words discovered</span>
+      </div>
+      <div class="stat-pill">
+        <span>💎</span>
+        <span id="gems-count-pill" class="value">0</span>
+        <span>skill gems</span>
+      </div>
+    </div>
+    <p class="page-subtitle">Your journal, your vocabulary, your story. Write freely — every word you use becomes part of your personal spellbook.</p>
   </header>
 
-  <div class="canvas-container">
-    <div class="story-text" id="story-feed">
-      <p style="opacity: 0.5; font-style: italic; text-align: center; margin-top: 20vh;">
-        "Every great journey begins with a single word. What world shall we build today?"
-      </p>
+  <!-- ═══ Main Content ═══ -->
+  <div class="content-area">
+
+    <!-- Reflection Prompt -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">💡 Reflection Prompt</span>
+      </div>
+      <div class="card-body">
+        <div class="prompt-card">
+          <div class="prompt-text" id="prompt-text"></div>
+          <div class="prompt-nav">
+            <button class="btn-prompt" id="btn-prev-prompt">← Prev</button>
+            <span class="prompt-counter" id="prompt-counter"></span>
+            <button class="btn-prompt" id="btn-next-prompt">Next →</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="story-input-wrapper">
-      <textarea class="story-input" rows="3" placeholder="Continue the tale..."></textarea>
-      <button class="audio-toggle" title="Kokoro TTS Active">🔊</button>
+    <!-- Daily Journal -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">✍️ Daily Journal</span>
+        <span class="word-count" id="live-word-count">0 words</span>
+      </div>
+      <div class="card-body">
+        <textarea class="journal-textarea" id="journal-input" placeholder="What's on your mind today? Write freely — this is your space..."></textarea>
+        <div class="journal-meta">
+          <span id="journal-date" style="font-family: var(--font-mono); font-size: 0.75rem;"></span>
+          <button class="btn-story" id="btn-save-journal">Save Entry</button>
+        </div>
+      </div>
     </div>
+
+    <div class="two-col">
+      <!-- Words Discovered -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📖 VAAM Spellbook</span>
+        </div>
+        <div class="card-body">
+          <div class="words-discovered">
+            <div class="words-count-big" id="words-total">0</div>
+            <div class="words-label">Unique Words Discovered</div>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--color-text-dim); text-align: center; margin-top: 0.6rem;">
+            Every unique word you write in your journal is added to your personal vocabulary. Your spellbook grows as you write.
+          </p>
+        </div>
+      </div>
+
+      <!-- S.I.L.K. Extract -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">💎 S.I.L.K. Extract</span>
+        </div>
+        <div class="card-body">
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 0.8rem;">
+            Scan your latest journal entry for action verbs and skill-related words. These become your "skill gems" — proof of what you can do.
+          </p>
+          <button class="btn-story" id="btn-extract-silk" style="width: 100%; margin-bottom: 1rem;">💎 Extract Skills from Entry</button>
+          <div class="section-label">Extracted Skill Gems</div>
+          <div class="gems-container" id="gems-container">
+            <div class="gems-empty">No gems extracted yet. Write a journal entry and extract.</div>
+          </div>
+          <div class="ai-results-label" id="ai-results-label">📜 The Lorekeeper's Reading</div>
+          <div class="ai-results" id="ai-results"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Journal History -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📚 Journal History</span>
+        <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--color-text-dim);" id="history-count">0 entries</span>
+      </div>
+      <div class="card-body" id="history-container">
+        <div class="empty-state">No journal entries yet. Write your first entry above.</div>
+      </div>
+    </div>
+
   </div>
 
-  <script>
-    const input = document.querySelector('.story-input');
-    const feed = document.getElementById('story-feed');
+  <!-- ═══ AI Loading Overlay ═══ -->
+  <div class="ai-loading-overlay" id="ai-loading-overlay">
+    <div class="ai-loading-icon">📜</div>
+    <div class="ai-loading-msg" id="ai-loading-msg">✨ The Lorekeeper unrolls the scroll...</div>
+    <div class="ai-loading-detail" id="ai-loading-detail">Loading The Storyteller's narrative engine. First run downloads ~1.88GB.</div>
+    <div class="ai-loading-bar-track"><div class="ai-loading-bar-fill" id="ai-loading-bar"></div></div>
+    <div class="ai-loading-pct" id="ai-loading-pct">0%</div>
+  </div>
+
+  <!-- ═══ Back to Hub ═══ -->
+  <a href="../index.html" class="back-btn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    Back to Hub
+  </a>
+
+  <script type="module">
+    import { PhoneState } from '../js/state.js';
+    import { PhoneAI } from '../js/ai.js';
+  (async function() {
+    'use strict';
     
-    input.addEventListener('keypress', (e) => {
-      if(e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if(!input.value.trim()) return;
-        
-        const p = document.createElement('p');
-        p.textContent = input.value;
-        p.style.color = '#fff';
-        feed.appendChild(p);
-        input.value = '';
-        
-        setTimeout(() => {
-          const p2 = document.createElement('p');
-          p2.textContent = "The winds shifted then, carrying the scent of ancient pine and impending storms. The shadows deepened along the edges of the path, whispering secrets forgotten by time...";
-          p2.style.opacity = '0';
-          p2.style.transition = 'opacity 2s ease';
-          feed.appendChild(p2);
-          
-          setTimeout(() => { p2.style.opacity = '1'; feed.parentElement.scrollTop = feed.parentElement.scrollHeight; }, 100);
-        }, 1500);
+    await PhoneState.init();
+    const state = PhoneState.load();
+
+    // ─── Reflection Prompts ───
+    const PROMPTS = [
+      'What surprised you today?',
+      'What would you tell your younger self about this week?',
+      'What pattern do you keep repeating?',
+      'What are you avoiding?',
+      'What gave you energy today?',
+      'If this challenge were a story, what chapter would you be in?',
+      'What would courage look like right now?',
+      'What are you grateful for that you usually overlook?',
+      'What skill did you use today without thinking about it?',
+      'What would your best self do tomorrow?',
+      'What did you learn about yourself recently?',
+      'Who made a difference in your life this week, and do they know it?',
+      'What would you attempt if you knew you could not fail?',
+      'What boundary do you need to set?',
+      'What is one small thing you can do today that your future self will thank you for?'
+    ];
+
+    // ─── S.I.L.K. Action Verbs / Skill Words ───
+    const SILK_WORDS = new Set([
+      'manage', 'managed', 'managing', 'lead', 'led', 'leading', 'build', 'built', 'building',
+      'create', 'created', 'creating', 'organize', 'organized', 'organizing',
+      'communicate', 'communicated', 'communicating', 'adapt', 'adapted', 'adapting',
+      'solve', 'solved', 'solving', 'coordinate', 'coordinated', 'coordinating',
+      'plan', 'planned', 'planning', 'design', 'designed', 'designing',
+      'develop', 'developed', 'developing', 'implement', 'implemented', 'implementing',
+      'analyze', 'analyzed', 'analyzing', 'research', 'researched', 'researching',
+      'teach', 'taught', 'teaching', 'train', 'trained', 'training',
+      'mentor', 'mentored', 'mentoring', 'negotiate', 'negotiated', 'negotiating',
+      'present', 'presented', 'presenting', 'write', 'wrote', 'writing',
+      'collaborate', 'collaborated', 'collaborating', 'facilitate', 'facilitated', 'facilitating',
+      'support', 'supported', 'supporting', 'assess', 'assessed', 'assessing',
+      'improve', 'improved', 'improving', 'maintain', 'maintained', 'maintaining',
+      'supervise', 'supervised', 'supervising', 'evaluate', 'evaluated', 'evaluating',
+      'resolve', 'resolved', 'resolving', 'achieve', 'achieved', 'achieving',
+      'deliver', 'delivered', 'delivering', 'initiate', 'initiated', 'initiating',
+      'motivate', 'motivated', 'motivating', 'inspire', 'inspired', 'inspiring',
+      'listen', 'listened', 'listening', 'decide', 'decided', 'deciding',
+      'prioritize', 'prioritized', 'prioritizing', 'delegate', 'delegated', 'delegating',
+      'compose', 'composed', 'composing', 'debug', 'debugged', 'debugging',
+      'repair', 'repaired', 'repairing', 'cook', 'cooked', 'cooking',
+      'drive', 'drove', 'driving', 'navigate', 'navigated', 'navigating',
+      'protect', 'protected', 'protecting', 'serve', 'served', 'serving',
+      'counsel', 'counseled', 'counseling', 'budget', 'budgeted', 'budgeting',
+      'schedule', 'scheduled', 'scheduling', 'pitch', 'pitched', 'pitching',
+      'launch', 'launched', 'launching', 'grow', 'grew', 'growing',
+      'sell', 'sold', 'selling', 'earn', 'earned', 'earning',
+      'learn', 'learned', 'learning', 'study', 'studied', 'studying',
+      'discover', 'discovered', 'discovering', 'overcome', 'overcame', 'overcoming',
+      'persist', 'persisted', 'persisting', 'endure', 'endured', 'enduring',
+      'volunteer', 'volunteered', 'volunteering', 'connect', 'connected', 'connecting',
+      'help', 'helped', 'helping', 'care', 'cared', 'caring',
+      'mediate', 'mediated', 'mediating', 'edit', 'edited', 'editing',
+      'program', 'programmed', 'programming', 'code', 'coded', 'coding',
+      'troubleshoot', 'troubleshot', 'troubleshooting',
+      'assemble', 'assembled', 'assembling', 'install', 'installed', 'installing',
+      'operate', 'operated', 'operating', 'calculate', 'calculated', 'calculating'
+    ]);
+
+    let promptIndex = 0;
+
+    // ─── Utility ───
+    function safeGetJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        console.warn('Storyteller: failed to read', key, e);
+        return fallback;
+      }
+    }
+
+    function safeSetJSON(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (e) {
+        console.warn('Storyteller: failed to write', key, e);
+      }
+    }
+
+    function showXP(text) {
+      const el = document.createElement('div');
+      el.className = 'xp-popup';
+      el.textContent = text;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1600);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function countWords(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return 0;
+      return trimmed.split(/\s+/).length;
+    }
+
+    function extractUniqueWords(text) {
+      return new Set(
+        text.toLowerCase()
+          .replace(/[^a-z'\-\s]/g, ' ')
+          .split(/\s+/)
+          .filter(w => w.length >= 2)
+      );
+    }
+
+    function getToday() {
+      return new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+
+    // ─── Prompts ───
+    function renderPrompt() {
+      document.getElementById('prompt-text').textContent = `"${PROMPTS[promptIndex]}"`;
+      document.getElementById('prompt-counter').textContent = `${promptIndex + 1} / ${PROMPTS.length}`;
+    }
+
+    // ─── Live Word Count ───
+    function updateWordCount() {
+      const text = document.getElementById('journal-input').value;
+      const count = countWords(text);
+      document.getElementById('live-word-count').textContent = `${count} word${count !== 1 ? 's' : ''}`;
+    }
+
+    // ─── Save Journal ───
+    function saveJournal() {
+      const input = document.getElementById('journal-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const journal = safeGetJSON('zen_story_journal', []);
+      const entry = {
+        text,
+        date: new Date().toISOString(),
+        wordCount: countWords(text)
+      };
+      journal.unshift(entry);
+      safeSetJSON('zen_story_journal', journal);
+
+      // Update word discovery
+      const existingWords = new Set(safeGetJSON('zen_story_words', []));
+      const newWords = extractUniqueWords(text);
+      let addedCount = 0;
+      newWords.forEach(w => {
+        if (!existingWords.has(w)) {
+          existingWords.add(w);
+          addedCount++;
+        }
+      });
+      safeSetJSON('zen_story_words', Array.from(existingWords));
+
+      input.value = '';
+      updateWordCount();
+      renderHistory();
+      renderWordsDiscovered();
+      updateHeaderStats();
+
+      if (addedCount > 0) {
+        showXP(`+${addedCount} new words discovered!`);
+      } else {
+        showXP('+15 Heart XP — Entry Saved');
+      }
+    }
+
+    // ─── History ───
+    function renderHistory() {
+      const journal = safeGetJSON('zen_story_journal', []);
+      const container = document.getElementById('history-container');
+      document.getElementById('history-count').textContent = `${journal.length} entr${journal.length === 1 ? 'y' : 'ies'}`;
+
+      if (journal.length === 0) {
+        container.innerHTML = '<div class="empty-state">No journal entries yet. Write your first entry above.</div>';
+        return;
+      }
+
+      const toShow = journal.slice(0, 5);
+      container.innerHTML = toShow.map((entry, idx) => {
+        const date = new Date(entry.date);
+        const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const preview = entry.text.length > 100 ? entry.text.substring(0, 100) + '…' : entry.text;
+        const wc = entry.wordCount || countWords(entry.text);
+
+        return `
+          <div class="history-entry" data-idx="${idx}">
+            <button class="history-delete" data-idx="${idx}" title="Delete entry">✕</button>
+            <span class="history-word-count">${wc} words</span>
+            <div class="history-date">${dateStr} at ${timeStr}</div>
+            <div class="history-preview">${escapeHtml(preview)}</div>
+            <div class="history-full">${escapeHtml(entry.text)}</div>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.history-entry').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.classList.contains('history-delete')) return;
+          el.classList.toggle('expanded');
+        });
+      });
+
+      container.querySelectorAll('.history-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const i = parseInt(btn.dataset.idx);
+          const current = safeGetJSON('zen_story_journal', []);
+          current.splice(i, 1);
+          safeSetJSON('zen_story_journal', current);
+          renderHistory();
+          updateHeaderStats();
+        });
+      });
+    }
+
+    // ─── Words Discovered ───
+    function renderWordsDiscovered() {
+      const words = safeGetJSON('zen_story_words', []);
+      document.getElementById('words-total').textContent = words.length;
+    }
+
+    // ─── S.I.L.K. Extract (AI-powered) ───
+    let spokeLoaded = false;
+
+    function showLoadingOverlay(visible) {
+      const overlay = document.getElementById('ai-loading-overlay');
+      if (visible) { overlay.classList.add('visible'); }
+      else { overlay.classList.remove('visible'); }
+    }
+
+    function updateLoadingProgress(progress) {
+      const pct = Math.round((progress.loaded / progress.total) * 100) || 0;
+      document.getElementById('ai-loading-bar').style.width = pct + '%';
+      document.getElementById('ai-loading-pct').textContent = pct + '%';
+      if (pct > 50) {
+        document.getElementById('ai-loading-msg').textContent = '✨ The scroll reveals its secrets...';
+      }
+      if (pct > 90) {
+        document.getElementById('ai-loading-msg').textContent = '📜 The Lorekeeper is ready...';
+      }
+    }
+
+    async function ensureSpokeLoaded() {
+      if (spokeLoaded) return true;
+      showLoadingOverlay(true);
+      try {
+        await PhoneAI.loadSpokeByName('storyteller', updateLoadingProgress);
+        spokeLoaded = true;
+        showLoadingOverlay(false);
+        return true;
+      } catch (err) {
+        console.error('[storyteller] Spoke load failed:', err);
+        showLoadingOverlay(false);
+        showXP('⚠️ Failed to load AI model');
+        return false;
+      }
+    }
+
+    async function extractSkills() {
+      const journal = safeGetJSON('zen_story_journal', []);
+      if (journal.length === 0) {
+        showXP('Write a journal entry first!');
+        return;
+      }
+
+      // First, do the local keyword extraction (original logic)
+      const latestEntry = journal[0].text;
+      const words = latestEntry.toLowerCase()
+        .replace(/[^a-z'\-\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length >= 2);
+
+      const foundGems = new Set();
+      words.forEach(w => {
+        if (SILK_WORDS.has(w)) {
+          foundGems.add(w.charAt(0).toUpperCase() + w.slice(1));
+        }
+      });
+
+      const existing = new Set(safeGetJSON('zen_silk_extracted', []));
+      foundGems.forEach(g => existing.add(g));
+      safeSetJSON('zen_silk_extracted', Array.from(existing));
+      renderGems();
+      updateHeaderStats();
+
+      if (foundGems.size > 0) {
+        showXP(`💎 ${foundGems.size} skill gem${foundGems.size > 1 ? 's' : ''} extracted!`);
+      }
+
+      // Now, AI-powered narrative extraction
+      const btn = document.getElementById('btn-extract-silk');
+      btn.disabled = true;
+      btn.textContent = '📜 Summoning The Lorekeeper...';
+
+      const loaded = await ensureSpokeLoaded();
+      if (!loaded) {
+        btn.disabled = false;
+        btn.textContent = '💎 Extract Skills from Entry';
+        return;
+      }
+
+      btn.textContent = '✨ The Lorekeeper is reading...';
+
+      const systemPrompt = `You are The Lorekeeper, a master storyteller who weaves the user's journal entries and vocabulary into an interactive narrative. You speak in a warm, mythic tone. You reward creativity and emotional honesty.
+
+Your task: Read the user's journal entry below and:
+1. Identify the key skills, strengths, and action verbs demonstrated.
+2. Reframe their experience as a heroic narrative — what quest are they on, what abilities did they demonstrate?
+3. Offer one reflective question to deepen their self-awareness.
+
+Keep your response under 200 words. Be encouraging but genuine.`;
+
+      const userPrompt = `Here is my latest journal entry:\n\n"${latestEntry}"`;
+
+      try {
+        const response = await PhoneAI.chatSpoke(systemPrompt, userPrompt);
+        const text = typeof response === 'string' ? response : (response?.message?.content ?? response);
+
+        const resultsLabel = document.getElementById('ai-results-label');
+        const resultsArea = document.getElementById('ai-results');
+        resultsLabel.classList.add('visible');
+        resultsArea.classList.add('visible');
+        resultsArea.textContent = text;
+
+        showXP('📜 +25 Heart XP — Lorekeeper Reading');
+      } catch (err) {
+        console.error('[storyteller] AI extraction failed:', err);
+        showXP('⚠️ Lorekeeper could not read the entry');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💎 Extract Skills from Entry';
+      }
+    }
+
+    function renderGems() {
+      const gems = safeGetJSON('zen_silk_extracted', []);
+      const container = document.getElementById('gems-container');
+
+      if (gems.length === 0) {
+        container.innerHTML = '<div class="gems-empty">No gems extracted yet. Write a journal entry and extract.</div>';
+        return;
+      }
+
+      container.innerHTML = gems.map(g => `<span class="skill-gem">${escapeHtml(g)}</span>`).join('');
+    }
+
+    // ─── Header Stats ───
+    function updateHeaderStats() {
+      const journal = safeGetJSON('zen_story_journal', []);
+      const words = safeGetJSON('zen_story_words', []);
+      const gems = safeGetJSON('zen_silk_extracted', []);
+
+      document.getElementById('journal-count-pill').textContent = journal.length;
+      document.getElementById('words-count-pill').textContent = words.length;
+      document.getElementById('gems-count-pill').textContent = gems.length;
+    }
+
+    // ─── Init ───
+    document.addEventListener('DOMContentLoaded', () => {
+      // Date display
+      document.getElementById('journal-date').textContent = getToday();
+
+      // Prompts
+      renderPrompt();
+      document.getElementById('btn-next-prompt').addEventListener('click', () => {
+        promptIndex = (promptIndex + 1) % PROMPTS.length;
+        renderPrompt();
+      });
+      document.getElementById('btn-prev-prompt').addEventListener('click', () => {
+        promptIndex = (promptIndex - 1 + PROMPTS.length) % PROMPTS.length;
+        renderPrompt();
+      });
+
+      // Journal
+      const journalInput = document.getElementById('journal-input');
+      journalInput.addEventListener('input', updateWordCount);
+      document.getElementById('btn-save-journal').addEventListener('click', saveJournal);
+      journalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          saveJournal();
+        }
+      });
+
+      // S.I.L.K.
+      document.getElementById('btn-extract-silk').addEventListener('click', extractSkills);
+
+      // Render existing data
+      renderHistory();
+      renderWordsDiscovered();
+      renderGems();
+      updateHeaderStats();
+
+      // Check for Pending Quest
+      const pendingQuestStr = localStorage.getItem('zen_pending_quest');
+      if (pendingQuestStr) {
+        try {
+          const quest = JSON.parse(pendingQuestStr);
+          if (quest.route === 'storyteller' && quest.prompt) {
+            document.getElementById('journal-input').value = quest.prompt;
+            localStorage.removeItem('zen_pending_quest');
+            showXP('📜 Quest received: Prefilled Journal Entry');
+            updateWordCount();
+          }
+        } catch (e) {
+          console.warn('[Storyteller] Failed to parse pending quest:', e);
+        }
       }
     });
+  })();
   </script>
+  <script type="module" src="../js/ai-core-widget.js?v=1"></script>
 </body>
 </html>

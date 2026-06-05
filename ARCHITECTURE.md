@@ -85,6 +85,42 @@ A secondary interface (hidden behind "Zen Mode" toggle) designed for the human v
 
 ---
 
+## 6. Portability & Hot-Swappable Thumb Interface Contract
+
+The core architectural pattern in Phonethagoras is **The Hand** (collapsible Hub widget as the Thumb, Spoke pages as the specialized Fingers).
+A crucial design constraint is that **The Thumb is an interface contract, not a hardcoded implementation**.
+
+Any intake engine that implements the following API contract can run the Global Collapsible Thumb widget, allowing Phonethagoras to scale across different platforms:
+
+### The Interface Contract
+Any Thumb provider must expose the following core operations:
+1. `PhoneAI.chat(messages, options) -> Promise<string>` - For direct intake conversation.
+2. `WllamaEngine.chat(messages, options) -> Promise<string>` - For low-latency local routing inference.
+3. `classifyIntent(text) -> Promise<'PROFESSOR' | 'NURSE' | 'STORYTELLER' | 'SCOUT' | 'CHAT'>` - For intent delegation.
+
+### Platform Swappability Matrix
+
+| Platform | Thumb Engine | Implementation Method | VRAM Overhead |
+|---|---|---|---|
+| **Web Browser (Standard)** | Liquid LFM-350M (WASM) | `wllama-engine.js` | ~350 MB |
+| **Android Mobile** | **Gemini Nano (AI Core)** | `window.AICore.createSession()` | **0 MB** (Shared OS process) |
+| **Desktop Wrapper** | Native LFM-8B (Tauri) | Tauri command `invoke("llama_chat")` | Native GPU speed |
+
+### Android Gemini Nano Hot-swap Integration
+To deploy Phonethagoras as an Android App, the standard WASM `WllamaEngine` is bypassed. Instead, we swap the intake routing calls to use the system-level **AI Core API**:
+```javascript
+// Example hot-swap implementation in android wrapper
+if (window.AICore) {
+  PhoneAI.chat = async (message) => {
+    const session = await window.AICore.createSession();
+    return await session.prompt(message);
+  };
+}
+```
+This reduces mobile memory consumption to virtually zero on the Hub page, preserving the entire VRAM budget for loading the heavy 1.2B/3B Horsemen spoke models.
+
+---
+
 ## Future Roadmap (Next Steps)
 1. **Google OAuth & Sync**: Implement cross-device syncing and coach-to-client secure telemetry. (Currently mapped in `sync.js`).
 2. **Local Media Suite (Triple-Reply System)**: Integrate Nomic embeddings and local image upscaling for "fun mode" litRPG exploration, ensuring cognitive processing is wrapped in engaging game mechanics.
