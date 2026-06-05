@@ -7,7 +7,7 @@
 export const PhoneI18nDict = {
   en: {
     app: {
-      name: "SILK",
+      name: "S.I.L.K.",
       epoch: "Skills Integration Life Keys",
       status_hardware: "Hardware Profile"
     },
@@ -67,7 +67,7 @@ export const PhoneI18nDict = {
   
   es: {
     app: {
-      name: "SILK",
+      name: "S.I.L.K.",
       epoch: "Skills Integration Life Keys",
       status_hardware: "Perfil de Hardware"
     },

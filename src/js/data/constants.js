@@ -123,7 +123,7 @@
   // Complete translation table: ornate → zen
   const ZEN = Object.freeze({
     // System concepts
-    'SILK':                             'silk',
+    'S.I.L.K.':                         'silk',
     'Attribute Matrix':                 'shape',
     'Virtue Topology':                  'roots',
     'Active Campaign':                  'walk',

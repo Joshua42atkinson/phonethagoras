@@ -182,13 +182,13 @@ ${vaamSummary}
 
     let systemPrompt = buildSystemPrompt(state, vaamSummary);
     
-    // Inject SILK Memory facts if using sidecar
+    // Inject S.I.L.K. Memory facts if using sidecar
     if (activeBackend === 'sidecar') {
       try {
         const memRes = await fetch('http://localhost:3001/api/memory/recall');
         const memData = await memRes.json();
-        if (memData.facts && memData.facts.length > 0) {
-          systemPrompt += `\n\nSILK Long-Term Memory (Facts about User):\n` + memData.facts.map(f => `- ${f}`).join('\n');
+        if (memData && memData.facts && memData.facts.length > 0) {
+          systemPrompt += `\n\nS.I.L.K. (System for Interactive Learning & Knowledge) - Real-world Skills Extraction:\n` + memData.facts.map(f => `- ${f}`).join('\n');
         }
       } catch(e) {
         console.warn("[SILK] Failed to recall memory", e);
@@ -285,8 +285,8 @@ ${vaamSummary}
         {
           type: "function",
           function: {
-            name: "remember_fact",
-            description: "Save a permanent fact about the user to SILK Long-Term Memory.",
+            name: "memorize_fact",
+            description: "Save a permanent skill or behavioral fact about the user to S.I.L.K. (System for Interactive Learning & Knowledge).",
             parameters: {
               type: "object",
               properties: {

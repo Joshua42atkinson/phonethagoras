@@ -419,7 +419,7 @@ export const PhoneChat = (() => {
     } else if (name === 'read_url') {
       htmlMsg = `I want to read the webpage at <a href="${args.url}" target="_blank" style="color:var(--color-accent);">${args.url}</a>. Do you approve?`;
     } else if (name === 'remember_fact') {
-      htmlMsg = `I want to memorize the following fact in your permanent SILK memory:<br><strong>"${args.fact}"</strong><br>Do you approve?`;
+      htmlMsg = `I want to extract the following skill for your S.I.L.K. profile (System for Interactive Learning & Knowledge):<br><strong>"${args.fact}"</strong><br>Do you approve?`;
     } else if (name === 'semantic_search') {
       htmlMsg = `I want to search your Inventory for:<br><strong>"${args.query}"</strong><br>Do you approve?`;
     } else if (name === 'generate_casework_summary') {
@@ -503,7 +503,7 @@ export const PhoneChat = (() => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fact: args.fact })
         });
-        sendSystemMessageToAI(`(System) Fact saved to SILK memory.`);
+        sendSystemMessageToAI(`(System) Skill saved to S.I.L.K. profile.`);
       } else if (name === 'semantic_search') {
         const res = await fetch(`http://localhost:3001/api/inventory/search?q=${encodeURIComponent(args.query)}`);
         const data = await res.json();
@@ -517,7 +517,7 @@ export const PhoneChat = (() => {
         const facts = (memoryData.facts || []).map(f => `- ${f.fact} (${f.created_at})`).join('\n');
         
         const timestamp = new Date().toISOString().split('T')[0];
-        const reportContent = `# ACAP Casework Summary\n**Date:** ${timestamp}\n\n## AI Summary\n${args.summary}\n\n## Recent SILK Memory Logs\n${facts}`;
+        const reportContent = `# ACAP Casework Summary\n**Date:** ${timestamp}\n\n## AI Summary\n${args.summary}\n\n## Recent S.I.L.K. Skill Extractions\n${facts}`;
         
         const filename = `casework_summary_${timestamp}.md`;
         const writeRes = await fetch(`http://localhost:3001/api/inventory/write`, {

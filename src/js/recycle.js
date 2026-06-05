@@ -85,6 +85,16 @@ A 2-3 sentence summary framing their reframed experience as an unlocked "Class" 
         resultCard.scrollIntoView({ behavior: 'smooth' });
       }
 
+      // Add XP Gamification Popup
+      const xpPopup = document.createElement('div');
+      xpPopup.className = 'xp-popup';
+      xpPopup.textContent = '+50 XP (S.I.L.K. Skill Unlocked)';
+      xpPopup.style.left = '50%';
+      xpPopup.style.top = '50%';
+      xpPopup.style.transform = 'translate(-50%, -50%)';
+      document.body.appendChild(xpPopup);
+      setTimeout(() => xpPopup.remove(), 2000);
+
       // Automatically update state.story with the original text (to save narrative context)
       state.story = text;
       PhoneState.save(state);
