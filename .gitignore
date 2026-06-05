@@ -19,3 +19,6 @@ yarn-error.log*
 
 # Vercel
 .vercel
+node_modules/
+test_site.js
+test_local.js
