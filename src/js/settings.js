@@ -6,6 +6,8 @@
 import { PhoneState } from './state.js';
 import { PhoneI18n } from './i18n.js';
 import { PhoneAI } from './ai.js';
+import { WebLLMManager } from './webllm-manager.js';
+import { PhoneVision } from './vision-manager.js';
 
 export const PhoneSettings = (() => {
   function init() {
@@ -29,6 +31,70 @@ export const PhoneSettings = (() => {
     const btnImport = document.getElementById('btn-import-state');
     const btnReset = document.getElementById('btn-reset-state');
     const fileImport = document.getElementById('file-import');
+
+    // Offline WebLLM download button
+    const btnWebLLM = document.getElementById('btn-enable-webllm');
+    const webllmProgressContainer = document.getElementById('webllm-progress-container');
+    const webllmProgressBar = document.getElementById('webllm-progress-bar');
+    const webllmProgressText = document.getElementById('webllm-progress-text');
+
+    if (btnWebLLM) {
+      btnWebLLM.addEventListener('click', async () => {
+        if (typeof WebLLMManager === 'undefined') {
+          alert("WebLLM Manager not loaded.");
+          return;
+        }
+
+        btnWebLLM.disabled = true;
+        btnWebLLM.textContent = "Downloading/Loading...";
+        webllmProgressContainer.style.display = 'block';
+
+        try {
+          await WebLLMManager.init((progress, text) => {
+            webllmProgressBar.style.width = `${progress}%`;
+            webllmProgressText.textContent = text || `${progress}%`;
+          });
+          btnWebLLM.textContent = "Brain Ready";
+          webllmProgressText.textContent = "Download complete. WebGPU engine loaded.";
+        } catch (e) {
+          btnWebLLM.disabled = false;
+          btnWebLLM.textContent = "Retry Download";
+          webllmProgressText.textContent = "Error: " + e.message;
+        }
+      });
+    }
+
+    // Offline Vision download button
+    const btnVision = document.getElementById('btn-enable-vision');
+    const visionProgressContainer = document.getElementById('vision-progress-container');
+    const visionProgressBar = document.getElementById('vision-progress-bar');
+    const visionProgressText = document.getElementById('vision-progress-text');
+
+    if (btnVision) {
+      btnVision.addEventListener('click', async () => {
+        if (typeof PhoneVision === 'undefined') {
+          alert("Vision Manager not loaded.");
+          return;
+        }
+
+        btnVision.disabled = true;
+        btnVision.textContent = "Downloading Vision...";
+        visionProgressContainer.style.display = 'block';
+
+        try {
+          await PhoneVision.init((progress, text) => {
+            visionProgressBar.style.width = `${progress}%`;
+            visionProgressText.textContent = text || `${progress}%`;
+          });
+          btnVision.textContent = "Vision Ready";
+          visionProgressText.textContent = "Download complete. Vision engine loaded.";
+        } catch (e) {
+          btnVision.disabled = false;
+          btnVision.textContent = "Retry Download";
+          visionProgressText.textContent = "Error: " + e.message;
+        }
+      });
+    }
 
     if (btnExport) {
       btnExport.addEventListener('click', async () => {

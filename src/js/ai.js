@@ -12,6 +12,7 @@
 
 import { PhoneHardware } from './hardware.js';
 import { WebLLMManager } from './webllm-manager.js';
+import { PhoneVision } from './vision-manager.js';
 
 export const PhoneAI = (() => {
   let isLoaded = false;
@@ -130,12 +131,29 @@ ${vaamSummary}
       }
     }
 
-    // 3. Heuristic offline response
-    if (activeBackend === 'offline') {
-      return getOfflineResponse(message);
+    // 3. Image Interception (Offline Vision)
+    let processedMessage = message;
+    if (imageBase64 && (activeBackend === 'offline' || activeBackend === 'webllm')) {
+      if (typeof PhoneVision !== 'undefined' && PhoneVision.isReady()) {
+        try {
+          console.log("[phone-ai] Analyzing image via Local WebGPU Vision...");
+          const visualDescription = await PhoneVision.describeImage(imageBase64);
+          processedMessage = `[User attached an image. Visual analysis: "${visualDescription}"]\n\nUser message: ${message}`;
+        } catch (e) {
+          console.error("[phone-ai] Local vision failed:", e);
+          processedMessage = `[User attached an image, but my visual cortex failed to process it.]\n\nUser message: ${message}`;
+        }
+      } else {
+        processedMessage = `[User attached an image, but my offline vision module is not downloaded/active.]\n\nUser message: ${message}`;
+      }
     }
 
-    // 4. WebLLM offline mode
+    // 4. Heuristic offline response
+    if (activeBackend === 'offline') {
+      return getOfflineResponse(processedMessage);
+    }
+
+    // 5. WebLLM offline mode
     if (activeBackend === 'webllm') {
       try {
         if (typeof WebLLMManager === 'undefined' || !WebLLMManager.isReady()) {
@@ -145,7 +163,7 @@ ${vaamSummary}
         let systemPrompt = buildSystemPrompt(state, vaamSummary);
         const messages = [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: message }
+          { role: 'user', content: processedMessage }
         ];
 
         console.log(`[phone-ai] Routing chat to Offline WebLLM...`);

@@ -24,6 +24,7 @@ const ASSETS = [
   './js/state.js',
   './js/sync.js',
   './js/vaam.js',
+  './js/vision-manager.js',
   './js/polarity.js',
   './js/quest.js',
   './js/voice.js',

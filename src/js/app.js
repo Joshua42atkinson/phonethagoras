@@ -25,6 +25,7 @@ import { PhoneDocs } from './docs.js';
 import { PhoneOnboarding } from './onboarding.js';
 import { PhoneQuest } from './quest.js';
 import { PhoneSettings } from './settings.js';
+import { PhoneVision } from './vision-manager.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
