@@ -1,4 +1,4 @@
-const CACHE_NAME = 'phonethagoras-v1';
+const CACHE_NAME = 'phonethagoras-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -23,6 +23,8 @@ const ASSETS = [
   './js/state.js',
   './js/sync.js',
   './js/vaam.js',
+  './js/polarity.js',
+  './js/quest.js',
   './js/voice.js',
   './js/webllm-manager.js',
   './js/data/constants.js',
@@ -36,9 +38,36 @@ self.addEventListener('install', event => {
   );
 });
 
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
 self.addEventListener('fetch', event => {
+  // Network-first strategy for development to avoid stale caches
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        // Update cache if network succeeds
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
