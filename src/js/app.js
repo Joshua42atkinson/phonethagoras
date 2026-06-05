@@ -23,6 +23,7 @@ import { PhoneBridge } from './bridge.js';
 import { PhoneSync } from './sync.js';
 import { PhoneDocs } from './docs.js';
 import { PhoneOnboarding } from './onboarding.js';
+import { PhoneQuest } from './quest.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -35,7 +36,8 @@ if ('serviceWorker' in navigator) {
 (async function initApp() {
   'use strict';
 
-  // ─── 1. Load State ───
+  // ─── 1. Load State (IndexedDB) ───
+  await PhoneState.init();
   let playerState = PhoneState.load();
   PhoneState.save(playerState);
 
@@ -68,25 +70,14 @@ if ('serviceWorker' in navigator) {
     console.log('[vaam]', VAAM.promptSummary());
   }
 
-  // ─── 3b. Initialize Subsystems ───
-  if (typeof PhoneChat !== 'undefined') {
-    await PhoneChat.init();
-  }
-  if (typeof PhoneBreath !== 'undefined') {
-    PhoneBreath.init();
-  }
-  if (typeof PhoneRecycle !== 'undefined') {
-    PhoneRecycle.init();
-  }
-  if (typeof PhoneBridge !== 'undefined') {
-    PhoneBridge.init();
-  }
-  if (typeof PhoneSync !== 'undefined') {
-    PhoneSync.init();
-  }
-  if (typeof PhoneDocs !== 'undefined') {
-    PhoneDocs.init();
-  }
+  // ─── 4. Module Initialization ───
+  if (typeof PhoneChat !== 'undefined') await PhoneChat.init();
+  if (typeof PhoneBreath !== 'undefined') PhoneBreath.init();
+  if (typeof PhoneRecycle !== 'undefined') PhoneRecycle.init();
+  if (typeof PhoneBridge !== 'undefined') PhoneBridge.init();
+  if (typeof PhoneSync !== 'undefined') PhoneSync.init();
+  if (typeof PhoneDocs !== 'undefined') PhoneDocs.init();
+  if (typeof PhoneQuest !== 'undefined') PhoneQuest.init();
 
   // ─── 4. Navigation (Clean Tab Switching) ───
   const navButtons = document.querySelectorAll('.sigil-btn[data-panel]');

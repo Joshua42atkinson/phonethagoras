@@ -129,37 +129,117 @@ import { ZEN_CONST } from './data/constants.js';
     }
   }
 
-  // ─── Persistence ───
-  function load() {
+  // ─── Persistence (IndexedDB + Cache) ───
+  let currentStateCache = null;
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('PhonethagorasDB', 1);
+      request.onupgradeneeded = (e) => {
+        e.target.result.createObjectStore('store');
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function dbGet(key) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        // Merge with defaults to handle schema evolution
-        return deepMerge(createDefaultState(), parsed);
-      }
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('store', 'readonly');
+        const store = tx.objectStore('store');
+        const req = store.get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
     } catch (e) {
-      console.warn('[PhoneState] Failed to load state:', e);
+      console.warn('IndexedDB blocked or unavailable:', e);
+      return null;
     }
-    return createDefaultState();
+  }
+
+  async function dbSet(key, val) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('store', 'readwrite');
+        const store = tx.objectStore('store');
+        const req = store.put(val, key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      console.warn('IndexedDB blocked or unavailable:', e);
+    }
+  }
+
+  async function dbRemove(key) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('store', 'readwrite');
+        const store = tx.objectStore('store');
+        const req = store.delete(key);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      console.warn('IndexedDB blocked or unavailable:', e);
+    }
+  }
+
+  async function init() {
+    try {
+      const dbState = await dbGet(STORAGE_KEY);
+      if (dbState) {
+        currentStateCache = deepMerge(createDefaultState(), dbState);
+      } else {
+        // Migration from localStorage
+        const lsRaw = localStorage.getItem(STORAGE_KEY);
+        if (lsRaw) {
+          const parsed = JSON.parse(lsRaw);
+          currentStateCache = deepMerge(createDefaultState(), parsed);
+          await dbSet(STORAGE_KEY, currentStateCache);
+          localStorage.removeItem(STORAGE_KEY);
+        } else {
+          currentStateCache = createDefaultState();
+          await dbSet(STORAGE_KEY, currentStateCache);
+        }
+      }
+    } catch (err) {
+      console.error('[PhoneState] DB Init failed, falling back to memory', err);
+      currentStateCache = createDefaultState();
+    }
+    return currentStateCache;
+  }
+
+  function load() {
+    if (!currentStateCache) {
+      console.warn('[PhoneState] load() called before init() finished!');
+      return createDefaultState();
+    }
+    return JSON.parse(JSON.stringify(currentStateCache));
   }
 
   function save(state) {
-    try {
-      updateFace(state); // Automatically evolve face before saving
-      state._meta.updated_at = new Date().toISOString();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      emit('state:changed', state);
-      return true;
-    } catch (e) {
-      console.error('[PhoneState] Failed to save state:', e);
-      return false;
-    }
+    updateFace(state);
+    state._meta.updated_at = new Date().toISOString();
+    currentStateCache = JSON.parse(JSON.stringify(state));
+    
+    dbSet(STORAGE_KEY, currentStateCache).catch(e => {
+      console.error('[PhoneState] Failed to save state to DB:', e);
+    });
+    
+    emit('state:changed', currentStateCache);
+    return true;
   }
 
   function reset() {
+    currentStateCache = createDefaultState();
+    dbRemove(STORAGE_KEY).catch(e => console.error(e));
     localStorage.removeItem(STORAGE_KEY);
-    return createDefaultState();
+    return load();
   }
 
   // ─── Export / Import ───
@@ -211,13 +291,14 @@ import { ZEN_CONST } from './data/constants.js';
   }
 
 export const PhoneState = {
-    load,
-    save,
-    reset,
-    exportJSON,
-    importJSON,
-    createDefaultState,
-    on,
-    off,
-    emit
-  };
+  on,
+  off,
+  init,
+  load,
+  save,
+  reset,
+  exportJSON,
+  importJSON,
+  createDefaultState,
+  emit
+};
