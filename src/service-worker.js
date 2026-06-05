@@ -11,7 +11,7 @@
  * just slower. With them: full multi-core inference on the device.
  */
 
-const CACHE_NAME = 'phonethagoras-v6';
+const CACHE_NAME = 'phonethagoras-v7';
 
 // App shell — everything needed to run offline after first visit.
 // The GGUF model files are NOT here — wllama manages its own HF cache.
@@ -23,6 +23,11 @@ const ASSETS = [
   './models/scout.html',
   './models/storyteller.html',
   './css/base.css',
+  './assets/litrpg_bg.png',
+  './assets/portal_sigil.png',
+  './assets/sample_player_state.json',
+  './assets/sigil.png',
+  './assets/zz_lightning.png',
   './css/layout.css',
   './css/components.css',
   './css/views.css',
@@ -52,6 +57,10 @@ const ASSETS = [
   './js/wllama-engine.js',
   './js/kokoro-engine.js',
   './js/ai-core-widget.js',
+  './js/rag-manager.js',
+  './js/lfm-manager.js',
+  './js/keystrokes.js',
+  './js/sitrep-generator.js',
   './js/data/constants.js',
   './js/data/i18n.js'
 ];
