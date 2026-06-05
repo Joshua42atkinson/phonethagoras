@@ -117,7 +117,7 @@ export const PhoneAI = (() => {
   }
 
   // ─── 4. Build Prompts ───
-  function buildSystemPrompt(state, vaamSummary) {
+  function buildSystemPrompt(state, vaamSummary, memoryContext = '') {
     const zenModeStr = state.zenMode ? "YES" : "NO";
     const phaseStr = typeof PEARL !== 'undefined' ? PEARL.getState() : "UNKNOWN";
 
@@ -140,6 +140,11 @@ Player S.I.L.K. Stats: ${shapeStr}
 User's current Vibe/Communication Style:
 ${vaamSummary}
 `;
+
+    if (memoryContext) {
+      prompt += `\nRelevant Historical Memory Context:\n${memoryContext}\n`;
+    }
+
     return prompt;
   }
 
@@ -206,6 +211,21 @@ ${vaamSummary}
       }
     }
 
+    // ─── Local Vector Memory (RAG) Retrieval ───
+    let memoryContext = '';
+    if (WllamaEngine.getStatus().memoryLoaded) {
+      try {
+        const { PhoneRAG } = await import('./rag-manager.js');
+        const results = await PhoneRAG.search(message, 3);
+        if (results && results.length > 0) {
+          memoryContext = results.map(r => `• ${r.text}`).join('\n');
+          console.log('[phone-ai] Recalled local memory facts:\n', memoryContext);
+        }
+      } catch (e) {
+        console.warn('[phone-ai] RAG search error:', e);
+      }
+    }
+
     // 4. Heuristic offline response
     if (activeBackend === 'offline') {
       return getOfflineResponse(processedMessage);
@@ -218,7 +238,7 @@ ${vaamSummary}
           return { message: { content: "[System] Wllama Logic Brain is not loaded. Open the AI Core panel and load the Logic model." } };
         }
 
-        const systemPrompt = buildSystemPrompt(state, vaamSummary);
+        const systemPrompt = buildSystemPrompt(state, vaamSummary, memoryContext);
         const messages = [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: processedMessage }
@@ -230,6 +250,17 @@ ${vaamSummary}
           temperature: 0.6,
           onChunk,
         });
+
+        // Store exchange in RAG memory in background
+        if (WllamaEngine.getStatus().memoryLoaded) {
+          import('./rag-manager.js').then(({ PhoneRAG }) => {
+            PhoneRAG.storeFact(`User asked: "${message}". AI logic engine replied: "${fullResponse}"`, {
+              type: 'chat_history',
+              timestamp: Date.now()
+            }).catch(e => console.warn('[phone-ai] Failed to store chat in RAG:', e));
+          });
+        }
+
         return { message: { content: fullResponse } };
       } catch (err) {
         console.error('[phone-ai] Wllama chat error:', err);
@@ -244,7 +275,7 @@ ${vaamSummary}
           return { message: { content: "[System] Wllama Logic Brain is not loaded. Open the AI Core panel and load the Logic model." } };
         }
 
-        const systemPrompt = buildSystemPrompt(state, vaamSummary);
+        const systemPrompt = buildSystemPrompt(state, vaamSummary, memoryContext);
         const messages = [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: processedMessage }
@@ -256,6 +287,17 @@ ${vaamSummary}
           temperature: 0.6,
           onChunk,
         });
+
+        // Store exchange in RAG memory in background
+        if (WllamaEngine.getStatus().memoryLoaded) {
+          import('./rag-manager.js').then(({ PhoneRAG }) => {
+            PhoneRAG.storeFact(`User asked: "${message}". AI logic engine replied: "${fullResponse}"`, {
+              type: 'chat_history',
+              timestamp: Date.now()
+            }).catch(e => console.warn('[phone-ai] Failed to store chat in RAG:', e));
+          });
+        }
+
         return { message: { content: fullResponse } };
       } catch (err) {
         console.error('[phone-ai] Wllama (via webllm) error:', err);
@@ -692,16 +734,45 @@ ${vaamSummary}
       if (!WllamaEngine.getStatus().spokeLoaded) {
         throw new Error("Spoke model is not loaded.");
       }
+
+      // Automatically search and inject RAG memory if memory model is loaded
+      let mergedUserPrompt = userPrompt;
+      if (WllamaEngine.getStatus().memoryLoaded) {
+        try {
+          const { PhoneRAG } = await import('./rag-manager.js');
+          const results = await PhoneRAG.search(userPrompt, 3);
+          if (results && results.length > 0) {
+            const memoryContext = results.map(r => `• ${r.text}`).join('\n');
+            mergedUserPrompt = `[Relevant Historical Memory Context:\n${memoryContext}]\n\n${userPrompt}`;
+            console.log('[phone-ai] Injected RAG context to Spoke query:', memoryContext);
+          }
+        } catch (e) {
+          console.warn('[phone-ai] RAG search error in Spoke:', e);
+        }
+      }
+
       const messages = [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: mergedUserPrompt }
       ];
       console.log(`[phone-ai] Routing chat to Wllama Spoke (1.2B)...`);
-      return await WllamaEngine.chatSpoke(messages, {
+      const response = await WllamaEngine.chatSpoke(messages, {
         max_tokens: 1024,
         temperature: 0.1,
         onChunk,
       });
+
+      // Also store Spoke interaction in RAG memory in background
+      if (WllamaEngine.getStatus().memoryLoaded) {
+        import('./rag-manager.js').then(({ PhoneRAG }) => {
+          PhoneRAG.storeFact(`User queried spoke with prompt: "${userPrompt}". Spoke replied: "${response}"`, {
+            type: 'spoke_history',
+            timestamp: Date.now()
+          }).catch(e => console.warn('[phone-ai] Failed to store Spoke exchange in RAG:', e));
+        });
+      }
+
+      return response;
     }
   };
 })();

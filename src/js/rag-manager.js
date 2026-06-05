@@ -1,15 +1,12 @@
 /**
  * RAG Manager
- * Handles local WebGPU embeddings (Nomic-Embed-Text) and IndexedDB Vector Storage.
+ * Handles IndexedDB Vector Storage and queries using WllamaEngine's Nomic embeddings.
  */
 
 export const PhoneRAG = (() => {
-  let embedPipeline = null;
-  let isDownloading = false;
   let isReady = false;
   let db = null;
 
-  const MODEL_ID = 'Xenova/nomic-embed-text-v1.5';
   const DB_NAME = 'PhoneRAG_DB';
   const STORE_NAME = 'vectors';
 
@@ -37,47 +34,34 @@ export const PhoneRAG = (() => {
   }
 
   async function init() {
-    if (embedPipeline) return embedPipeline;
-    isDownloading = true;
-
+    if (isReady) return;
     try {
       await initDB();
-
-      console.log("[RAG] Importing @huggingface/transformers (v3-alpha) for Nomic...");
-      const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0-alpha.19');
-      
-      // Configure for WebGPU/WASM. Embeddings are very fast in WASM if WebGPU is busy.
-      // We will try to use WebGPU but fallback to WASM seamlessly.
-      env.backends.onnx.wasm.numThreads = 1;
-
-      console.log(`[RAG] Loading model: ${MODEL_ID}...`);
-      embedPipeline = await pipeline('feature-extraction', MODEL_ID, {
-        dtype: 'q4'
-      });
-      
-      isDownloading = false;
       isReady = true;
-      console.log("[RAG] Engine is ready!");
-
-      // Pre-seed the database with Armory Mini-Bibles if empty
-      await seedArmoryData();
-
-      return embedPipeline;
+      console.log("[RAG] Unified Local Vector DB Initialized.");
     } catch (e) {
-      console.error("[RAG] Failed to initialize:", e);
-      isDownloading = false;
+      console.error("[RAG] Failed to initialize RAG database:", e);
       throw e;
     }
   }
 
   async function embed(text) {
-    if (!isReady || !embedPipeline) throw new Error("RAG Engine not ready.");
-    const output = await embedPipeline(text, { pooling: 'mean', normalize: true });
-    return Array.from(output.data);
+    const { WllamaEngine } = await import('./wllama-engine.js');
+    if (!WllamaEngine.getStatus().memoryLoaded) {
+      throw new Error("Memory (Nomic Embed) model is not loaded in Systems.");
+    }
+    return await WllamaEngine.embed(text, 'query');
   }
 
   async function storeFact(text, metadata = {}) {
-    const vector = await embed(text);
+    if (!isReady) await init();
+
+    const { WllamaEngine } = await import('./wllama-engine.js');
+    if (!WllamaEngine.getStatus().memoryLoaded) {
+      throw new Error("Memory (Nomic Embed) model is not loaded in Systems.");
+    }
+
+    const vector = await WllamaEngine.embed(text, 'document');
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
@@ -89,6 +73,7 @@ export const PhoneRAG = (() => {
   }
 
   async function getAllFacts() {
+    if (!isReady) await init();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
@@ -112,6 +97,11 @@ export const PhoneRAG = (() => {
   }
 
   async function search(query, topK = 3) {
+    if (!isReady) await init();
+
+    // Ensure database is seeded with Armory data first
+    await ensureSeeded();
+
     const queryVector = await embed(query);
     const facts = await getAllFacts();
 
@@ -126,13 +116,13 @@ export const PhoneRAG = (() => {
   }
 
   // Seed the Model Armory details so the AI knows its own capabilities
-  async function seedArmoryData() {
+  async function ensureSeeded() {
     const facts = await getAllFacts();
     if (facts.length > 0) return; // Already seeded
 
     console.log("[RAG] Seeding Armory Mini-Bibles into Vector DB...");
     const bibles = [
-      "SYSTEM CAPABILITY: The current orchestrator is Llama-3.2-1B, which handles logic, casework, and general conversation. It runs strictly on WebGPU.",
+      "SYSTEM CAPABILITY: The current orchestrator is Liquid LFM-2.5-350M, which handles logic, casework, and general conversation. It runs locally.",
       "SYSTEM CAPABILITY: For offline multimodal vision, the app uses Florence-2-base, an extremely efficient 230MB vision model running in WebGPU. It can describe images the user attaches.",
       "SYSTEM CAPABILITY: The memory system relies on Nomic Embed Text v1.5 to vectorize text and store it in an IndexedDB vector database locally on the user's phone.",
       "ARMORY: DeepSeek Janus-Pro-1B is an extremely powerful multimodal vision model, but it is heavy (1GB+). It requires a dedicated 'Swap-to-Play' harness page to run safely on mobile without crashing the browser.",
