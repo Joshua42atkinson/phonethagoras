@@ -3,231 +3,316 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Model Armory | Phonethagoras</title>
-  <link rel="stylesheet" href="css/index.css">
+  <title>The Armory | Phonethagoras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
   <link rel="manifest" href="manifest.json">
   <style>
-    /* Armory Specific PEARL Styling */
+    body {
+      background: radial-gradient(circle at 50% 0%, #1a1b26 0%, #0a0f19 100%);
+      min-height: 100vh;
+      color: var(--color-text);
+      font-family: 'Inter', sans-serif;
+    }
+
     .armory-container {
-      padding: var(--space-6) var(--space-4);
-      max-width: 800px;
+      padding: 4rem 1.5rem;
+      max-width: 1000px;
       margin: 0 auto;
     }
     
     .armory-header {
       text-align: center;
-      margin-bottom: var(--space-8);
+      margin-bottom: 4rem;
+      animation: fadeInDown 0.8s ease forwards;
     }
     
     .armory-header h1 {
-      font-size: 2rem;
-      background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #e0e0e0, #888);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: var(--space-2);
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .armory-header p {
+      color: var(--color-text-dim);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
     }
     
     .armory-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: var(--space-6);
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
     }
     
-    .model-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-5);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Premium Glassmorphism Card */
+    .persona-card {
+      background: rgba(20, 25, 40, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
     }
     
-    .model-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    .persona-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 4px;
+      background: var(--theme-color, var(--color-accent));
+      opacity: 0.8;
+      transition: height 0.3s ease;
     }
-    
-    .model-badge {
-      align-self: flex-start;
-      background: rgba(255,255,255,0.1);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: var(--space-3);
-      border-left: 3px solid var(--color-primary);
+
+    .persona-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px var(--theme-glow, rgba(255,255,255,0.1));
+      border-color: rgba(255, 255, 255, 0.2);
     }
-    
-    .model-card.vision .model-badge { border-left-color: #ff9a9e; }
-    .model-card.audio .model-badge { border-left-color: #a18cd1; }
-    .model-card.memory .model-badge { border-left-color: #fbc2eb; }
-    
-    .model-title {
-      font-size: 1.25rem;
+
+    .persona-card:hover::before {
+      height: 6px;
+    }
+
+    /* Persona Themes */
+    .theme-scout { 
+      --theme-color: #2ecc71; 
+      --theme-glow: rgba(46, 204, 113, 0.2); 
+    }
+    .theme-storyteller { 
+      --theme-color: #f39c12; 
+      --theme-glow: rgba(243, 156, 18, 0.2); 
+    }
+    .theme-nurse { 
+      --theme-color: #3498db; 
+      --theme-glow: rgba(52, 152, 219, 0.2); 
+    }
+    .theme-professor { 
+      --theme-color: #9b59b6; 
+      --theme-glow: rgba(155, 89, 182, 0.2); 
+    }
+
+    .persona-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+      filter: drop-shadow(0 0 10px var(--theme-glow));
+    }
+
+    .persona-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
       font-weight: 700;
-      margin-bottom: var(--space-2);
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+      letter-spacing: 1px;
+    }
+
+    .persona-specs {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
     }
     
-    .model-specs {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin-bottom: var(--space-4);
-      display: flex;
-      gap: 10px;
-    }
-    
+    /* PEARL Layout inside Card */
     .pearl-section {
-      margin-bottom: var(--space-4);
+      margin-bottom: 1.2rem;
     }
     
     .pearl-label {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem;
       text-transform: uppercase;
-      opacity: 0.5;
-      margin-bottom: 2px;
-      font-weight: bold;
+      color: var(--theme-color);
+      margin-bottom: 4px;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
     
     .pearl-text {
       font-size: 0.9rem;
-      line-height: 1.4;
+      line-height: 1.5;
+      color: var(--color-text-dim);
     }
     
-    .harness-btn {
+    .enter-btn {
       margin-top: auto;
       width: 100%;
       text-align: center;
-      padding: var(--space-3);
-      background: rgba(255,255,255,0.05);
+      padding: 0.8rem;
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius-md);
+      border-radius: 8px;
       color: var(--color-text);
       text-decoration: none;
       font-weight: 600;
-      transition: background 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
     
-    .harness-btn:hover {
-      background: rgba(255,255,255,0.15);
+    .enter-btn:hover {
+      background: var(--theme-color);
+      color: #000;
+      border-color: var(--theme-color);
+      box-shadow: 0 0 15px var(--theme-glow);
     }
     
     .nav-back {
       position: absolute;
-      top: var(--space-4);
-      left: var(--space-4);
-      color: var(--color-text);
+      top: 1.5rem;
+      left: 1.5rem;
+      color: var(--color-text-muted);
       text-decoration: none;
-      opacity: 0.7;
       font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      transition: color 0.3s;
+      font-weight: 500;
     }
-    .nav-back:hover { opacity: 1; }
+    .nav-back:hover { 
+      color: var(--color-text); 
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .armory-grid .persona-card:nth-child(1) { animation-delay: 0.1s; }
+    .armory-grid .persona-card:nth-child(2) { animation-delay: 0.2s; }
+    .armory-grid .persona-card:nth-child(3) { animation-delay: 0.3s; }
+    .armory-grid .persona-card:nth-child(4) { animation-delay: 0.4s; }
+
   </style>
 </head>
 <body>
   
-  <a href="index.html" class="nav-back">← Back to Main</a>
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Return to Hub
+  </a>
 
   <div class="armory-container">
     <header class="armory-header">
-      <h1>The Model Armory</h1>
-      <p style="opacity: 0.7;">Edge AI Harnesses. Swap out Zen Zuse to experiment with heavy experimental models.</p>
+      <h1>The Armory</h1>
+      <p>Isolated heavy harnesses. VRAM is perfectly managed. Choose your Persona.</p>
     </header>
 
     <div class="armory-grid">
       
-      <!-- Liquid LFM (Core) -->
-      <div class="model-card text">
-        <div class="model-badge">Core Engine</div>
-        <div class="model-title">Liquid LFM-1.3B</div>
-        <div class="model-specs"><span>Size: ~1.3GB</span> • <span>Architecture: Non-Transformer</span></div>
+      <!-- The Scout -->
+      <div class="persona-card theme-scout">
+        <div class="persona-icon">🌲</div>
+        <div class="persona-title">The Scout</div>
+        <div class="persona-specs">Vision / Environment / Survival</div>
         
         <div class="pearl-section">
           <div class="pearl-label">What</div>
-          <div class="pearl-text">A dynamic state-space model that replaces the traditional transformer architecture.</div>
+          <div class="pearl-text">A multimodal vision persona utilizing the rear camera to analyze the physical world.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Where</div>
-          <div class="pearl-text">Runs persistently in WebGPU on the main app page via Transformers.js.</div>
+          <div class="pearl-text">Tactical viewfinder interface overlaying live camera feed.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Why</div>
-          <div class="pearl-text">Incredible potential for infinite context windows and roughly 5x better memory efficiency on mobile devices.</div>
+          <div class="pearl-text">Foraging, plant identification, and situational awareness in physical environments.</div>
         </div>
         
-        <a href="index.html" class="harness-btn">Active on Main</a>
+        <a href="models/scout.html" class="enter-btn">Equip Scout</a>
       </div>
 
-      <!-- Janus-Pro-1B (Vision) -->
-      <div class="model-card vision">
-        <div class="model-badge">Experimental Vision</div>
-        <div class="model-title">DeepSeek Janus-Pro 1B</div>
-        <div class="model-specs"><span>Size: ~1GB</span> • <span>VRAM: ~1.5GB</span></div>
+      <!-- The Storyteller -->
+      <div class="persona-card theme-storyteller">
+        <div class="persona-icon">📖</div>
+        <div class="persona-title">The Storyteller</div>
+        <div class="persona-specs">Generative / Lore / Audio</div>
         
         <div class="pearl-section">
           <div class="pearl-label">What</div>
-          <div class="pearl-text">A massive multimodal architecture capable of extreme visual comprehension and reasoning.</div>
+          <div class="pearl-text">A highly creative, contextually deep text model paired with Kokoro TTS.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Where</div>
-          <div class="pearl-text">Requires a dedicated isolated harness to prevent main app crashes.</div>
+          <div class="pearl-text">A distraction-free, fluid typography canvas wrapped in amber hues.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Why</div>
-          <div class="pearl-text">For times when Florence-2 isn't enough and you need deep semantic understanding of an image.</div>
+          <div class="pearl-text">For crafting immersive lore, creative writing, and audio-first storytelling.</div>
         </div>
         
-        <a href="models/janus.html" class="harness-btn">Enter Janus Harness</a>
+        <a href="models/storyteller.html" class="enter-btn">Equip Storyteller</a>
       </div>
 
-      <!-- Nomic Embed (Memory) -->
-      <div class="model-card memory">
-        <div class="model-badge">Vector Memory</div>
-        <div class="model-title">Nomic Embed Text v1.5</div>
-        <div class="model-specs"><span>Size: 50MB</span> • <span>VRAM: ~80MB</span></div>
+      <!-- The Nurse -->
+      <div class="persona-card theme-nurse">
+        <div class="persona-icon">⚕️</div>
+        <div class="persona-title">The Nurse</div>
+        <div class="persona-specs">Empathy / Logic / Health</div>
         
         <div class="pearl-section">
           <div class="pearl-label">What</div>
-          <div class="pearl-text">A 768-dimensional semantic embedding model.</div>
+          <div class="pearl-text">An empathetic, safety-first persona tuned for careful logic and health discussion.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Where</div>
-          <div class="pearl-text">Runs silently in the background alongside Zen Zuse.</div>
+          <div class="pearl-text">A pristine, calming clinical blue interface with clear safety disclosures.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Why</div>
-          <div class="pearl-text">Enables the local RAG pipeline, allowing you to search your journals and memories instantly.</div>
+          <div class="pearl-text">To provide a safe, structured environment for discussing physical and mental wellness.</div>
         </div>
         
-        <a href="models/nomic.html" class="harness-btn">Enter Nomic Harness</a>
+        <a href="models/nurse.html" class="enter-btn">Equip Nurse</a>
       </div>
 
-      <!-- Llama 3.2 (Text) -->
-      <div class="model-card text">
-        <div class="model-badge">Experimental Logic</div>
-        <div class="model-title">Llama 3.2 1B Instruct</div>
-        <div class="model-specs"><span>Size: 1GB</span> • <span>VRAM: ~1.2GB</span></div>
+      <!-- The Professor -->
+      <div class="persona-card theme-professor">
+        <div class="persona-icon">🏛️</div>
+        <div class="persona-title">The Professor</div>
+        <div class="persona-specs">Reasoning / RAG / Citations</div>
         
         <div class="pearl-section">
           <div class="pearl-label">What</div>
-          <div class="pearl-text">A highly optimized autoregressive language model.</div>
+          <div class="pearl-text">A strict, academic persona integrated with Nomic Embeddings for deep vector search.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Where</div>
-          <div class="pearl-text">Runs via MLC-LLM in an isolated harness.</div>
+          <div class="pearl-text">A cyber-academic dual-pane view: Chat on the left, Citations on the right.</div>
         </div>
         <div class="pearl-section">
           <div class="pearl-label">Why</div>
-          <div class="pearl-text">For times when a strict instruction-following transformer is needed over a state-space model.</div>
+          <div class="pearl-text">For rigorous research, analyzing personal journals, and exploring dense documentation.</div>
         </div>
         
-        <a href="models/llama.html" class="harness-btn">Enter Llama Harness</a>
+        <a href="models/professor.html" class="enter-btn">Equip Professor</a>
       </div>
 
     </div>

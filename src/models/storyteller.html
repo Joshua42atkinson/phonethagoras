@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Storyteller | Phonethagoras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    :root {
+      --story-amber: #f39c12;
+      --story-purple: #2c0b38;
+      --story-dark: #120514;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at 50% 30%, var(--story-purple) 0%, var(--story-dark) 100%);
+      color: #fdf5e6;
+      font-family: 'Cormorant Garamond', serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-bar {
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(18,5,20,0.9), transparent);
+      z-index: 10;
+    }
+
+    .nav-back {
+      color: var(--story-amber);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: opacity 0.3s;
+    }
+    .nav-back:hover { opacity: 0.8; }
+
+    .model-status {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(253, 245, 230, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--story-amber);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--story-amber);
+    }
+
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem;
+      overflow-y: auto;
+    }
+
+    .story-text {
+      max-width: 700px;
+      width: 100%;
+      font-size: 1.5rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+      text-align: justify;
+    }
+
+    .story-text p {
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .story-input-wrapper {
+      max-width: 700px;
+      width: 100%;
+      position: relative;
+      margin-top: auto;
+      padding-bottom: 2rem;
+    }
+
+    .story-input {
+      width: 100%;
+      background: rgba(44, 11, 56, 0.4);
+      border: 1px solid rgba(243, 156, 18, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: #fdf5e6;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      resize: none;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .story-input:focus {
+      border-color: rgba(243, 156, 18, 0.5);
+      background: rgba(44, 11, 56, 0.6);
+      box-shadow: 0 5px 30px rgba(243, 156, 18, 0.15);
+    }
+
+    .story-input::placeholder {
+      color: rgba(253, 245, 230, 0.3);
+      font-style: italic;
+    }
+
+    .audio-toggle {
+      position: absolute;
+      right: 1.5rem;
+      bottom: 3rem;
+      background: transparent;
+      border: none;
+      color: var(--story-amber);
+      font-size: 1.5rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .audio-toggle:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+  </style>
+</head>
+<body>
+
+  <header class="nav-bar">
+    <a href="../models.html" class="nav-back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Leave Canvas
+    </a>
+    <div class="model-status">
+      <span>Llama-3.2-3B GGUF</span>
+      <div class="status-dot"></div>
+    </div>
+  </header>
+
+  <div class="canvas-container">
+    <div class="story-text" id="story-feed">
+      <p style="opacity: 0.5; font-style: italic; text-align: center; margin-top: 20vh;">
+        "Every great journey begins with a single word. What world shall we build today?"
+      </p>
+    </div>
+
+    <div class="story-input-wrapper">
+      <textarea class="story-input" rows="3" placeholder="Continue the tale..."></textarea>
+      <button class="audio-toggle" title="Kokoro TTS Active">🔊</button>
+    </div>
+  </div>
+
+</body>
+</html>

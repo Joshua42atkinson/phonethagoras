@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Professor | Phonethagoras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    :root {
+      --prof-neon: #9b59b6;
+      --prof-neon-glow: rgba(155, 89, 182, 0.4);
+      --prof-bg: #1e1e24;
+      --prof-panel: #2a2a35;
+      --prof-text: #e0e0e0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--prof-bg);
+      color: var(--prof-text);
+      font-family: 'JetBrains Mono', monospace;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header-bar {
+      padding: 1rem 1.5rem;
+      background: #15151a;
+      border-bottom: 1px solid rgba(155, 89, 182, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .nav-back {
+      color: var(--prof-neon);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .nav-back:hover {
+      text-shadow: 0 0 10px var(--prof-neon-glow);
+    }
+
+    .sys-status {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .badge {
+      background: rgba(155, 89, 182, 0.1);
+      border: 1px solid var(--prof-neon);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--prof-neon);
+    }
+
+    .dual-pane-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* LEFT PANE: Chat */
+    .chat-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px dashed rgba(155, 89, 182, 0.2);
+      background: var(--prof-bg);
+    }
+
+    .chat-feed {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+    }
+
+    .chat-msg.prof {
+      align-self: flex-start;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: #fff;
+    }
+
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--prof-panel);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      border-left: 3px solid var(--prof-neon);
+    }
+
+    .chat-input-area {
+      padding: 1.5rem;
+      background: #15151a;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .chat-input {
+      width: 100%;
+      background: var(--prof-panel);
+      border: 1px solid rgba(155, 89, 182, 0.2);
+      color: var(--prof-text);
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .chat-input:focus {
+      border-color: var(--prof-neon);
+    }
+
+    /* RIGHT PANE: Citations / RAG */
+    .rag-pane {
+      width: 40%;
+      background: var(--prof-panel);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rag-header {
+      padding: 1rem 1.5rem;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--prof-neon);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .citation-feed {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .citation-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .citation-card:hover {
+      background: rgba(155, 89, 182, 0.05);
+      border-color: rgba(155, 89, 182, 0.3);
+    }
+
+    .citation-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0; width: 3px;
+      background: var(--prof-neon);
+    }
+
+    .cit-title {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cit-score {
+      color: var(--prof-neon);
+    }
+
+    .cit-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: #fff;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .dual-pane-container { flex-direction: column; }
+      .rag-pane { width: 100%; height: 40%; border-top: 1px solid var(--prof-neon); }
+      .chat-pane { height: 60%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-bar">
+    <a href="../models.html" class="nav-back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      Leave Study
+    </a>
+    <div class="sys-status">
+      <span class="badge">NOMIC-EMBED-V1.5</span>
+      <span class="badge">REASONING GGUF</span>
+    </div>
+  </header>
+
+  <div class="dual-pane-container">
+    
+    <!-- Left Pane: Chat -->
+    <div class="chat-pane">
+      <div class="chat-feed">
+        <div class="chat-msg prof">
+          "The unexamined life is not worth living." Let us proceed logically. Ask your question, and I will cross-reference the local vector database to construct a rigorous answer.
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" placeholder="Posit a hypothesis...">
+      </div>
+    </div>
+
+    <!-- Right Pane: RAG Database Citations -->
+    <div class="rag-pane">
+      <div class="rag-header">
+        <span>Vector Database</span>
+        <span style="font-size: 0.7rem; color: #888;">Live Search</span>
+      </div>
+      <div class="citation-feed">
+        
+        <div class="citation-card">
+          <div class="cit-title">
+            <span>Journal Entry: 2026-05-12</span>
+            <span class="cit-score">89% Match</span>
+          </div>
+          <div class="cit-text">
+            "I've realized that my tendency to avoid conflict stems directly from my time in the service, where stepping out of line had severe consequences."
+          </div>
+        </div>
+
+        <div class="citation-card">
+          <div class="cit-title">
+            <span>Doc: Cognitive Reframing</span>
+            <span class="cit-score">76% Match</span>
+          </div>
+          <div class="cit-text">
+            "Identifying cognitive distortions is the first step toward altering maladaptive behavioral patterns."
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
