@@ -3,7 +3,7 @@
  * Handles downloading and running LLMs entirely inside the browser via WebGPU.
  */
 
-const WebLLMManager = (() => {
+export const WebLLMManager = (() => {
   let engine = null;
   let isDownloading = false;
   let downloadProgress = 0;

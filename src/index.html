@@ -9,7 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/index.css?v=5">
+  <link rel="stylesheet" href="css/base.css?v=6">
+  <link rel="stylesheet" href="css/layout.css?v=6">
+  <link rel="stylesheet" href="css/components.css?v=6">
+  <link rel="stylesheet" href="css/views.css?v=6">
+  <link rel="stylesheet" href="css/utilities.css?v=6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
 </head>
 <body>
@@ -337,9 +343,15 @@
               </div>
             </div>
             <div class="chat-controls">
+              <button class="control-btn" id="btn-enable-webllm" title="Load Local Neural Engine">🧠 Load AI</button>
               <button class="control-btn" id="btn-toggle-tts" title="Toggle Voice">🔇 Voice</button>
               <button class="control-btn" id="btn-toggle-handsfree" title="Hands-Free">🔁 Hands-Free</button>
             </div>
+          </div>
+
+          <div id="webllm-progress-container" class="webllm-progress hidden">
+            <span id="webllm-progress-text">Initializing Engine...</span>
+            <div class="progress-track"><div id="webllm-progress-bar" class="progress-fill" style="width: 0%"></div></div>
           </div>
 
           <div class="chat-messages" id="chat-feed">
@@ -365,18 +377,25 @@
         </div>
       </section>
 
-      <!-- ═══ BREATHE PANEL ═══ -->
+      <!-- ═══ THE FORGE PANEL ═══ -->
       <section id="panel-breath" class="panel">
         <div class="card card-breath">
           <div class="card-header">
-            <h2 class="card-title">breathe</h2>
-            <span class="card-subtitle">Box breathing. 4 seconds each: in, hold, out, hold.</span>
+            <h2 class="card-title">the forge</h2>
+            <span class="card-subtitle">Physiological resets. Opt-in when you are ready.</span>
+          </div>
+          
+          <div class="forge-mode-selector" style="margin-bottom: var(--space-md); text-align: center;">
+            <select id="forge-mode-select" class="drone-select">
+              <option value="breath">Box Breathing (4-4-4-4)</option>
+              <option value="cold">Cold Exposure (3 Minutes)</option>
+            </select>
           </div>
           <div class="breath-container">
             <div class="breath-circle" id="breath-visualizer">
-              <span class="breath-state-label" id="breath-phase-text">Breathe</span>
+              <span class="breath-state-label" id="breath-phase-text">Ready</span>
             </div>
-            <div class="breath-timer" id="breath-timer-text">04</div>
+            <div class="breath-timer" id="breath-timer-text">--</div>
           </div>
           <div class="breath-controls-panel">
             <div class="drone-select-wrapper">
@@ -596,25 +615,6 @@
     </main>
   </div>
 
-  <script src="js/data/constants.js?v=5"></script>
-  <script src="js/data/i18n.js?v=5"></script>
-  <script src="js/i18n.js?v=5"></script>
-  <script src="js/webllm-manager.js"></script>
-  <script src="js/vaam.js?v=5"></script>
-  <script src="js/state.js?v=5"></script>
-  <script src="js/pearl.js?v=5"></script>
-  <script src="js/hardware.js?v=5"></script>
-  <script src="js/ai.js?v=5"></script>
-  <script src="js/voice.js?v=5"></script>
-  <script src="js/chat.js?v=5"></script>
-  <script src="js/breath.js?v=5"></script>
-  <script src="js/recycle.js?v=5"></script>
-  <script src="js/bridge.js?v=5"></script>
-  <script src="js/sync.js?v=5"></script>
-  <script src="js/docs.js?v=5"></script>
-  <script src="js/radar.js?v=5"></script>
-  <script src="js/dashboard.js?v=5"></script>
-  <script src="js/onboarding.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script type="module" src="js/app.js?v=6"></script>
 </body>
 </html>

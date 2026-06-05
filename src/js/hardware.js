@@ -8,7 +8,7 @@
  *   LITE → Liquid-LFM-1B (WASM fallback)
  */
 
-const PhoneHardware = (() => {
+export const PhoneHardware = (() => {
 
   async function profile() {
     const memory = navigator.deviceMemory || 4;

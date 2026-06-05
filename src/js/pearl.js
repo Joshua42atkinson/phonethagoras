@@ -5,7 +5,7 @@
  * with structured reasoning and attention management.
  */
 
-const PEARL = (() => {
+export const PEARL = (() => {
   const PHASES = Object.freeze({
     ASSESSMENT: 'assessment',
     CHARACTER_SHEET: 'character_sheet',
@@ -109,9 +109,3 @@ const PEARL = (() => {
   };
 })();
 
-// Export for module systems or window
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PEARL;
-} else {
-  window.PEARL = PEARL;
-}

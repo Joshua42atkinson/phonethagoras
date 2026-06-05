@@ -7,7 +7,11 @@
  * 3. Web Audio API sine wave oscillator drone (ambient sound tempering)
  */
 
-const PhoneBreath = (() => {
+import { PhoneVoice } from './voice.js';
+import { PhoneState } from './state.js';
+import { PhoneDashboard } from './dashboard.js';
+
+export const PhoneBreath = (() => {
   let audioCtx = null;
   let oscillator = null;
   let gainNode = null;
@@ -28,7 +32,8 @@ const PhoneBreath = (() => {
   let currentState = STATES.INACTIVE;
   let timeRemaining = 4;
 
-  let visualizerEl, phaseTextEl, timerTextEl, toggleBtn, droneSelect;
+  let visualizerEl, phaseTextEl, timerTextEl, toggleBtn, droneSelect, modeSelect;
+  let activeMode = 'breath';
 
   function init() {
     visualizerEl = document.getElementById('breath-visualizer');
@@ -36,10 +41,29 @@ const PhoneBreath = (() => {
     timerTextEl = document.getElementById('breath-timer-text');
     toggleBtn = document.getElementById('btn-toggle-breath');
     droneSelect = document.getElementById('drone-hz-select');
+    modeSelect = document.getElementById('forge-mode-select');
 
     if (!toggleBtn) return; // Exit if not on page
 
     toggleBtn.addEventListener('click', toggleExercise);
+    if (modeSelect) {
+      modeSelect.addEventListener('change', (e) => {
+        activeMode = e.target.value;
+        resetUIForMode();
+      });
+    }
+  }
+
+  function resetUIForMode() {
+    if (!visualizerEl || !phaseTextEl || !timerTextEl) return;
+    visualizerEl.className = 'breath-circle';
+    if (activeMode === 'breath') {
+      phaseTextEl.textContent = 'Ready';
+      timerTextEl.textContent = '--';
+    } else {
+      phaseTextEl.textContent = 'Cold';
+      timerTextEl.textContent = '3:00';
+    }
   }
 
   function initAudio() {
@@ -113,11 +137,17 @@ const PhoneBreath = (() => {
     }
 
     startAudio();
-    nextState(STATES.INHALE);
-
-    // Setup pacing loops
-    cycleInterval = setInterval(tickCycle, 4000);
-    timerInterval = setInterval(tickTimer, 1000);
+    
+    if (activeMode === 'breath') {
+      nextState(STATES.INHALE);
+      cycleInterval = setInterval(tickCycle, 4000);
+      timerInterval = setInterval(tickTimer, 1000);
+    } else {
+      timeRemaining = 180; // 3 minutes
+      if (visualizerEl) visualizerEl.className = 'breath-circle cold-exposure';
+      if (phaseTextEl) phaseTextEl.textContent = 'Endure';
+      timerInterval = setInterval(tickColdTimer, 1000);
+    }
   }
 
   function stop() {
@@ -135,24 +165,14 @@ const PhoneBreath = (() => {
       toggleBtn.classList.add('btn-accent');
     }
 
-    if (visualizerEl) {
-      visualizerEl.className = 'breath-circle';
-    }
-    if (phaseTextEl) {
-      phaseTextEl.textContent = 'Breathe';
-    }
-    if (timerTextEl) {
-      timerTextEl.textContent = '04';
-    }
+    resetUIForMode();
 
     // Slightly increase guard (armor density) in player state for finishing exercise!
     if (typeof PhoneState !== 'undefined') {
       let state = PhoneState.load();
-      state.pulse.guard = Math.min(state.pulse.guard + 0.05, 1.0);
+      state.shape.body = Math.min(100, state.shape.body + 2);
+      state.shape.mind = Math.min(100, state.shape.mind + 1);
       PhoneState.save(state);
-      if (typeof PhoneDashboard !== 'undefined') {
-        PhoneDashboard.render(state);
-      }
       console.log('[phone-breath] Guard reinforced via breath exercise.');
     }
   }
@@ -181,6 +201,29 @@ const PhoneBreath = (() => {
     }
     if (timerTextEl) {
       timerTextEl.textContent = `0${timeRemaining + 1}`;
+    }
+  }
+
+  function tickColdTimer() {
+    timeRemaining--;
+    if (timeRemaining <= 0) {
+      stop();
+      if (phaseTextEl) phaseTextEl.textContent = 'Done';
+      if (timerTextEl) timerTextEl.textContent = '0:00';
+      
+      // Reinforce guard intensely for cold exposure
+      if (typeof PhoneState !== 'undefined') {
+        let state = PhoneState.load();
+        state.shape.body = Math.min(100, state.shape.body + 10);
+        state.shape.mind = Math.min(100, state.shape.mind + 5);
+        PhoneState.save(state);
+      }
+      return;
+    }
+    const mins = Math.floor(timeRemaining / 60);
+    const secs = timeRemaining % 60;
+    if (timerTextEl) {
+      timerTextEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
     }
   }
 

@@ -9,7 +9,7 @@
  * 3. Hands-free loop: automatically restarts listening when agent stops speaking
  */
 
-const PhoneVoice = (() => {
+export const PhoneVoice = (() => {
   let recognition = null;
   let audioCtx = null;
   let activeAudioSource = null;
@@ -21,6 +21,13 @@ const PhoneVoice = (() => {
   
   let onTranscriptChangeCallback = null;
   let onFinalTranscriptCallback = null;
+  
+  // Voice Stress Analysis (Biometrics)
+  let stressAudioCtx = null;
+  let stressAnalyser = null;
+  let stressStream = null;
+  let stressInterval = null;
+  let vocalJitterScore = 0;
 
   function init() {
     // 1. Initialize Speech Recognition
@@ -68,6 +75,7 @@ const PhoneVoice = (() => {
 
       recognition.onend = () => {
         isListening = false;
+        stopVoiceStressAnalysis();
         updateMicUI();
         // If hands-free is enabled and we aren't speaking, start listening again
         if (handsFree && !isSpeaking) {
@@ -87,9 +95,87 @@ const PhoneVoice = (() => {
     if (!recognition || isListening) return;
     try {
       recognition.start();
+      startVoiceStressAnalysis();
     } catch (e) {
       console.warn('[phone-voice] Failed to start recognition:', e.message);
     }
+  }
+
+  async function startVoiceStressAnalysis() {
+    try {
+      if (!stressAudioCtx) {
+        stressAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (stressAudioCtx.state === 'suspended') {
+        await stressAudioCtx.resume();
+      }
+      stressStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      const source = stressAudioCtx.createMediaStreamSource(stressStream);
+      stressAnalyser = stressAudioCtx.createAnalyser();
+      stressAnalyser.fftSize = 512;
+      source.connect(stressAnalyser);
+
+      const bufferLength = stressAnalyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      let previousFundamental = 0;
+      let totalJitter = 0;
+      let samples = 0;
+
+      stressInterval = setInterval(() => {
+        if (!isListening) return;
+        stressAnalyser.getByteFrequencyData(dataArray);
+        
+        // Find peak frequency (simple proxy for fundamental)
+        let maxVal = 0;
+        let peakIndex = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          if (dataArray[i] > maxVal) {
+            maxVal = dataArray[i];
+            peakIndex = i;
+          }
+        }
+        
+        if (maxVal > 50) { // If there is actual voice
+          if (previousFundamental > 0) {
+            const jitter = Math.abs(peakIndex - previousFundamental);
+            totalJitter += jitter;
+            samples++;
+          }
+          previousFundamental = peakIndex;
+        }
+      }, 100);
+
+      // We attach the score to a getter
+      setInterval(() => {
+        if (samples > 0) {
+          vocalJitterScore = totalJitter / samples;
+          // Send to VAAM if available
+          if (typeof window.VAAM !== 'undefined') {
+            // we could dispatch an event or call directly. Let's just store it here for the chat to harvest
+          }
+        }
+      }, 2000);
+      
+    } catch (err) {
+      console.warn('[phone-voice] Could not start voice stress analysis:', err);
+    }
+  }
+
+  function stopVoiceStressAnalysis() {
+    if (stressInterval) clearInterval(stressInterval);
+    if (stressStream) {
+      stressStream.getTracks().forEach(track => track.stop());
+      stressStream = null;
+    }
+  }
+
+  function getVocalStressScore() {
+    return vocalJitterScore;
+  }
+
+  function resetVocalStressScore() {
+    vocalJitterScore = 0;
   }
 
   function stopListening() {
@@ -276,6 +362,8 @@ const PhoneVoice = (() => {
     cancel,
     setCallbacks,
     isListening: () => isListening,
-    isSpeaking: () => isSpeaking
+    isSpeaking: () => isSpeaking,
+    getVocalStressScore,
+    resetVocalStressScore
   };
 })();

@@ -1,0 +1,16 @@
+{
+  "name": "Phonethagoras",
+  "short_name": "Phonethagoras",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0a0f19",
+  "theme_color": "#0a0f19",
+  "description": "A private, local-first pedagogical engine.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -10,7 +10,10 @@
  * 2. Vision API support (sending base64 image data to local vision model)
  */
 
-const PhoneAI = (() => {
+import { PhoneHardware } from './hardware.js';
+import { WebLLMManager } from './webllm-manager.js';
+
+export const PhoneAI = (() => {
   let isLoaded = false;
   let activeBackend = 'offline';
   let activeModel = 'fallback';
@@ -101,7 +104,7 @@ ${vaamSummary}
   }
 
   // ─── 5. Chat Completion ───
-  async function chat(message, imageBase64 = null) {
+  async function chat(message, imageBase64 = null, onChunk = null) {
     // 1. Load context
     const state = PhoneState.load();
     const vaamSummary = typeof VAAM !== 'undefined' ? VAAM.promptSummary() : 'Brevity: 0.5 | Directness: 0.5';
@@ -146,7 +149,7 @@ ${vaamSummary}
         ];
 
         console.log(`[phone-ai] Routing chat to Offline WebLLM...`);
-        let fullResponse = await WebLLMManager.chat(messages);
+        let fullResponse = await WebLLMManager.chat(messages, onChunk);
         return { message: { content: fullResponse } };
       } catch (err) {
         console.error(err);

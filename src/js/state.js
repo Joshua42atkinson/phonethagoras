@@ -7,15 +7,33 @@
  * Zen Zuse naming: every field uses the simplest possible English word.
  */
 
-(function(root, factory) {
-  const state = factory();
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = state;
-  } else {
-    root.PhoneState = state;
-  }
-})(typeof self !== 'undefined' ? self : this, function() {
+import { ZEN_CONST } from './data/constants.js';
+
   const STORAGE_KEY = 'zen_book';
+  
+  // ─── Event Emitter (Pub/Sub) ───
+  const listeners = {};
+
+  function on(event, callback) {
+    if (!listeners[event]) listeners[event] = [];
+    listeners[event].push(callback);
+  }
+
+  function off(event, callback) {
+    if (!listeners[event]) return;
+    listeners[event] = listeners[event].filter(cb => cb !== callback);
+  }
+
+  function emit(event, data) {
+    if (!listeners[event]) return;
+    listeners[event].forEach(cb => {
+      try {
+        cb(data);
+      } catch (err) {
+        console.error(`[Event: ${event}] Listener error:`, err);
+      }
+    });
+  }
 
   function createDefaultState() {
     return {
@@ -94,7 +112,7 @@
   
   // ─── Face Evolvement ───
   function updateFace(state) {
-    if (typeof ZEN_CONST === 'undefined') return;
+    if (!ZEN_CONST) return;
     
     const { mind, heart, body, act } = state.shape;
     const maxVal = Math.max(mind, heart, body, act);
@@ -131,6 +149,7 @@
       updateFace(state); // Automatically evolve face before saving
       state._meta.updated_at = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      emit('state:changed', state);
       return true;
     } catch (e) {
       console.error('[PhoneState] Failed to save state:', e);
@@ -191,12 +210,14 @@
     return result;
   }
 
-  return {
+export const PhoneState = {
     load,
     save,
     reset,
     exportJSON,
     importJSON,
-    createDefaultState
+    createDefaultState,
+    on,
+    off,
+    emit
   };
-});

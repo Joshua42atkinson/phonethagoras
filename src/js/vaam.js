@@ -14,14 +14,7 @@
  * and trinity-iron-road/vaam/cognitive_load.rs (117 lines)
  */
 
-(function(root, factory) {
-  const vaam = factory();
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = vaam;
-  } else {
-    root.VAAM = vaam;
-  }
-})(typeof self !== 'undefined' ? self : this, function() {
+
   const STORAGE_KEY = 'zen_vaam_profile';
 
   // ─── Cognitive Load (exact port from cognitive_load.rs) ───
@@ -95,6 +88,7 @@
     return {
       wordWeights: {},
       style: createStyle(),
+      keystrokes: { wpmAvg: 0, correctionRateAvg: 0, pauseCountTotal: 0 },
       interactionsAnalyzed: 0,
       discovered: {},  // word → timesUsed
       mastered: [],     // words that hit Rule of Three
@@ -136,6 +130,17 @@
   function recordInteraction(wordCount, questionCount, statementCount) {
     profile.interactionsAnalyzed++;
     updateStyle(profile.style, wordCount, questionCount, statementCount, profile.interactionsAnalyzed);
+    saveProfile(profile);
+  }
+
+  function recordKeystrokes(metrics) {
+    if (!profile.keystrokes) {
+      profile.keystrokes = { wpmAvg: 0, correctionRateAvg: 0, pauseCountTotal: 0 };
+    }
+    const alpha = profile.interactionsAnalyzed < 10 ? 0.3 : 0.1;
+    profile.keystrokes.wpmAvg = profile.keystrokes.wpmAvg * (1 - alpha) + metrics.wpm * alpha;
+    profile.keystrokes.correctionRateAvg = profile.keystrokes.correctionRateAvg * (1 - alpha) + metrics.correctionRate * alpha;
+    profile.keystrokes.pauseCountTotal += metrics.pauseCount;
     saveProfile(profile);
   }
 
@@ -190,9 +195,18 @@
     if (top.length > 0) {
       parts.push(`Key words: ${top.map(t => t.word).join(', ')}`);
     }
+    if (profile.keystrokes) {
+      const wpm = Math.round(profile.keystrokes.wpmAvg);
+      const corr = Math.round(profile.keystrokes.correctionRateAvg * 100);
+      parts.push(`Cognitive Proxy: ${wpm} WPM, ${corr}% Corrections`);
+    }
     if (profile.mastered.length > 0) {
       parts.push(`Mastered: ${profile.mastered.length} words`);
     }
+    
+    // Core Consent Rules
+    parts.push(`CORE RULE: All self-help interventions (e.g. breathing, emotional check-ins) MUST be consensual. Do NOT interrogate or force solutions. Wait for the user to opt-in. Hold space. If cognitive load is high, simply use shorter sentences.`);
+    
     return parts.join(' | ');
   }
 
@@ -203,15 +217,15 @@
     return profile;
   }
 
-  return {
+export const VAAM = {
     countSyllables,
     calculateCognitiveLoad,
     recordWordUsage,
     recordInteraction,
+    recordKeystrokes,
     scanMessage,
     topWords,
     promptSummary,
     getProfile,
     resetProfile,
   };
-});

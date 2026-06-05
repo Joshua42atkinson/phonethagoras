@@ -7,9 +7,17 @@
  *   Also triggers real-time state adaptation based on interaction content.
  */
 
-const PhoneChat = (() => {
+import { PhoneAI } from './ai.js';
+import { PhoneVoice } from './voice.js';
+import { PEARL } from './pearl.js';
+import { PhoneState } from './state.js';
+import { PhoneDashboard } from './dashboard.js';
+import { PhoneKeystrokes } from './keystrokes.js';
+import { VAAM } from './vaam.js';
+
+export const PhoneChat = (() => {
   let btnSendChat, chatUserInput, chatFeed;
-  let btnToggleTts, btnToggleHandsfree, btnMic;
+  let btnToggleTts, btnToggleHandsfree, btnMic, btnEnableWebLLM;
   let btnAttachImage, fileImageInput, chatImagePreviewContainer, chatImagePreview, btnRemovePreview;
   let ragStatusBadge, agentBackendStatus;
 
@@ -40,6 +48,7 @@ const PhoneChat = (() => {
     btnRemovePreview = document.getElementById('btn-remove-preview');
     ragStatusBadge = document.getElementById('rag-status-badge');
     agentBackendStatus = document.getElementById('agent-backend-status');
+    btnEnableWebLLM = document.getElementById('btn-enable-webllm');
     
     docViewer = document.getElementById('chat-document-viewer');
     docTitle = document.getElementById('doc-title');
@@ -57,6 +66,35 @@ const PhoneChat = (() => {
 
     btnToggleTts.addEventListener('click', toggleTTS);
     btnToggleHandsfree.addEventListener('click', toggleHandsFree);
+
+    if (btnEnableWebLLM) {
+      btnEnableWebLLM.addEventListener('click', async () => {
+        const progressContainer = document.getElementById('webllm-progress-container');
+        const progressBar = document.getElementById('webllm-progress-bar');
+        const progressText = document.getElementById('webllm-progress-text');
+        
+        btnEnableWebLLM.disabled = true;
+        progressContainer.classList.remove('hidden');
+        
+        try {
+          // Dynamically import WebLLMManager if needed or use existing
+          const { WebLLMManager } = await import('./webllm-manager.js');
+          await WebLLMManager.init((progress, text) => {
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = text;
+          });
+          
+          PhoneAI.setActiveBackend('webllm');
+          updateStatusIndicators();
+          progressText.textContent = 'Engine Loaded Successfully.';
+          setTimeout(() => progressContainer.classList.add('hidden'), 3000);
+          btnEnableWebLLM.style.display = 'none'; // Hide once loaded
+        } catch (e) {
+          progressText.textContent = 'Failed to load Engine. Check console.';
+          btnEnableWebLLM.disabled = false;
+        }
+      });
+    }
 
     // Mic controls
     if (btnMic) {
@@ -82,7 +120,8 @@ const PhoneChat = (() => {
       btnSaveDoc.addEventListener('click', saveCurrentDocument);
     }
 
-    // 3. Initialize AI and Voice engines
+    // 3. Initialize AI, Voice, and Biometrics
+    PhoneKeystrokes.init('chat-user-input');
     await PhoneAI.init();
     PhoneVoice.init();
 
@@ -242,6 +281,13 @@ const PhoneChat = (() => {
     
     if (!text && !imageToSend) return;
 
+    // Harvest and reset keystroke metrics
+    const ksMetrics = PhoneKeystrokes.getMetrics();
+    if (typeof VAAM !== 'undefined') {
+      VAAM.recordKeystrokes(ksMetrics);
+    }
+    PhoneKeystrokes.reset();
+
     // Clear input and previews
     chatUserInput.value = '';
     clearImageAttachment();
@@ -281,12 +327,14 @@ const PhoneChat = (() => {
       return;
     }
 
-    // 4. Append typing indicator
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'chat-message agent';
-    typingDiv.id = 'typing-indicator';
-    typingDiv.innerHTML = '<p>Thinking...</p>';
-    chatFeed.appendChild(typingDiv);
+    // 4. Append typing indicator / stream container
+    const agentMsgDiv = document.createElement('div');
+    agentMsgDiv.className = 'chat-message agent';
+    agentMsgDiv.id = 'typing-indicator';
+    const textP = document.createElement('p');
+    textP.innerHTML = '<em>Thinking...</em>';
+    agentMsgDiv.appendChild(textP);
+    chatFeed.appendChild(agentMsgDiv);
     chatFeed.scrollTop = chatFeed.scrollHeight;
 
     // 5. Fetch response from AI with PEARL context and Language
@@ -299,6 +347,15 @@ const PhoneChat = (() => {
     promptContext += `IMPORTANT: You must respond entirely in ${lang}.\n\n`;
 
     let response;
+    let accumulatedText = "";
+    const onChunk = (chunk) => {
+      if (accumulatedText === "") {
+        textP.innerHTML = ""; // Clear "Thinking..."
+      }
+      accumulatedText += chunk;
+      textP.textContent = accumulatedText;
+      chatFeed.scrollTop = chatFeed.scrollHeight;
+    };
     
     // The Worker Route Trigger
     if (text.trim().startsWith('/work ')) {
@@ -307,21 +364,25 @@ const PhoneChat = (() => {
       response = await PhoneAI.work(promptContext + taskDescription);
     } else {
       // Standard Chat Router
-      response = await PhoneAI.chat(promptContext + text, imageToSend);
+      response = await PhoneAI.chat(promptContext + text, imageToSend, onChunk);
     }
-
-    // Remove typing indicator
-    const typingIndicator = document.getElementById('typing-indicator');
-    if (typingIndicator) typingIndicator.remove();
 
     // 5. Handle Tool Calls vs Standard Messages
     if (response && response.type === 'tool_call') {
+      agentMsgDiv.remove();
       handleToolCall(response.call);
       return;
     }
 
-    // Append Standard Agent Message
-    appendMessage(response, false);
+    // Clean up typing indicator ID and set final formatted text
+    agentMsgDiv.removeAttribute('id');
+    if (response && response.message && response.message.content) {
+      let finalContent = response.message.content;
+      textP.innerHTML = escapeHTML(finalContent).replace(/\n/g, '<br>');
+    } else {
+      // Fallback if response structure is missing
+      agentMsgDiv.remove();
+    }
 
     // 6. Speak response if enabled
     if (ttsEnabled) {
@@ -338,7 +399,6 @@ const PhoneChat = (() => {
       let state = PhoneState.load();
       state.pearlState = PEARL.getState();
       PhoneState.save(state);
-      PhoneDashboard.render(state);
     }
 
     // 8. Dynamically update attributes based on user message keywords
@@ -500,7 +560,6 @@ const PhoneChat = (() => {
       if (matched) {
         state.shape[stat] = Math.min(state.shape[stat] + 1, 100);
         PhoneState.save(state);
-        PhoneDashboard.render(state);
         console.log(`[phone-chat] Adapted state: +1 ${stat} from deliberate language`);
         return; // Only one bump per message
       }

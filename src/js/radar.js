@@ -13,7 +13,7 @@
  * Values are integers [0, 100] mapped to SVG coordinate space.
  */
 
-const PhoneRadar = (() => {
+export const PhoneRadar = (() => {
   // SVG coordinate space constants (matches viewBox 0 0 400 400)
   const CENTER = 200;
   const MIN_RADIUS = 0;

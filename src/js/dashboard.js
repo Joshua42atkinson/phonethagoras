@@ -8,7 +8,9 @@
  * - Identity (self)
  */
 
-const PhoneDashboard = (() => {
+import { ZEN_CONST } from './data/constants.js';
+
+export const PhoneDashboard = (() => {
 
   /**
    * Render the full dashboard from a player state object

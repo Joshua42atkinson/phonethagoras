@@ -6,7 +6,9 @@
  * and cognitive metrics to determine caseload priorities.
  */
 
-const PhoneBridge = (() => {
+import { PhoneState } from './state.js';
+
+export const PhoneBridge = (() => {
   let caseloadListEl;
 
   function init() {

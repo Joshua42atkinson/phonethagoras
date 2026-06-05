@@ -16,14 +16,7 @@
  *   Zuse = build from first principles, no institution needed (Western)
  */
 
-(function(root, factory) {
-  const consts = factory();
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = consts;
-  } else {
-    root.ZEN_CONST = consts;
-  }
-})(typeof self !== 'undefined' ? self : this, function() {
+
   // ─── The Four Directions ───
   // Each maps to a human capacity. One syllable. AoA < 4 years.
   //
@@ -161,5 +154,4 @@
     'Competence':                       'skill',
   });
 
-  return { DIR, DEPTH, FACE, ROOT, COLOR, HSL, ASK, DEPTH_THRESHOLD, ZEN };
-});
+  export const ZEN_CONST = { DIR, DEPTH, FACE, ROOT, COLOR, HSL, ASK, DEPTH_THRESHOLD, ZEN };

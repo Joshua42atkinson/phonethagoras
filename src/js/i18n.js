@@ -4,7 +4,9 @@
  * Translates DOM elements with `data-i18n` attributes based on the current language state.
  */
 
-const PhoneI18n = (() => {
+import { PhoneI18nDict } from './data/i18n.js';
+
+export const PhoneI18n = (() => {
   
   function getNestedTranslation(dict, path) {
     return path.split('.').reduce((obj, key) => (obj && obj[key] !== 'undefined') ? obj[key] : null, dict);
@@ -49,9 +51,3 @@ const PhoneI18n = (() => {
   return { translateDOM };
 })();
 
-// Dual-module support
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PhoneI18n;
-} else {
-  window.PhoneI18n = PhoneI18n;
-}

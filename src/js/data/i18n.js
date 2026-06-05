@@ -4,7 +4,7 @@
  * Contains all static UI text for the phonethagoras application.
  */
 
-const PhoneI18nDict = {
+export const PhoneI18nDict = {
   en: {
     app: {
       name: "SILK",
@@ -126,9 +126,3 @@ const PhoneI18nDict = {
   }
 };
 
-// Dual-module support
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PhoneI18nDict;
-} else {
-  window.PhoneI18nDict = PhoneI18nDict;
-}

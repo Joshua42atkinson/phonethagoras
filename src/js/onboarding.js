@@ -10,7 +10,11 @@
  * Stores completion flag so it only shows once.
  */
 
-const PhoneOnboarding = (() => {
+import { PhoneState } from './state.js';
+import { PhoneRadar } from './radar.js';
+import { PhoneDashboard } from './dashboard.js';
+
+export const PhoneOnboarding = (() => {
   const ONBOARDED_KEY = 'zen_onboarded';
 
   function shouldShow() {
@@ -136,14 +140,6 @@ const PhoneOnboarding = (() => {
         modal.classList.add('hidden');
         modal.style.opacity = '';
         
-        // Re-render dashboard with new state
-        if (typeof PhoneRadar !== 'undefined') {
-          PhoneRadar.animateEntrance(state.shape, 300);
-        }
-        if (typeof PhoneDashboard !== 'undefined') {
-          PhoneDashboard.render(state);
-        }
-
         // Update the welcome message in chat
         const feed = document.getElementById('chat-feed');
         if (feed && name) {
@@ -168,8 +164,3 @@ const PhoneOnboarding = (() => {
   return { init, shouldShow };
 })();
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PhoneOnboarding;
-} else {
-  window.PhoneOnboarding = PhoneOnboarding;
-}

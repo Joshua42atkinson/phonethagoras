@@ -10,12 +10,43 @@
  * 6. Dismiss loading overlay
  */
 
+import { PhoneState } from './state.js';
+import { PhoneI18n } from './i18n.js';
+import { PhoneHardware } from './hardware.js';
+import { PhoneRadar } from './radar.js';
+import { PhoneDashboard } from './dashboard.js';
+import { VAAM } from './vaam.js';
+import { PhoneChat } from './chat.js';
+import { PhoneBreath } from './breath.js';
+import { PhoneRecycle } from './recycle.js';
+import { PhoneBridge } from './bridge.js';
+import { PhoneSync } from './sync.js';
+import { PhoneDocs } from './docs.js';
+import { PhoneOnboarding } from './onboarding.js';
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('[phonethagoras] SW registered:', reg.scope))
+      .catch(err => console.error('[phonethagoras] SW registration failed:', err));
+  });
+}
+
 (async function initApp() {
   'use strict';
 
   // ─── 1. Load State ───
   let playerState = PhoneState.load();
   PhoneState.save(playerState);
+
+  PhoneState.on('state:changed', (newState) => {
+    playerState = newState;
+    PhoneRadar.render(newState.shape);
+    PhoneDashboard.render(newState);
+    if (typeof PhoneI18n !== 'undefined') {
+      PhoneI18n.translateDOM(newState.language);
+    }
+  });
 
   console.log('[phonethagoras] Player state loaded:', playerState.id);
   
@@ -171,8 +202,6 @@
       try {
         playerState = await PhoneState.importJSON(file);
         PhoneState.save(playerState);
-        PhoneRadar.animateEntrance(playerState.shape, 200);
-        PhoneDashboard.render(playerState);
         
         if (playerState.zenMode === undefined) playerState.zenMode = true;
         if (checkZenMode) {
@@ -181,9 +210,6 @@
         }
         
         if (selectLanguage) selectLanguage.value = playerState.language || 'en';
-        if (typeof PhoneI18n !== 'undefined') {
-          PhoneI18n.translateDOM(playerState.language);
-        }
         
         console.log('[phonethagoras] State imported');
       } catch (err) {
@@ -201,17 +227,12 @@
         PhoneState.save(playerState);
         // Clear onboarding flag so it shows again
         localStorage.removeItem('zen_onboarded');
-        PhoneRadar.animateEntrance(playerState.shape, 200);
-        PhoneDashboard.render(playerState);
         
         if (checkZenMode) {
           checkZenMode.checked = true;
           applyZenModeGating(true);
         }
         if (selectLanguage) selectLanguage.value = 'en';
-        if (typeof PhoneI18n !== 'undefined') {
-          PhoneI18n.translateDOM('en');
-        }
         
         // Show onboarding again
         if (typeof PhoneOnboarding !== 'undefined') {

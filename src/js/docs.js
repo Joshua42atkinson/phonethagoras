@@ -7,7 +7,12 @@
  * and conducts a hands-free voice questionnaire to complete missing fields.
  */
 
-const PhoneDocs = (() => {
+import { PhoneState } from './state.js';
+import { PhoneVoice } from './voice.js';
+import { PhoneChat } from './chat.js';
+import { PhoneSync } from './sync.js';
+
+export const PhoneDocs = (() => {
   let docListContainer, formPanel, skillsContainer, attitudesContainer, ambitionsContainer;
   let startVoiceBtn, stopVoiceBtn, voiceStatusText, downloadDocBtn;
   let activeDocument = null;
@@ -470,9 +475,3 @@ const PhoneDocs = (() => {
   };
 })();
 
-// Dual-mode module export
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PhoneDocs;
-} else {
-  window.PhoneDocs = PhoneDocs;
-}

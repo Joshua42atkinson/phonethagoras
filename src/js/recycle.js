@@ -6,7 +6,12 @@
  * to output professional resume competencies through third-person cognitive detachment.
  */
 
-const PhoneRecycle = (() => {
+import { PhoneState } from './state.js';
+import { PhoneAI } from './ai.js';
+import { PhoneDashboard } from './dashboard.js';
+import { PhoneRadar } from './radar.js';
+
+export const PhoneRecycle = (() => {
   let rawInput, runBtn, storyContextVal, resultCard, resultText, copyBtn, syncBtn;
 
   function init() {
@@ -85,14 +90,6 @@ A 2-3 sentence summary framing their reframed experience as an unlocked "Class" 
       PhoneState.save(state);
       updateNarrativeDisplay();
       
-      // Re-render dashboard to show radar/state updates
-      if (typeof PhoneDashboard !== 'undefined') {
-        PhoneDashboard.render(state);
-      }
-      if (typeof PhoneRadar !== 'undefined') {
-        PhoneRadar.render(state.shape);
-      }
-
     } catch (e) {
       console.error('[phone-recycle] Alchemize failed:', e);
       alert('Failed to alchemize raw input. Check console.');

@@ -1,0 +1,178 @@
+/* ═══════════════════════════════════════════════════════════════
+   LOADING OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.loading-sigil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.loading-diamond {
+  width: 80px;
+  height: 80px;
+  animation: spin-diamond 3s linear infinite;
+}
+
+@keyframes spin-diamond {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: pulse-text 2s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════════════ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: hsla(250, 40%, 5%, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-bottom: 1px solid hsla(180, 80%, 40%, 0.2);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-sm) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brand-sigil {
+  font-size: 1.25rem;
+  background: var(--gradient-diamond);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sigil-pulse 4s ease-in-out infinite;
+}
+
+.brand-sigil-large {
+  font-size: 3rem;
+  background: var(--gradient-diamond);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes sigil-pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.4); }
+}
+
+.brand-name {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.brand-epoch {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-text-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.sigil-nav {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  background: hsla(250, 40%, 8%, 0.9);
+  padding: 3px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.sigil-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: var(--radius-md);
+}
+
+.sigil-icon {
+  width: 22px;
+  height: 22px;
+  transition: all var(--transition-fast);
+}
+
+.sigil-btn:hover {
+  color: var(--color-text);
+  background: hsla(180, 80%, 40%, 0.08);
+}
+
+.sigil-btn.active {
+  color: var(--color-accent);
+  background: hsla(45, 100%, 50%, 0.1);
+}
+
+.sigil-btn.active .sigil-icon {
+  filter: drop-shadow(0 0 4px hsla(45, 100%, 50%, 0.5));
+}
+
+.status-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+}
+
+.status-indicator.tier-high { color: var(--color-mind); border-color: hsla(180, 100%, 50%, 0.3); background: hsla(180, 100%, 50%, 0.08); }
+.status-indicator.tier-mid  { color: var(--color-accent); border-color: hsla(45, 100%, 50%, 0.3); background: hsla(45, 100%, 50%, 0.08); }
+.status-indicator.tier-lite { color: var(--color-text-muted); }
+

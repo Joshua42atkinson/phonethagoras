@@ -6,7 +6,10 @@
  * in localStorage, demonstrating true non-custodial synchronization.
  */
 
-const PhoneSync = (() => {
+import { PhoneState } from './state.js';
+import { PhoneDocs } from './docs.js';
+
+export const PhoneSync = (() => {
   const DRIVE_STORAGE_KEY = 'zen_mock_drive_files';
   const AUTH_STORAGE_KEY = 'zen_google_auth_state';
 
@@ -462,9 +465,3 @@ Scope: drive.file (Access limited to this specific file only)`);
   };
 })();
 
-// Dual-mode module export
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = PhoneSync;
-} else {
-  window.PhoneSync = PhoneSync;
-}
