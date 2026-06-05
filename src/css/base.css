@@ -1,0 +1,83 @@
+/* ═══════════════════════════════════════════════════════════════
+   PHONETHAGORAS DESIGN SYSTEM
+   Theme: The Pythagorean Forge (Voix Vive Aesthetic)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Core Palette (Voix Vive) */
+  --color-bg:          hsl(218, 31%, 15%);  /* #1a2332 Slate Navy */
+  --color-bg-elevated: hsl(218, 29%, 20%);
+  --color-surface:     hsla(218, 31%, 15%, 0.5); /* Glass surface */
+  --color-surface-2:   hsl(218, 29%, 29%);  /* #354560 Slate Blue */
+  --color-border:      hsl(40, 46%, 61%);   /* #c9a96e Muted Gold */
+  --color-border-subtle: hsla(40, 46%, 61%, 0.25);
+
+  /* Typography */
+  --color-text:        hsl(240, 10%, 80%);  /* #c8c8d0 Soft Silver */
+  --color-text-muted:  hsl(216, 20%, 60%);  /* #8090a8 Slate Grey */
+  --color-text-dim:    hsla(240, 10%, 80%, 0.4);
+
+  /* Action/Direction Palette (Muted/Jewel Tones to fit the dark academia vibe) */
+  --color-mind:        hsl(190, 60%, 50%);  /* Teal */
+  --color-heart:       hsl(10, 60%, 50%);   /* Rust / Coral */
+  --color-body:        hsl(140, 40%, 50%);  /* Sage */
+  --color-act:         hsl(40, 46%, 61%);   /* Gold */
+
+  --color-accent:      hsl(40, 46%, 61%);   /* #c9a96e Muted Gold */
+  --color-danger:      hsl(350, 70%, 50%);
+  --color-success:     hsl(140, 40%, 50%);
+
+  --color-own:         hsl(40, 46%, 61%);
+  --color-bond:        hsl(340, 50%, 50%);
+  --color-skill:       hsl(210, 50%, 50%);
+
+  /* Gradients & Shadows */
+  --gradient-glass:    linear-gradient(135deg, hsla(218, 31%, 20%, 0.4), hsla(218, 31%, 10%, 0.6));
+  --gradient-accent:   linear-gradient(90deg, hsl(40, 46%, 51%), hsl(40, 46%, 71%));
+  --gradient-diamond:  linear-gradient(135deg, var(--color-mind), var(--color-accent));
+
+  /* Fonts */
+  --font-sans:   'Inter', sans-serif;
+  --font-header: 'Cormorant Garamond', serif;
+  --font-mono:   'JetBrains Mono', monospace;
+
+  /* Spacing & Radii */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-card:    0 8px 32px hsla(0, 0%, 0%, 0.4);
+  --shadow-glow:    0 0 15px hsla(40, 46%, 61%, 0.2);
+
+  /* Transitions */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Reset */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-surface-2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }

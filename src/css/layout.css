@@ -52,10 +52,10 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: hsla(250, 40%, 5%, 0.85);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border-bottom: 1px solid hsla(180, 80%, 40%, 0.2);
+  background: hsla(218, 31%, 10%, 0.85);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .header-inner {
@@ -75,8 +75,11 @@
 }
 
 .brand-sigil {
-  font-size: 1.25rem;
-  background: var(--gradient-diamond);
+  font-family: var(--font-header);
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 600;
+  background: var(--gradient-accent);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -98,8 +101,9 @@
 
 .brand-name {
   font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--color-text);
 }
 
@@ -118,7 +122,7 @@
   display: flex;
   gap: 2px;
   align-items: center;
-  background: hsla(250, 40%, 8%, 0.9);
+  background: hsla(218, 31%, 10%, 0.9);
   padding: 3px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-border-subtle);
@@ -148,16 +152,16 @@
 
 .sigil-btn:hover {
   color: var(--color-text);
-  background: hsla(180, 80%, 40%, 0.08);
+  background: hsla(40, 46%, 61%, 0.08);
 }
 
 .sigil-btn.active {
   color: var(--color-accent);
-  background: hsla(45, 100%, 50%, 0.1);
+  background: hsla(40, 46%, 61%, 0.15);
 }
 
 .sigil-btn.active .sigil-icon {
-  filter: drop-shadow(0 0 4px hsla(45, 100%, 50%, 0.5));
+  filter: drop-shadow(0 0 6px hsla(40, 46%, 61%, 0.4));
 }
 
 .status-indicator {
