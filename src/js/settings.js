@@ -6,7 +6,7 @@
 import { PhoneState } from './state.js';
 import { PhoneI18n } from './i18n.js';
 import { PhoneAI } from './ai.js';
-import { WebLLMManager } from './webllm-manager.js';
+import { PhoneLFM } from './lfm-manager.js';
 import { PhoneVision } from './vision-manager.js';
 
 export const PhoneSettings = (() => {
@@ -32,7 +32,7 @@ export const PhoneSettings = (() => {
     const btnReset = document.getElementById('btn-reset-state');
     const fileImport = document.getElementById('file-import');
 
-    // Offline WebLLM download button
+    // Offline Liquid LFM download button
     const btnWebLLM = document.getElementById('btn-enable-webllm');
     const webllmProgressContainer = document.getElementById('webllm-progress-container');
     const webllmProgressBar = document.getElementById('webllm-progress-bar');
@@ -40,8 +40,8 @@ export const PhoneSettings = (() => {
 
     if (btnWebLLM) {
       btnWebLLM.addEventListener('click', async () => {
-        if (typeof WebLLMManager === 'undefined') {
-          alert("WebLLM Manager not loaded.");
+        if (typeof PhoneLFM === 'undefined') {
+          alert("Liquid LFM Manager not loaded.");
           return;
         }
 
@@ -50,12 +50,12 @@ export const PhoneSettings = (() => {
         webllmProgressContainer.style.display = 'block';
 
         try {
-          await WebLLMManager.init((progress, text) => {
+          await PhoneLFM.init((progress, text) => {
             webllmProgressBar.style.width = `${progress}%`;
             webllmProgressText.textContent = text || `${progress}%`;
           });
           btnWebLLM.textContent = "Brain Ready";
-          webllmProgressText.textContent = "Download complete. WebGPU engine loaded.";
+          webllmProgressText.textContent = "Download complete. Liquid LFM engine loaded.";
         } catch (e) {
           btnWebLLM.disabled = false;
           btnWebLLM.textContent = "Retry Download";

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Model Armory | Phonethagoras</title>
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    /* Armory Specific PEARL Styling */
+    .armory-container {
+      padding: var(--space-6) var(--space-4);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .armory-header {
+      text-align: center;
+      margin-bottom: var(--space-8);
+    }
+    
+    .armory-header h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #a8c0ff, #3f2b96);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: var(--space-2);
+    }
+    
+    .armory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-6);
+    }
+    
+    .model-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .model-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    
+    .model-badge {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-3);
+      border-left: 3px solid var(--color-primary);
+    }
+    
+    .model-card.vision .model-badge { border-left-color: #ff9a9e; }
+    .model-card.audio .model-badge { border-left-color: #a18cd1; }
+    .model-card.memory .model-badge { border-left-color: #fbc2eb; }
+    
+    .model-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+    
+    .model-specs {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-bottom: var(--space-4);
+      display: flex;
+      gap: 10px;
+    }
+    
+    .pearl-section {
+      margin-bottom: var(--space-4);
+    }
+    
+    .pearl-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      opacity: 0.5;
+      margin-bottom: 2px;
+      font-weight: bold;
+    }
+    
+    .pearl-text {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    
+    .harness-btn {
+      margin-top: auto;
+      width: 100%;
+      text-align: center;
+      padding: var(--space-3);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    
+    .harness-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    
+    .nav-back {
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-4);
+      color: var(--color-text);
+      text-decoration: none;
+      opacity: 0.7;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-back:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+  
+  <a href="index.html" class="nav-back">← Back to Main</a>
+
+  <div class="armory-container">
+    <header class="armory-header">
+      <h1>The Model Armory</h1>
+      <p style="opacity: 0.7;">Edge AI Harnesses. Swap out Zen Zuse to experiment with heavy experimental models.</p>
+    </header>
+
+    <div class="armory-grid">
+      
+      <!-- Liquid LFM (Core) -->
+      <div class="model-card text">
+        <div class="model-badge">Core Engine</div>
+        <div class="model-title">Liquid LFM-1.3B</div>
+        <div class="model-specs"><span>Size: ~1.3GB</span> • <span>Architecture: Non-Transformer</span></div>
+        
+        <div class="pearl-section">
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A dynamic state-space model that replaces the traditional transformer architecture.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">Runs persistently in WebGPU on the main app page via Transformers.js.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">Incredible potential for infinite context windows and roughly 5x better memory efficiency on mobile devices.</div>
+        </div>
+        
+        <a href="index.html" class="harness-btn">Active on Main</a>
+      </div>
+
+      <!-- Janus-Pro-1B (Vision) -->
+      <div class="model-card vision">
+        <div class="model-badge">Experimental Vision</div>
+        <div class="model-title">DeepSeek Janus-Pro 1B</div>
+        <div class="model-specs"><span>Size: ~1GB</span> • <span>VRAM: ~1.5GB</span></div>
+        
+        <div class="pearl-section">
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A massive multimodal architecture capable of extreme visual comprehension and reasoning.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">Requires a dedicated isolated harness to prevent main app crashes.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">For times when Florence-2 isn't enough and you need deep semantic understanding of an image.</div>
+        </div>
+        
+        <a href="models/janus.html" class="harness-btn">Enter Janus Harness</a>
+      </div>
+
+      <!-- Nomic Embed (Memory) -->
+      <div class="model-card memory">
+        <div class="model-badge">Vector Memory</div>
+        <div class="model-title">Nomic Embed Text v1.5</div>
+        <div class="model-specs"><span>Size: 50MB</span> • <span>VRAM: ~80MB</span></div>
+        
+        <div class="pearl-section">
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A 768-dimensional semantic embedding model.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">Runs silently in the background alongside Zen Zuse.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">Enables the local RAG pipeline, allowing you to search your journals and memories instantly.</div>
+        </div>
+        
+        <a href="models/nomic.html" class="harness-btn">Enter Nomic Harness</a>
+      </div>
+
+      <!-- Llama 3.2 (Text) -->
+      <div class="model-card text">
+        <div class="model-badge">Experimental Logic</div>
+        <div class="model-title">Llama 3.2 1B Instruct</div>
+        <div class="model-specs"><span>Size: 1GB</span> • <span>VRAM: ~1.2GB</span></div>
+        
+        <div class="pearl-section">
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A highly optimized autoregressive language model.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">Runs via MLC-LLM in an isolated harness.</div>
+        </div>
+        <div class="pearl-section">
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">For times when a strict instruction-following transformer is needed over a state-space model.</div>
+        </div>
+        
+        <a href="models/llama.html" class="harness-btn">Enter Llama Harness</a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

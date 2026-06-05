@@ -11,7 +11,7 @@
  */
 
 import { PhoneHardware } from './hardware.js';
-import { WebLLMManager } from './webllm-manager.js';
+import { PhoneLFM } from './lfm-manager.js';
 import { PhoneVision } from './vision-manager.js';
 
 export const PhoneAI = (() => {
@@ -153,11 +153,11 @@ ${vaamSummary}
       return getOfflineResponse(processedMessage);
     }
 
-    // 5. WebLLM offline mode
+    // 5. Liquid LFM offline mode
     if (activeBackend === 'webllm') {
       try {
-        if (typeof WebLLMManager === 'undefined' || !WebLLMManager.isReady()) {
-          return { message: { content: "[System] Offline Brain is still downloading or failed to initialize." } };
+        if (typeof PhoneLFM === 'undefined' || !PhoneLFM.isReady()) {
+          return { message: { content: "[System] Liquid Core Brain is still downloading or failed to initialize." } };
         }
         
         let systemPrompt = buildSystemPrompt(state, vaamSummary);
@@ -166,8 +166,8 @@ ${vaamSummary}
           { role: 'user', content: processedMessage }
         ];
 
-        console.log(`[phone-ai] Routing chat to Offline WebLLM...`);
-        let fullResponse = await WebLLMManager.chat(messages, onChunk);
+        console.log(`[phone-ai] Routing chat to Offline Liquid LFM...`);
+        let fullResponse = await PhoneLFM.chat(messages, onChunk);
         return { message: { content: fullResponse } };
       } catch (err) {
         console.error(err);

@@ -19,6 +19,7 @@ const ASSETS = [
   './js/onboarding.js',
   './js/pearl.js',
   './js/radar.js',
+  './js/rag-manager.js',
   './js/recycle.js',
   './js/settings.js',
   './js/state.js',
@@ -28,7 +29,7 @@ const ASSETS = [
   './js/polarity.js',
   './js/quest.js',
   './js/voice.js',
-  './js/webllm-manager.js',
+  './js/lfm-manager.js',
   './js/data/constants.js',
   './js/data/i18n.js'
 ];

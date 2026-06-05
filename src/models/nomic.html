@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nomic Embed Harness | The Armory</title>
+  <link rel="stylesheet" href="../css/index.css">
+  <style>
+    .harness-container {
+      max-width: 800px;
+      margin: var(--space-8) auto;
+      padding: var(--space-4);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+    
+    .status {
+      padding: var(--space-4);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-4);
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  
+  <a href="../models.html" class="btn" style="position:absolute; top:20px; left:20px; text-decoration:none;">← Return to Armory</a>
+
+  <div class="harness-container">
+    <h2>Nomic Embed Text v1.5 Harness</h2>
+    <p style="opacity: 0.8; margin-bottom: var(--space-4);">This model runs continuously in the background of the main app for memory retrieval. Here you can visualize the exact 768-dimensional vectors it generates.</p>
+    
+    <div class="status" id="status-log">
+      Ready to Initialize.
+    </div>
+
+    <button id="btn-init" class="btn btn-primary">Initialize Pipeline</button>
+    
+    <div id="harness-ui" style="display:none; margin-top: var(--space-6);">
+      <textarea id="text-input" class="input" style="width: 100%; height: 100px; margin-bottom: var(--space-4);" placeholder="Type a sentence to embed..."></textarea>
+      <button id="btn-analyze" class="btn btn-secondary">Generate Vector</button>
+      
+      <div id="result" class="status" style="margin-top: var(--space-4); min-height: 100px; word-break: break-all; font-size: 10px; color: var(--color-accent);"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0-alpha.19';
+    
+    env.backends.onnx.wasm.numThreads = 1;
+    let embedPipe = null;
+
+    const log = (msg) => document.getElementById('status-log').innerText = msg;
+
+    document.getElementById('btn-init').addEventListener('click', async () => {
+      document.getElementById('btn-init').disabled = true;
+      log("Loading Nomic Embed Weights...");
+      
+      try {
+        embedPipe = await pipeline('feature-extraction', 'Xenova/nomic-embed-text-v1.5', {
+          dtype: 'q4'
+        });
+        
+        log("Pipeline Initialized successfully.");
+        document.getElementById('harness-ui').style.display = 'block';
+      } catch (e) {
+        log(`Error: ${e.message}`);
+      }
+    });
+
+    document.getElementById('btn-analyze').addEventListener('click', async () => {
+      if (!embedPipe) return;
+      const text = document.getElementById('text-input').value;
+      if (!text) return;
+      
+      document.getElementById('result').innerText = "Computing 768-D Vector...";
+      
+      try {
+        const output = await embedPipe(text, { pooling: 'mean', normalize: true });
+        const arr = Array.from(output.data);
+        // Just show first 20 and last 3 to not explode the DOM
+        document.getElementById('result').innerText = `[${arr.slice(0, 20).map(n => n.toFixed(4)).join(', ')} ... ${arr.slice(-3).map(n => n.toFixed(4)).join(', ')}]`;
+      } catch (e) {
+        document.getElementById('result').innerText = `Error: ${e.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

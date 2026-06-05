@@ -26,6 +26,7 @@ import { PhoneOnboarding } from './onboarding.js';
 import { PhoneQuest } from './quest.js';
 import { PhoneSettings } from './settings.js';
 import { PhoneVision } from './vision-manager.js';
+import { PhoneRAG } from './rag-manager.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -81,6 +82,9 @@ if ('serviceWorker' in navigator) {
   if (typeof PhoneDocs !== 'undefined') PhoneDocs.init();
   if (typeof PhoneQuest !== 'undefined') PhoneQuest.init();
   if (typeof PhoneSettings !== 'undefined') PhoneSettings.init();
+  
+  // Initialize background RAG silently
+  PhoneRAG.init().catch(e => console.warn("RAG Init failed silently in background:", e));
 
   // ─── 4. Navigation (Clean Tab Switching) ───
   const navButtons = document.querySelectorAll('.sigil-btn[data-panel]');
@@ -245,51 +249,11 @@ if ('serviceWorker' in navigator) {
   const offlineSection = document.getElementById('offline-download-section');
   const btnDownload = document.getElementById('download-model-btn');
   const progressContainer = document.getElementById('download-progress-container');
-  const progressFill = document.getElementById('download-progress-fill');
-  const progressText = document.getElementById('download-progress-text');
 
   if (modal && btnCloseModal) {
     btnCloseModal.addEventListener('click', () => {
       modal.classList.add('hidden');
     });
-
-    if (engineSelect) {
-      engineSelect.addEventListener('change', (e) => {
-        if (e.target.value === 'offline') {
-          offlineSection?.classList.remove('hidden');
-        } else {
-          offlineSection?.classList.add('hidden');
-        }
-      });
-    }
-
-    if (btnDownload) {
-      btnDownload.addEventListener('click', async () => {
-        if (typeof WebLLMManager === 'undefined') {
-          alert("WebLLM offline engine not available.");
-          return;
-        }
-        
-        btnDownload.disabled = true;
-        progressContainer?.classList.remove('hidden');
-        
-        try {
-          await WebLLMManager.init((progress, text) => {
-            if (progressFill) progressFill.style.width = `${progress}%`;
-            if (progressText) progressText.textContent = `${progress}% - ${text}`;
-          });
-          
-          btnDownload.textContent = "Downloaded & Ready!";
-          if (typeof PhoneAI !== 'undefined') {
-            PhoneAI.setActiveBackend('webllm');
-          }
-        } catch (err) {
-          console.error(err);
-          if (progressText) progressText.textContent = "Error downloading model.";
-          btnDownload.disabled = false;
-        }
-      });
-    }
   }
 
   // ─── 7. First-Run Onboarding ───

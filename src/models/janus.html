@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Janus-Pro-1B Harness | The Armory</title>
+  <link rel="stylesheet" href="../css/index.css">
+  <style>
+    .harness-container {
+      max-width: 800px;
+      margin: var(--space-8) auto;
+      padding: var(--space-4);
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+    
+    .status {
+      padding: var(--space-4);
+      background: rgba(0,0,0,0.2);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-4);
+      font-family: monospace;
+    }
+    
+    .warning {
+      color: #ff9a9e;
+      font-weight: bold;
+      margin-bottom: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  
+  <a href="../models.html" class="btn" style="position:absolute; top:20px; left:20px; text-decoration:none;">← Return to Armory</a>
+
+  <div class="harness-container">
+    <h2>DeepSeek Janus-Pro-1B Harness</h2>
+    <p class="warning">⚠️ WARNING: Entering this harness isolates the environment to guarantee 1.5GB of pristine VRAM. Zen Zuse is currently suspended.</p>
+    
+    <div class="status" id="status-log">
+      System Ready. Click "Initialize Pipeline" to load weights into WebGPU.
+    </div>
+
+    <button id="btn-init" class="btn btn-primary">Initialize Pipeline</button>
+    
+    <div id="harness-ui" style="display:none; margin-top: var(--space-6);">
+      <input type="file" id="image-upload" accept="image/*" class="btn" style="margin-bottom: var(--space-4);">
+      <img id="preview" style="max-width: 100%; max-height: 300px; display: none; border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+      <button id="btn-analyze" class="btn btn-secondary">Analyze Image</button>
+      
+      <div id="result" class="status" style="margin-top: var(--space-4); min-height: 100px;"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.0-alpha.19';
+    
+    env.backends.onnx.wasm.numThreads = 1;
+    let visionPipe = null;
+
+    const log = (msg) => document.getElementById('status-log').innerText = msg;
+
+    document.getElementById('btn-init').addEventListener('click', async () => {
+      document.getElementById('btn-init').disabled = true;
+      log("Downloading/Loading Janus-Pro-1B... (This may take several minutes on first load)");
+      
+      try {
+        visionPipe = await pipeline('image-to-text', 'deepseek-community/Janus-Pro-1B', {
+          device: 'webgpu',
+          dtype: 'q4',
+          progress_callback: (report) => {
+            if (report.status === 'progress') {
+              log(`Loading Weights: ${report.file} (${Math.round(report.progress)}%)`);
+            }
+          }
+        });
+        
+        log("Pipeline Initialized successfully on WebGPU.");
+        document.getElementById('harness-ui').style.display = 'block';
+      } catch (e) {
+        log(`Error: ${e.message}`);
+      }
+    });
+
+    let currentImageData = null;
+
+    document.getElementById('image-upload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentImageData = event.target.result;
+        const img = document.getElementById('preview');
+        img.src = currentImageData;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('btn-analyze').addEventListener('click', async () => {
+      if (!visionPipe || !currentImageData) return;
+      document.getElementById('result').innerText = "Analyzing...";
+      
+      try {
+        const result = await visionPipe(currentImageData, {
+          prompt: "<MORE_DETAILED_CAPTION>",
+          max_new_tokens: 150
+        });
+        document.getElementById('result').innerText = result[0]?.generated_text || "No result.";
+      } catch (e) {
+        document.getElementById('result').innerText = `Inference Error: ${e.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

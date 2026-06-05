@@ -599,24 +599,60 @@
           <!-- Brain Settings Modal -->
           <div id="brain-settings-modal" class="modal-overlay hidden">
             <div class="modal-content">
-              <h2>Brain Setup</h2>
-              <div class="form-group">
-                <label>AI Engine</label>
-                <select id="engine-select">
-                  <option value="lmstudio">Local Network (LM Studio)</option>
-                  <option value="offline">Offline (WebGPU Browser)</option>
-                </select>
+              <div class="modal-header">
+                <h3>Brain Setup</h3>
+                <button id="btn-close-brain-modal" class="btn btn-icon">×</button>
               </div>
-              <div id="offline-download-section" class="hidden">
-                <p class="small-text">Download the model (~700MB) to run AI completely offline in your browser.</p>
-                <button id="download-model-btn" class="btn btn-secondary">Download Offline Brain</button>
-                <div id="download-progress-container" class="hidden">
-                  <div class="progress-bar"><div id="download-progress-fill" class="progress-fill" style="width:0%"></div></div>
-                  <span id="download-progress-text" class="small-text">0%</span>
+              <div class="modal-body">
+                <p style="opacity: 0.8; margin-bottom: var(--space-4);">Select how Phonethagoras thinks.</p>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); text-align: center;">
+                  <h4>⚔️ The Model Armory ⚔️</h4>
+                  <p style="font-size: var(--text-sm); opacity: 0.8; margin-bottom: var(--space-3);">
+                    Explore the experimental model hub for Heavy Harnesses like Janus-Pro and Nemotron.
+                  </p>
+                  <a href="models.html" class="btn btn-primary" style="width: 100%; text-decoration: none; text-align: center; display: block; box-sizing: border-box;">Enter the Armory</a>
                 </div>
-              </div>
-              <div class="modal-actions">
-                <button id="close-brain-settings" class="btn btn-secondary">Close</button>
+
+                <div class="form-group">
+                  <label>AI Engine</label>
+                  <select id="engine-select">
+                    <option value="lmstudio">Local Network (LM Studio)</option>
+                    <option value="offline">Offline (WebGPU Browser)</option>
+                  </select>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.05); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                  <h4>Liquid LFM Brain (WebGPU)</h4>
+                  <p style="font-size: var(--text-sm); opacity: 0.8; margin-bottom: var(--space-2);">
+                    Download a 1.3GB Liquid Foundation Model to your browser cache. 5x more memory efficient than Llama.
+                  </p>
+                  <button id="btn-enable-webllm" class="btn btn-secondary" style="width: 100%;">Download Liquid Brain</button>
+                  <div id="webllm-progress-container" style="display: none; margin-top: var(--space-2);">
+                    <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                      <div id="webllm-progress-bar" style="width: 0%; height: 100%; background: var(--color-primary); transition: width 0.3s ease;"></div>
+                    </div>
+                    <p id="webllm-progress-text" style="font-size: 12px; margin-top: 4px; opacity: 0.7;">0%</p>
+                  </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.05); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+                  <h4>Offline Vision Brain (WebGPU)</h4>
+                  <p style="font-size: var(--text-sm); opacity: 0.8; margin-bottom: var(--space-2);">
+                    Download a ~230MB vision model (Florence-2) to allow Phonethagoras to "see" images while offline.
+                  </p>
+                  <button id="btn-enable-vision" class="btn btn-secondary" style="width: 100%;">Download Vision Brain</button>
+                  <div id="vision-progress-container" style="display: none; margin-top: var(--space-2);">
+                    <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                      <div id="vision-progress-bar" style="width: 0%; height: 100%; background: var(--color-accent); transition: width 0.3s ease;"></div>
+                    </div>
+                    <p id="vision-progress-text" style="font-size: 12px; margin-top: 4px; opacity: 0.7;">0%</p>
+                  </div>
+                </div>
+
+                <div class="modal-actions">
+                  <button id="close-brain-settings" class="btn btn-secondary">Close</button>
+                </div>
               </div>
             </div>
           </div>
