@@ -188,25 +188,37 @@ import { PhoneState } from './state.js';
   }
 
   function promptSummary() {
-    let summary = `[VAAM Telemetry]\n`;
+    const parts = [];
+    const s = profile.style;
+    const brevity = s.brevity > 0.6 ? 'terse' : s.brevity < 0.4 ? 'verbose' : 'balanced';
+    const directness = s.directness > 0.6 ? 'direct' : s.directness < 0.4 ? 'exploratory' : 'mixed';
+    parts.push(`Style: ${brevity} + ${directness}`);
     
-    // 1. Stress injection
-    if (stressState === 'high_stress') {
-      summary += `STATE: HIGH STRESS DETECTED. User is dysregulated. DO NOT ask complex questions. Guide them to ground themselves immediately.\n`;
-    } else {
-      summary += `STATE: Nominal.\n`;
+    const top = topWords(5);
+    if (top.length > 0) {
+      parts.push(`Key words: ${top.map(t => t.word).join(', ')}`);
+    }
+    
+    if (profile.keystrokes) {
+      const wpm = Math.round(profile.keystrokes.wpmAvg);
+      const corr = Math.round(profile.keystrokes.correctionRateAvg * 100);
+      parts.push(`Cognitive Proxy: ${wpm} WPM, ${corr}% Corrections`);
+    }
+    
+    if (profile.mastered.length > 0) {
+      parts.push(`Mastered: ${profile.mastered.length} words`);
     }
 
-    // 2. Polarity Injection
+    // Polarity Injection
     const polarityAlert = Polarity.getImbalanceAlert();
     if (polarityAlert) {
-      summary += `${polarityAlert}\n`;
+      parts.push(polarityAlert);
     }
 
-    // 3. Core Constraints
-    summary += `CORE RULE: All interventions must be consensual. Do NOT interrogate or force self-help. If the user does not opt-in, just listen. If cognitive load is high, simply use shorter sentences.`;
+    // Core Consent Rules
+    parts.push(`CORE RULE: All self-help interventions (e.g. breathing, emotional check-ins) MUST be consensual. Do NOT interrogate or force solutions. Wait for the user to opt-in. Hold space. If cognitive load is high, simply use shorter sentences.`);
     
-    return summary;
+    return parts.join(' | ');
   }
 
   function getProfile() { return { ...profile }; }
