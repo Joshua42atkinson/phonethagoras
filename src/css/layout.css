@@ -108,7 +108,7 @@
 }
 
 .brand-epoch {
-  font-size: 0.6875rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-dim);
   letter-spacing: 0.05em;
@@ -166,7 +166,7 @@
 
 .status-indicator {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   padding: 4px 10px;

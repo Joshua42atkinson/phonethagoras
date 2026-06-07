@@ -27,6 +27,7 @@ import { PhoneQuest } from './quest.js';
 import { PhoneSettings } from './settings.js';
 import { PhoneVision } from './vision-manager.js';
 import { PhoneRAG } from './rag-manager.js';
+import { PhoneAuth } from './auth.js';
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -82,6 +83,7 @@ if ('serviceWorker' in navigator) {
   if (typeof PhoneDocs !== 'undefined') PhoneDocs.init();
   if (typeof PhoneQuest !== 'undefined') PhoneQuest.init();
   if (typeof PhoneSettings !== 'undefined') PhoneSettings.init();
+  if (typeof PhoneAuth !== 'undefined') PhoneAuth.init();
   
   // Initialize background RAG silently
   PhoneRAG.init().catch(e => console.warn("RAG Init failed silently in background:", e));

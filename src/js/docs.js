@@ -1,7 +1,7 @@
 /**
  * DOCS TRANSLATION & HANDS-FREE QUESTIONNAIRE MODULE — phone.com
  * 
- * Enables coaches to drop WIOA intake documents into a shared space.
+ * Enables Guild Officers to drop Quest intake documents into a shared space.
  * The client's AI interprets them, parses the client "character sheet" state,
  * structures it as a dynamic resume (Skills, Attitudes, Ambitions),
  * and conducts a hands-free voice questionnaire to complete missing fields.
@@ -95,7 +95,7 @@ export const PhoneDocs = (() => {
     if (!isDriveConnected) {
       docListContainer.innerHTML = `
         <div style="padding: 1.5rem; text-align: center; color: var(--color-text-dim); border: 1px dashed var(--color-border); border-radius: 6px;">
-          <p style="font-size: 0.85rem; margin-bottom: 1rem;">Connect your Google Drive in Settings to access shared coach folders.</p>
+          <p style="font-size: 0.85rem; margin-bottom: 1rem;">Connect your Google Drive in Settings to access shared guild folders.</p>
           <button class="btn btn-secondary" onclick="document.getElementById('nav-settings').click()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Go to Settings</button>
         </div>
       `;

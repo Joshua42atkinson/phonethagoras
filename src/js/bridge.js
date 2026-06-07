@@ -62,6 +62,7 @@ export const PhoneBridge = (() => {
     // Actions
     btnSendSitrep = document.getElementById('btn-send-sitrep');
     btnDownloadSitrep = document.getElementById('btn-download-sitrep');
+    const btnP2PSync = document.getElementById('btn-p2p-mentor-sync');
 
     // History
     historyContainer = document.getElementById('sitrep-history-container');
@@ -79,6 +80,23 @@ export const PhoneBridge = (() => {
     btnSaveMentor.addEventListener('click', saveMentorInfo);
     btnSendSitrep.addEventListener('click', sendSitrep);
     btnDownloadSitrep.addEventListener('click', downloadSitrep);
+    if (btnP2PSync) {
+      btnP2PSync.addEventListener('click', async () => {
+        btnP2PSync.textContent = "Connecting P2P...";
+        btnP2PSync.disabled = true;
+        try {
+          const { PhoneNativeBridge } = await import('./native-bridge.js');
+          await PhoneNativeBridge.startP2PSync();
+          alert("P2P Sync complete. Data has been shared locally.");
+        } catch(e) {
+          console.error("P2P Sync failed", e);
+          alert("Failed to sync via P2P. Make sure Bluetooth/WiFi Direct is enabled.");
+        } finally {
+          btnP2PSync.textContent = "P2P Mentor Sync (Offline QR/Bluetooth)";
+          btnP2PSync.disabled = false;
+        }
+      });
+    }
 
     // Help tag toggle buttons
     if (helpTagsContainer) {
@@ -111,7 +129,7 @@ export const PhoneBridge = (() => {
         const mentor = JSON.parse(saved);
         if (mentorNameInput) mentorNameInput.value = mentor.name || '';
         if (mentorEmailInput) mentorEmailInput.value = mentor.email || '';
-        if (mentorRelSelect) mentorRelSelect.value = mentor.relationship || 'career_coach';
+        if (mentorRelSelect) mentorRelSelect.value = mentor.relationship || 'guild_master';
         updateSaveButton(true);
       }
     } catch (e) {
@@ -123,7 +141,7 @@ export const PhoneBridge = (() => {
     const mentor = {
       name: mentorNameInput?.value.trim() || '',
       email: mentorEmailInput?.value.trim() || '',
-      relationship: mentorRelSelect?.value || 'career_coach',
+      relationship: mentorRelSelect?.value || 'guild_master',
       savedAt: new Date().toISOString()
     };
 
@@ -231,11 +249,11 @@ export const PhoneBridge = (() => {
 
   function formatSitrepAsText(sitrep) {
     const relationshipLabels = {
-      career_coach: 'Career Coach',
-      case_manager: 'Case Manager',
-      peer_mentor: 'Peer Mentor',
-      therapist: 'Therapist / Counselor',
-      sponsor: 'Sponsor (Recovery)',
+      guild_master: 'Guild Master',
+      guild_officer: 'Guild Officer',
+      party_member: 'Party Member',
+      healer: 'Healer',
+      paladin: 'Paladin',
       family: 'Family Support',
       other: 'Mentor'
     };
@@ -338,7 +356,7 @@ Context:
     }
   }
 
-  // ─── Send via Email (mailto:) ───
+  // ─── Send via WhatsApp (wa.me) ───
 
   function sendSitrep() {
     const sitrep = buildSitrep();
@@ -357,11 +375,26 @@ Context:
     // Save to local history before sending
     saveToHistory(sitrep);
 
-    // Build mailto link
-    const mailtoUrl = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    // Build WhatsApp link (wa.me)
+    let waUrl = `https://wa.me/`;
+    if (email && email.match(/^[+0-9]+$/)) { 
+      waUrl += `${email.replace(/[^0-9]/g, '')}`;
+    }
+    waUrl += `?text=${encodeURIComponent(body)}`;
 
-    // Open the user's email client
-    window.location.href = mailtoUrl;
+    // Open WhatsApp (Agnostic Routing)
+    if (window.__TAURI__) {
+      // Native NDK routing
+      import('@tauri-apps/plugin-shell').then(module => {
+        module.open(waUrl);
+      }).catch(err => {
+        console.warn('[bridge] Tauri shell plugin failed, falling back to window.open', err);
+        window.open(waUrl, '_blank');
+      });
+    } else {
+      // Web browser routing
+      window.open(waUrl, '_blank');
+    }
 
     // XP feedback
     showXpPopup('+25 XP (Weekly Bridge Report)');

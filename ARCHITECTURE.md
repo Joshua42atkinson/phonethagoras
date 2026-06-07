@@ -1,11 +1,7 @@
 # Phonethagoras Architecture & Design Document
 
 ## Philosophy
-Phonethagoras is designed as a **local-first, offline-capable, privacy-sovereign web application**. 
-It is built specifically for users navigating intense transitions (veterans, single parents, people in recovery).
-- **No external servers required** for the core experience.
-- **Zero data collection.** All state lives in `localStorage`.
-- **Pure JavaScript, HTML, CSS.** No build steps or complex frameworks required to deploy or modify.
+> **Note to Contributors:** The core philosophy, branding, and tone of Phonethagoras is tracked in `IDENTITY.md`. Please read that file before contributing. This document (`ARCHITECTURE.md`) is strictly for technical structure, state management, and platform integration mechanics.
 
 ---
 
@@ -122,5 +118,9 @@ This reduces mobile memory consumption to virtually zero on the Hub page, preser
 ---
 
 ## Future Roadmap (Next Steps)
-1. **Google OAuth & Sync**: Implement cross-device syncing and coach-to-client secure telemetry. (Currently mapped in `sync.js`).
+1. **International Identity & True Offline P2P Sync**: 
+   - **Authentication**: Replace Google OAuth with a **WhatsApp Business API (OTP)** login flow to serve international markets where phone numbers are the primary identity.
+   - **Local Storage**: Use **SQLCipher** for encrypted local data at rest on Android natively via the JNI bridge.
+   - **Encrypted Sync**: Leverage CRDTs (Conflict-free Replicated Data Types like Yjs) over a **self-hosted Open Source Relay** (e.g., GunDB or Y-Websockets) to ensure data sovereignty. 
+   - **Peer-to-Peer**: Enable true offline sync between Mentee and Mentor via Android Nearby Connections or QR code optical transfer.
 2. **Local Media Suite (Triple-Reply System)**: Integrate Nomic embeddings and local image upscaling for "fun mode" litRPG exploration, ensuring cognitive processing is wrapped in engaging game mechanics.

@@ -5,23 +5,23 @@
 
 :root {
   /* Core Palette (Voix Vive) */
-  --color-bg:          hsl(218, 31%, 15%);  /* #1a2332 Slate Navy */
-  --color-bg-elevated: hsl(218, 29%, 20%);
-  --color-surface:     hsla(218, 31%, 15%, 0.5); /* Glass surface */
-  --color-surface-2:   hsl(218, 29%, 29%);  /* #354560 Slate Blue */
-  --color-border:      hsl(40, 46%, 61%);   /* #c9a96e Muted Gold */
+  --color-bg:          hsl(220, 43%, 7%);   /* Deep Obsidian */
+  --color-bg-elevated: hsl(220, 30%, 12%);
+  --color-surface:     hsla(220, 20%, 15%, 0.6); /* Glassy Charcoal */
+  --color-surface-2:   hsl(220, 20%, 20%);  
+  --color-border:      hsl(40, 46%, 61%);   /* Muted Gold */
   --color-border-subtle: hsla(40, 46%, 61%, 0.25);
 
   /* Typography */
-  --color-text:        hsl(240, 10%, 80%);  /* #c8c8d0 Soft Silver */
-  --color-text-muted:  hsl(216, 20%, 60%);  /* #8090a8 Slate Grey */
+  --color-text:        hsl(240, 10%, 80%);  /* Soft Silver */
+  --color-text-muted:  hsl(216, 20%, 60%);  /* Slate Grey */
   --color-text-dim:    hsla(240, 10%, 80%, 0.4);
 
-  /* Action/Direction Palette (Muted/Jewel Tones to fit the dark academia vibe) */
-  --color-mind:        hsl(190, 60%, 50%);  /* Teal */
-  --color-heart:       hsl(10, 60%, 50%);   /* Rust / Coral */
-  --color-body:        hsl(140, 40%, 50%);  /* Sage */
-  --color-act:         hsl(40, 46%, 61%);   /* Gold */
+  /* Action/Direction Palette (High-Contrast LitRPG Vibe) */
+  --color-mind:        hsl(210, 100%, 60%); /* Arcane Blue */
+  --color-heart:       hsl(350, 90%, 60%);  /* Vitality Red */
+  --color-body:        hsl(150, 90%, 50%);  /* Stamina Green */
+  --color-act:         hsl(280, 90%, 65%);  /* Willpower Purple */
 
   --color-accent:      hsl(40, 46%, 61%);   /* #c9a96e Muted Gold */
   --color-danger:      hsl(350, 70%, 50%);
@@ -55,8 +55,8 @@
   --radius-xl: 20px;
 
   /* Shadows */
-  --shadow-card:    0 8px 32px hsla(0, 0%, 0%, 0.4);
-  --shadow-glow:    0 0 15px hsla(40, 46%, 61%, 0.2);
+  --shadow-card:    0 8px 32px hsla(0, 0%, 0%, 0.6);
+  --shadow-glow:    0 0 20px hsla(40, 46%, 61%, 0.5);
 
   /* Transitions */
   --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -66,7 +66,15 @@
 
 /* Reset */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Mobile readability: scale base font up so all rem sizes grow proportionally */
+@media (max-width: 767px) {
+  html { font-size: 17px; }
+}
+@media (max-width: 400px) {
+  html { font-size: 16.5px; }
+}
 body {
   font-family: var(--font-sans);
   background: var(--color-bg);
@@ -75,9 +83,19 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
+  background: radial-gradient(ellipse at 50% 0%, hsl(218, 31%, 18%) 0%, var(--color-bg) 70%);
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--color-surface-2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

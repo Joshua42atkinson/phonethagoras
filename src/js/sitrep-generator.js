@@ -3,7 +3,7 @@
  * 
  * Generates a concise "Situation Report" from the user's local state.
  * This synthesizes their LitRPG attributes, active quests, and PEARL phase
- * into a shareable snapshot for their life coach or mentor.
+ * into a shareable snapshot for their Guild Master or Party Members.
  * 
  * 100% local, privacy-first.
  */

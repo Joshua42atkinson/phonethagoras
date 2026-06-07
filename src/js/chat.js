@@ -25,7 +25,7 @@ export const PhoneChat = (() => {
   let handsFreeEnabled = false;
   let attachedImageBase64 = null;
   
-  // Socratic Coach Routing State
+  // System Console Routing State
   let isAwaitingEmailDraftPermission = false;
   let cachedDistressText = "";
   
@@ -99,6 +99,9 @@ export const PhoneChat = (() => {
     // Mic controls
     if (btnMic) {
       btnMic.addEventListener('click', () => {
+        if (!PhoneVoice.isListening()) {
+          appendMessage(`<strong>[Skill Unlocked]</strong> You have equipped the Voice Interface. Grant your browser microphone access to speak directly to the System Console.`, false);
+        }
         PhoneVoice.toggleListening();
       });
     }
@@ -270,8 +273,10 @@ export const PhoneChat = (() => {
     }
     // Toggle mic based on hands-free
     if (handsFreeEnabled) {
+      appendMessage(`<strong>[Mode Activated]</strong> Hands-Free Mode initiated. The system will automatically capture your voice and respond aloud. Grant microphone access to proceed.`, false);
       PhoneVoice.startListening();
     } else {
+      appendMessage(`<strong>[Mode Deactivated]</strong> Hands-Free Mode offline. Manual controls restored.`, false);
       PhoneVoice.stopListening();
     }
   }
@@ -320,14 +325,14 @@ export const PhoneChat = (() => {
       PhoneVoice.stopListening();
     }
 
-    // 2. Handle Coach Routing (Layers 2 & 3: Agency & Attention Stewardship)
+    // 2. Handle Guild Routing (Layers 2 & 3: Agency & Attention Stewardship)
     if (isAwaitingEmailDraftPermission) {
       if (text.toLowerCase().match(/\b(yes|yeah|sure|okay|ok|do it|please)\b/)) {
         isAwaitingEmailDraftPermission = false;
         
         // Pull real mentor email from the Mentorship Portal
-        let mentorEmail = 'coach@example.com';
-        let mentorName = 'Coach';
+        let mentorEmail = 'guild@example.com';
+        let mentorName = 'Guild Master';
         try {
           const saved = localStorage.getItem('zen_mentor');
           if (saved) {
@@ -353,11 +358,11 @@ export const PhoneChat = (() => {
       return;
     }
 
-    // 3. Check Coach Routing (Layer 1: Boundary Setting)
-    if (typeof PEARL !== 'undefined' && PEARL.checkCoachRouting(text)) {
-      isAwaitingEmailDraftPermission = true;
-      cachedDistressText = text;
-      appendMessage("I am an architectural scaffold, and this sounds like a deeply important topic best explored with your human coach. Would you like me to draft an email summarizing what we just discussed so you can share it with them?", false);
+    // 3. Check Raid Intervention (Layer 1: Boundary Setting)
+    if (typeof PEARL !== 'undefined' && PEARL.checkRaidIntervention(text)) {
+      isWaitingForResponse = false;
+      updateStatus('Standing by', 'ready');
+      appendMessage("I am a System Console, and this sounds like a deeply important Raid best explored with a human Paladin. Would you like me to draft an SOS summarizing what we just discussed so you can share it with them?", false);
       return;
     }
 
@@ -457,7 +462,7 @@ export const PhoneChat = (() => {
     } else if (name === 'semantic_search') {
       htmlMsg = `I want to search your Inventory for:<br><strong>"${args.query}"</strong><br>Do you approve?`;
     } else if (name === 'generate_casework_summary') {
-      htmlMsg = `I want to generate a Weekly Casework Summary for your coach and save it to your Inventory.<br><br><strong>Summary:</strong> ${args.summary}<br><br>Do you approve?`;
+      htmlMsg = `I want to generate a Party Sync for your Guild and save it to your Inventory.<br><br><strong>Summary:</strong> ${args.summary}<br><br>Do you approve?`;
     } else {
       htmlMsg = `I want to execute the tool <strong>${name}</strong> with arguments: <code>${JSON.stringify(args)}</code>. Do you approve?`;
     }
@@ -612,7 +617,7 @@ export const PhoneChat = (() => {
     evtSource.addEventListener("file_updated", (event) => {
       try {
         const data = JSON.parse(event.data);
-        appendMessage(`<strong>[System Alert]</strong> The human coach or an external process just updated the file: <code>${data.filename}</code> in your Inventory.<br><br>Type <code>/work Please read ${data.filename}</code> to review the new changes.`, false);
+        appendMessage(`<strong>[System Alert]</strong> The Guild Master or an external process just updated the file: <code>${data.filename}</code> in your Inventory.<br><br>Type <code>/work Please read ${data.filename}</code> to review the new changes.`, false);
         if (ttsEnabled) {
           PhoneVoice.speak(`Alert: The file ${data.filename} was just updated in your inventory.`);
         }

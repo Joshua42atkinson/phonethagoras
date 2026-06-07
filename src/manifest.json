@@ -7,7 +7,7 @@
   "orientation": "portrait",
   "background_color": "#0a0f19",
   "theme_color": "#0a0f19",
-  "description": "A private, offline-first life management engine with AI-powered coaching, resume building, and self-mastery tools.",
+  "description": "A private, offline-first LitRPG self-mastery engine with character stats, artifact crafting, and guild sync.",
   "categories": ["education", "lifestyle", "productivity", "health"],
   "icons": [
     {

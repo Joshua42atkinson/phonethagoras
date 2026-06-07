@@ -11,13 +11,15 @@
  * just slower. With them: full multi-core inference on the device.
  */
 
-const CACHE_NAME = 'phonethagoras-v7';
+const CACHE_NAME = 'phonethagoras-v8';
 
 // App shell — everything needed to run offline after first visit.
 // The GGUF model files are NOT here — wllama manages its own HF cache.
 const ASSETS = [
   './',
   './index.html',
+  './about.html',
+  './help.html',
   './models/professor.html',
   './models/nurse.html',
   './models/scout.html',

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Learn about Phonethagoras — a free, private AI self-mastery engine that runs entirely on your phone. No login, no server, no cost. Built for veterans, mentors, and anyone rebuilding.">
+  <meta name="theme-color" content="#0a0f19">
+  <title>About | Phonethagoras — Free Private AI System Console</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+
+  <style>
+    /* ═══════════════════════════════════════
+       ABOUT PAGE — Phonethagoras
+       ═══════════════════════════════════════ */
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1a1b26 0%, #0a0f19 100%);
+      min-height: 100vh;
+      color: var(--color-text);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Navigation ── */
+    .nav-back {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s;
+      font-weight: 500;
+      z-index: 100;
+    }
+    .nav-back:hover {
+      color: var(--color-text);
+    }
+
+    /* ── Page Container ── */
+    .about-container {
+      padding: 5rem 1.5rem 4rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero Header ── */
+    .about-hero {
+      text-align: center;
+      margin-bottom: 4rem;
+      animation: fadeInDown 0.8s ease forwards;
+    }
+
+    .about-hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #e0e0e0, #888);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+      letter-spacing: 2px;
+    }
+
+    .about-hero .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      color: var(--color-accent);
+      font-style: italic;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-hero .hero-sub {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── Section Headings ── */
+    .section-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-subheading {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .about-section {
+      margin-bottom: 4rem;
+    }
+
+    /* ── What Is This (Intro Card) ── */
+    .intro-card {
+      background: rgba(20, 25, 40, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.15s;
+    }
+
+    .intro-card p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--color-text);
+      margin-bottom: 1rem;
+    }
+
+    .intro-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .intro-highlights {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .intro-highlights li {
+      padding-left: 1.5rem;
+      position: relative;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--color-text);
+    }
+
+    .intro-highlights li::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: var(--color-accent);
+      font-size: 0.875rem;
+      top: 0.35rem;
+    }
+
+    .builder-credit {
+      font-size: 0.875rem !important;
+      color: var(--color-text-muted) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1rem;
+      margin-top: 1.5rem !important;
+    }
+
+    /* ── Tool Cards Grid ── */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tool-card {
+      background: rgba(20, 25, 40, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.75rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--color-accent));
+      opacity: 0.7;
+      transition: height 0.3s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35),
+                  0 0 15px var(--card-glow, rgba(255, 255, 255, 0.05));
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .tool-card:hover::before {
+      height: 5px;
+    }
+
+    .tool-card:nth-child(1) { animation-delay: 0.1s; --card-accent: #2ecc71; --card-glow: rgba(46, 204, 113, 0.15); }
+    .tool-card:nth-child(2) { animation-delay: 0.2s; --card-accent: #f39c12; --card-glow: rgba(243, 156, 18, 0.15); }
+    .tool-card:nth-child(3) { animation-delay: 0.3s; --card-accent: #3498db; --card-glow: rgba(52, 152, 219, 0.15); }
+    .tool-card:nth-child(4) { animation-delay: 0.4s; --card-accent: #9b59b6; --card-glow: rgba(155, 89, 182, 0.15); }
+    .tool-card:nth-child(5) { animation-delay: 0.5s; --card-accent: var(--color-accent); --card-glow: rgba(201, 169, 110, 0.15); }
+
+    .tool-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: inline-block;
+    }
+
+    .tool-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .tool-desc {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--color-text-muted);
+    }
+
+    /* ── Steps ── */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      counter-reset: step-counter;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      animation: fadeInUp 0.7s ease forwards;
+      opacity: 0;
+    }
+
+    .step-item:nth-child(1) { animation-delay: 0.1s; }
+    .step-item:nth-child(2) { animation-delay: 0.2s; }
+    .step-item:nth-child(3) { animation-delay: 0.3s; }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(201, 169, 110, 0.15);
+      border: 1px solid var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+
+    .step-content h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.25rem;
+    }
+
+    .step-content p {
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Guild Workflow ── */
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .workflow-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(20, 25, 40, 0.35);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      animation: fadeInUp 0.7s ease forwards;
+      opacity: 0;
+    }
+
+    .workflow-step:nth-child(1) { animation-delay: 0.1s; }
+    .workflow-step:nth-child(2) { animation-delay: 0.2s; }
+    .workflow-step:nth-child(3) { animation-delay: 0.3s; }
+    .workflow-step:nth-child(4) { animation-delay: 0.4s; }
+
+    .workflow-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .workflow-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--color-text);
+    }
+
+    /* ── Compliance Table ── */
+    .compliance-table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.15s;
+    }
+
+    .compliance-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .compliance-table thead {
+      background: rgba(201, 169, 110, 0.12);
+    }
+
+    .compliance-table th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-accent);
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .compliance-table td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+
+    .compliance-table td:first-child {
+      font-weight: 600;
+      white-space: nowrap;
+      color: var(--color-text);
+    }
+
+    .compliance-table td:last-child {
+      color: var(--color-text-muted);
+    }
+
+    .compliance-table tbody tr {
+      transition: background 0.2s;
+    }
+
+    .compliance-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .cost-callout {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--color-accent);
+      letter-spacing: 0.5px;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.3s;
+    }
+
+    /* ── Open Source ── */
+    .opensource-card {
+      background: rgba(20, 25, 40, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.15s;
+    }
+
+    .opensource-card p {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+
+    .opensource-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .opensource-card a {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.3);
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .opensource-card a:hover {
+      color: #e0c88e;
+      border-color: var(--color-accent);
+    }
+
+    .license-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.2), transparent);
+      margin: 0 2rem;
+      border: none;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .about-container {
+        padding: 4.5rem 1rem 3rem;
+      }
+
+      .intro-card,
+      .opensource-card {
+        padding: 1.75rem 1.25rem;
+      }
+
+      .tool-card {
+        padding: 1.5rem 1.25rem;
+      }
+
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .compliance-table th,
+      .compliance-table td {
+        padding: 0.75rem 1rem;
+      }
+
+      .workflow-step {
+        padding: 1rem 1.25rem;
+      }
+
+      .section-heading {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Return to App
+  </a>
+
+  <div class="about-container">
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+    <header class="about-hero">
+      <h1>About Phonethagoras</h1>
+      <p class="hero-tagline">Your private System Console — right in your pocket.</p>
+      <p class="hero-sub">A free tool built for people who are rebuilding. No accounts, no servers, no tracking. Everything stays on your device.</p>
+    </header>
+
+    <!-- ═══════════════════ SECTION 1: WHAT IS THIS? ═══════════════════ -->
+    <section class="about-section">
+      <h2 class="section-heading">What Is Phonethagoras?</h2>
+      <p class="section-subheading">A self-mastery engine anyone can use — with nothing to install, sign up for, or pay.</p>
+
+      <div class="intro-card">
+        <p>Phonethagoras is a free, private AI self-mastery engine that runs entirely on your phone. It helps you organize your life story, build a resume, manage stamina, and prepare for your next encounter — all without sending a single byte of data to anyone.</p>
+        <ul class="intro-highlights">
+          <li><strong>No login required</strong> — open the site and start immediately</li>
+          <li><strong>No server, no cloud</strong> — the AI runs directly on your device</li>
+          <li><strong>No cost, ever</strong> — free at launch, free forever</li>
+          <li><strong>Works offline</strong> — after your first visit, it works without internet</li>
+          <li><strong>Complete privacy</strong> — all data stays on your phone, period</li>
+        </ul>
+        <p class="builder-credit">Built by <strong>Joshua Atkinson</strong> — disabled veteran, Purdue University Learning Design &amp; Technology program, Systems Architect &amp; Instructional Designer. Created because everyone deserves a free tool to organize their life.</p>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════ SECTION 2: THE FOUR TOOLS ═══════════════════ -->
+    <section class="about-section">
+      <h2 class="section-heading">What Does It Do?</h2>
+      <p class="section-subheading">Four specialized tools and one personal guide — each designed to meet you where you are.</p>
+
+      <div class="tools-grid">
+
+        <div class="tool-card">
+          <span class="tool-icon">🌲</span>
+          <div class="tool-name">The Scout (Career Explorer)</div>
+          <p class="tool-desc">Paste your work history — military service, odd jobs, volunteer work, anything. The AI translates it into resume-ready bullet points that recruiters actually understand.</p>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">📖</span>
+          <div class="tool-name">The Storyteller (Story Writer)</div>
+          <p class="tool-desc">Write about a hard time in your own words. The AI finds the strength in your experience and reframes it into professional language you can use on applications and in interviews.</p>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">⚕️</span>
+          <div class="tool-name">The Nurse (Wellness Guide)</div>
+          <p class="tool-desc">Feeling overwhelmed? Start a guided breathing exercise to reset your nervous system, or talk through what's going on. Includes crisis resources (988 &amp; 211) if you need them.</p>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">🏛️</span>
+          <div class="tool-name">The Professor (Job Matcher)</div>
+          <p class="tool-desc">Paste a job posting. The AI compares it against your skills and experience, showing exactly which requirements you meet and which gaps to work on next.</p>
+        </div>
+
+        <div class="tool-card">
+          <span class="tool-icon">💎</span>
+          <div class="tool-name">Zen Zuse — The Architect</div>
+          <p class="tool-desc">Not sure where to start? Just tell Zen Zuse what's going on. Your personal AI guide will listen, ask the right questions, and point you to the tool that fits your situation.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════ SECTION 3: GETTING STARTED ═══════════════════ -->
+    <section class="about-section">
+      <h2 class="section-heading">How to Get Started</h2>
+      <p class="section-subheading">Three steps. Under two minutes. No downloads.</p>
+
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Open Phonethagoras on your phone</h3>
+            <p>Visit <strong>phonethagoras.com</strong> in any browser. It works on iPhone, Android, laptops — anything with a modern browser.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Enter your name and a short story</h3>
+            <p>Tell the app what to call you and where you're at right now. Use your real name or a nickname — whatever feels safe. This never leaves your device.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Pick one goal to work on</h3>
+            <p>Choose something specific — "get a job in IT," "build a resume," "learn to manage stress." The AI breaks it into steps and guides you from there.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════ SECTION 4: FOR GUILDS ═══════════════════ -->
+    <section class="about-section">
+      <h2 class="section-heading">For Guilds &amp; Mentors</h2>
+      <p class="section-subheading">Stay connected to your party's progress — without adding another system to manage.</p>
+
+      <div class="workflow-steps">
+        <div class="workflow-step">
+          <span class="workflow-icon">📋</span>
+          <p class="workflow-text">Your party member generates a <strong>Party Sync</strong> directly in the app — leveling progress, unlocked skills, and what buffs they need from you.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-icon">📤</span>
+          <p class="workflow-text">They tap <strong>"Sync with Guild"</strong> to export their Character Sheet via QR or Bluetooth.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-icon">📊</span>
+          <p class="workflow-text">You <strong>review their stats</strong> between raids — see what's working, where they're under-leveled, and what support they're asking for.</p>
+        </div>
+        <div class="workflow-step">
+          <span class="workflow-icon">📈</span>
+          <p class="workflow-text">Auto-populated data from their <strong>character profile</strong> shows measurable EXP growth over time across four core attributes: Mind, Heart, Body, and Act.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════ SECTION 5: PRIVACY & COMPLIANCE ═══════════════════ -->
+    <section class="about-section">
+      <h2 class="section-heading">Privacy &amp; Compliance</h2>
+      <p class="section-subheading">Phonethagoras is private by architecture, not by policy. There is no server to breach.</p>
+
+      <div class="compliance-table-wrap">
+        <table class="compliance-table">
+          <thead>
+            <tr>
+              <th>Regulation</th>
+              <th>How We Comply</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GDPR / CCPA</td>
+              <td>Complete data sovereignty. All data lives on the user's device. Clearing browser data = permanent, irrecoverable erasure.</td>
+            </tr>
+            <tr>
+              <td>HIPAA</td>
+              <td>Bypassed entirely — zero Protected Health Information (PHI) is transmitted across any network, ever.</td>
+            </tr>
+            <tr>
+              <td>FERPA &amp; COPPA</td>
+              <td>Student records are isolated on the local device. No data is collected, stored, or shared by any external party.</td>
+            </tr>
+            <tr>
+              <td>WIOA</td>
+              <td>Local scripts compile client data into downloadable compliance reports — ready for your existing intake workflows.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="cost-callout">Operational cost: <strong>$0.00 per user</strong> at infinite scale.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- ═══════════════════ SECTION 6: OPEN SOURCE ═══════════════════ -->
+    <section class="about-section" style="margin-bottom: 2rem;">
+      <h2 class="section-heading">Open Source</h2>
+      <p class="section-subheading">Built in the open. Free to inspect, fork, and improve.</p>
+
+      <div class="opensource-card">
+        <span class="license-badge">GPL-3.0 License</span>
+        <p>Phonethagoras is open-source software. Every line of code is available for review, audit, or contribution.</p>
+        <p>GitHub: <a href="https://github.com/Joshua42atkinson/phonethagoras" target="_blank" rel="noopener noreferrer">github.com/Joshua42atkinson/phonethagoras</a></p>
+        <p>Contributions, feedback, and forks are welcome.</p>
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

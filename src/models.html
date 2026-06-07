@@ -125,7 +125,7 @@
 
     .persona-specs {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       color: var(--color-text-muted);
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
@@ -139,7 +139,7 @@
     
     .pearl-label {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       color: var(--theme-color);
       margin-bottom: 4px;
@@ -166,7 +166,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -221,150 +221,101 @@
 
   <div class="armory-container">
     <header class="armory-header">
-      <h1 id="guild-title" data-game="The Guild Hall" data-coach="Specialist AI Guild">The Guild Hall</h1>
-      <p id="guild-subtitle" data-game="Isolated heavy harnesses for your Prestige Classes. VRAM is perfectly managed." data-coach="Deploy specialized AI advisors to translate your life experiences into real-world career achievements.">Isolated heavy harnesses for your Prestige Classes. VRAM is perfectly managed.</p>
-      
-      <!-- Premium Translation Mode Toggle -->
-      <div class="mode-toggle-container" style="display: inline-flex; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; padding: 4px; margin-top: 1.5rem; gap: 4px;">
-        <button id="toggle-game" class="toggle-btn active" style="background: var(--color-accent); color: #000; border: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s;">🎮 Game Mode (Client)</button>
-        <button id="toggle-coach" class="toggle-btn" style="background: transparent; color: var(--color-text-muted); border: none; padding: 0.5rem 1.2rem; border-radius: 20px; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s;">👔 Coach & Career Mode</button>
-      </div>
+      <h1 id="guild-title">The Guild Hall</h1>
+      <p id="guild-subtitle">Isolated heavy harnesses for your Prestige Classes. VRAM is perfectly managed.</p>
     </header>
 
     <div class="armory-grid">
       
-      <!-- The Scout (Pathfinder) -->
+      <!-- The Scout -->
       <div class="persona-card theme-scout">
         <div class="persona-icon">🌲</div>
-        <div class="persona-title" data-game="The Scout" data-coach="The Pathfinder (Career Explorer)">The Scout</div>
-        <div class="persona-specs" data-game="Body / Act / The Druid" data-coach="Act / Career Skills Translation">Body / Act / The Druid</div>
+        <div class="persona-title">The Scout</div>
+        <div class="persona-specs">Body / Act / The Druid</div>
         
         <div class="pearl-section">
-          <div class="pearl-label" data-game="What" data-coach="Function">What</div>
-          <div class="pearl-text" data-game="A multimodal vision persona utilizing the rear camera to analyze the physical world." data-coach="An offline career assistant designed to translate military, vocational, or unstructured life history into professional resume metrics.">A multimodal vision persona utilizing the rear camera to analyze the physical world.</div>
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A multimodal vision persona utilizing the rear camera to analyze the physical world.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Where" data-coach="Interface">Where</div>
-          <div class="pearl-text" data-game="Tactical viewfinder interface overlaying live camera feed." data-coach="A structured resume workspace that extracts active skills and drafts civilian-ready career logs.">Tactical viewfinder interface overlaying live camera feed.</div>
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">Tactical viewfinder interface overlaying live camera feed.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Why" data-coach="Use Case">Why</div>
-          <div class="pearl-text" data-game="Foraging, plant identification, and situational awareness in physical environments." data-coach="Use this to reframe past odd jobs, service records, or work gaps into standard recruiter terms.">Foraging, plant identification, and situational awareness in physical environments.</div>
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">Foraging, plant identification, and situational awareness in physical environments.</div>
         </div>
         
-        <a href="models/scout.html" class="enter-btn" data-game="Equip Scout" data-coach="Start Career Pathfinder">Equip Scout</a>
+        <a href="models/scout.html" class="enter-btn">Equip Scout</a>
       </div>
 
-      <!-- The Storyteller (Lorekeeper) -->
+      <!-- The Storyteller -->
       <div class="persona-card theme-storyteller">
         <div class="persona-icon">📖</div>
-        <div class="persona-title" data-game="The Storyteller" data-coach="The Lorekeeper (Resume & Skill Writer)">The Storyteller</div>
-        <div class="persona-specs" data-game="Heart / Eloquence / The Bard" data-coach="Heart / Self-Determination Therapy">Heart / Eloquence / The Bard</div>
+        <div class="persona-title">The Storyteller</div>
+        <div class="persona-specs">Heart / Eloquence / The Bard</div>
         
         <div class="pearl-section">
-          <div class="pearl-label" data-game="What" data-coach="Function">What</div>
-          <div class="pearl-text" data-game="A highly creative, contextually deep text model paired with Kokoro TTS." data-coach="Narrative therapy and story translation engine. Takes difficult personal statements (e.g. gaps, justice history) and reframes them to highlight underlying strengths.">A highly creative, contextually deep text model paired with Kokoro TTS.</div>
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A highly creative, contextually deep text model paired with Kokoro TTS.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Where" data-coach="Interface">Where</div>
-          <div class="pearl-text" data-game="A distraction-free, fluid typography canvas wrapped in amber hues." data-coach="A warm, distraction-free writing environment that extracts action-oriented professional verbs.">A distraction-free, fluid typography canvas wrapped in amber hues.</div>
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">A distraction-free, fluid typography canvas wrapped in amber hues.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Why" data-coach="Use Case">Why</div>
-          <div class="pearl-text" data-game="For crafting immersive lore, creative writing, and audio-first storytelling." data-coach="Use this to rewrite personal stories, build resume summaries, and identify core resilience values.">For crafting immersive lore, creative writing, and audio-first storytelling.</div>
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">For crafting immersive lore, creative writing, and audio-first storytelling.</div>
         </div>
         
-        <a href="models/storyteller.html" class="enter-btn" data-game="Equip Storyteller" data-coach="Start Storyteller">Equip Storyteller</a>
+        <a href="models/storyteller.html" class="enter-btn">Equip Storyteller</a>
       </div>
 
-      <!-- The Nurse (Healer) -->
+      <!-- The Nurse -->
       <div class="persona-card theme-nurse">
         <div class="persona-icon">⚕️</div>
-        <div class="persona-title" data-game="The Nurse" data-coach="The Healer (Wellness & Somatic Guard)">The Nurse</div>
-        <div class="persona-specs" data-game="Heart / Empathy / The Empath" data-coach="Heart / Autonomic Stress Regulation">Heart / Empathy / The Empath</div>
+        <div class="persona-title">The Nurse</div>
+        <div class="persona-specs">Heart / Empathy / The Empath</div>
         
         <div class="pearl-section">
-          <div class="pearl-label" data-game="What" data-coach="Function">What</div>
-          <div class="pearl-text" data-game="An empathetic, safety-first persona tuned for careful logic and health discussion." data-coach="A safety-first empathetic coach focused on somatic regulation (managing stress/anxiety) and immediate local emergency response guides.">An empathetic, safety-first persona tuned for careful logic and health discussion.</div>
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">An empathetic, safety-first persona tuned for careful logic and health discussion.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Where" data-coach="Interface">Where</div>
-          <div class="pearl-text" data-game="A pristine, calming clinical blue interface with clear safety disclosures." data-coach="A calming blue space featuring box-breathing templates, tension checks, and crisis hotlines (988/211).">A pristine, calming clinical blue interface with clear safety disclosures.</div>
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">A pristine, calming clinical blue interface with clear safety disclosures.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Why" data-coach="Use Case">Why</div>
-          <div class="pearl-text" data-game="To provide a safe, structured environment for discussing physical and mental wellness." data-coach="Use this when feeling overwhelmed, anxious, or needing immediate de-escalation support during transitions.">To provide a safe, structured environment for discussing physical and mental wellness.</div>
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">To provide a safe, structured environment for discussing physical and mental wellness.</div>
         </div>
         
-        <a href="models/nurse.html" class="enter-btn" data-game="Equip Nurse" data-coach="Start Somatic Healer">Equip Nurse</a>
+        <a href="models/nurse.html" class="enter-btn">Equip Nurse</a>
       </div>
 
-      <!-- The Professor (Sage) -->
+      <!-- The Professor -->
       <div class="persona-card theme-professor">
         <div class="persona-icon">🏛️</div>
-        <div class="persona-title" data-game="The Professor" data-coach="The Sage (Education & Job Matcher)">The Professor</div>
-        <div class="persona-specs" data-game="Mind / Intelligence / The Sage" data-coach="Mind / Skill Gap Analysis">Mind / Intelligence / The Sage</div>
+        <div class="persona-title">The Professor</div>
+        <div class="persona-specs">Mind / Intelligence / The Sage</div>
         
         <div class="pearl-section">
-          <div class="pearl-label" data-game="What" data-coach="Function">What</div>
-          <div class="pearl-text" data-game="A strict, academic persona integrated with Nomic Embeddings for deep vector search." data-coach="An academic researcher that compares resumes against specific job description requirements to pinpoint exact training gaps.">A strict, academic persona integrated with Nomic Embeddings for deep vector search.</div>
+          <div class="pearl-label">What</div>
+          <div class="pearl-text">A strict, academic persona integrated with Nomic Embeddings for deep vector search.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Where" data-coach="Interface">Where</div>
-          <div class="pearl-text" data-game="A cyber-academic dual-pane view: Chat on the left, Citations on the right." data-coach="A comparative view showing your resume next to target job descriptions, highlighting requirements.">A cyber-academic dual-pane view: Chat on the left, Citations on the right.</div>
+          <div class="pearl-label">Where</div>
+          <div class="pearl-text">A cyber-academic dual-pane view: Chat on the left, Citations on the right.</div>
         </div>
         <div class="pearl-section">
-          <div class="pearl-label" data-game="Why" data-coach="Use Case">Why</div>
-          <div class="pearl-text" data-game="For rigorous research, analyzing personal journals, and exploring dense documentation." data-coach="Use this to customize your resume for a job opening, prepare for interviews, and plan educational goals.">For rigorous research, analyzing personal journals, and exploring dense documentation.</div>
+          <div class="pearl-label">Why</div>
+          <div class="pearl-text">For rigorous research, analyzing personal journals, and exploring dense documentation.</div>
         </div>
         
-        <a href="models/professor.html" class="enter-btn" data-game="Equip Professor" data-coach="Start Job Matcher">Equip Professor</a>
+        <a href="models/professor.html" class="enter-btn">Equip Professor</a>
       </div>
 
     </div>
   </div>
-
-  <script>
-    const toggleGameBtn = document.getElementById('toggle-game');
-    const toggleCoachBtn = document.getElementById('toggle-coach');
-
-    function setMode(mode) {
-      const isGame = mode === 'game';
-      
-      // Update toggle button UI
-      if (isGame) {
-        toggleGameBtn.style.background = 'var(--color-accent)';
-        toggleGameBtn.style.color = '#000';
-        toggleGameBtn.classList.add('active');
-        
-        toggleCoachBtn.style.background = 'transparent';
-        toggleCoachBtn.style.color = 'var(--color-text-muted)';
-        toggleCoachBtn.classList.remove('active');
-      } else {
-        toggleCoachBtn.style.background = 'var(--color-accent)';
-        toggleCoachBtn.style.color = '#000';
-        toggleCoachBtn.classList.add('active');
-        
-        toggleGameBtn.style.background = 'transparent';
-        toggleGameBtn.style.color = 'var(--color-text-muted)';
-        toggleGameBtn.classList.remove('active');
-      }
-
-      // Update text contents based on dataset attributes
-      document.querySelectorAll('[data-game][data-coach]').forEach(el => {
-        el.textContent = isGame ? el.dataset.game : el.dataset.coach;
-      });
-
-      // Save preference
-      localStorage.setItem('zen_guild_mode', mode);
-    }
-
-    toggleGameBtn.addEventListener('click', () => setMode('game'));
-    toggleCoachBtn.addEventListener('click', () => setMode('coach'));
-
-    // Initialize from storage or default to game
-    const savedMode = localStorage.getItem('zen_guild_mode') || 'game';
-    setMode(savedMode);
-  </script>
 </body>
 </html>

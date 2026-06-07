@@ -88,7 +88,7 @@
       font-size: 1.1rem;
     }
     .page-subtitle {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       color: var(--color-text-dim);
       font-weight: 400;
     }
@@ -134,7 +134,7 @@
       box-shadow: 0 0 8px var(--color-accent-glow);
     }
     .card-badge {
-      font-size: 0.7rem;
+      font-size: 0.875rem;
       font-family: var(--font-mono);
       color: var(--color-accent);
       background: var(--color-accent-dim);
@@ -146,7 +146,7 @@
     /* ── Form Elements ── */
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       font-weight: 500;
       color: var(--color-text-muted);
       margin-bottom: 6px;
@@ -183,7 +183,7 @@
       padding: 0.65rem 1.2rem;
       border-radius: 8px;
       font-family: 'Inter', system-ui, sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.25s;
@@ -219,7 +219,7 @@
       border: 1px solid var(--color-border);
     }
     .stat-label {
-      font-size: 0.65rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--color-text-dim);
@@ -241,7 +241,7 @@
       background: rgba(255,255,255,0.03);
       border-radius: 8px;
       border-left: 3px solid var(--color-accent);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       color: var(--color-text-muted);
     }
     .quest-line strong {
@@ -252,7 +252,7 @@
       text-align: center;
       padding: 2rem;
       color: var(--color-text-dim);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
     }
 
     /* ── Job Match Results ── */
@@ -271,7 +271,7 @@
       text-shadow: 0 0 20px var(--color-accent-glow);
     }
     .match-label {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--color-text-dim);
@@ -284,7 +284,7 @@
       margin-top: 0.6rem;
     }
     .skill-tag {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       padding: 3px 10px;
       border-radius: 16px;
       font-family: var(--font-mono);
@@ -301,7 +301,7 @@
       color: hsl(0, 72%, 60%);
     }
     .match-section-title {
-      font-size: 0.75rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--color-text-dim);
@@ -311,7 +311,7 @@
 
     /* ── Auto-save indicator ── */
     .save-indicator {
-      font-size: 0.7rem;
+      font-size: 0.875rem;
       color: var(--color-text-dim);
       transition: color 0.3s;
     }
@@ -332,7 +332,7 @@
       padding: 0.7rem 1.2rem;
       border-radius: 24px;
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 500;
       display: flex;
       align-items: center;
@@ -417,7 +417,7 @@
         <div class="card-title"><div class="dot"></div> Job Match Analyzer</div>
         <div class="card-badge">KEYWORD</div>
       </div>
-      <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+      <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">
         Paste a job posting below. We'll load the 1.2B Spoke AI (runs locally on your device) to analyze the job against your S.I.L.K. skills and resume, providing a probability of success and missing skills.
       </p>
       <div class="form-row">
@@ -434,7 +434,7 @@
         <div class="card-title"><div class="dot"></div> Document Workspace</div>
         <span class="save-indicator" id="doc-save-status"></span>
       </div>
-      <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+      <p style="font-size: 0.875rem; color: var(--color-text-muted); margin-bottom: 1rem;">
         Draft cover letters, notes, or anything else. Auto-saves when you click away.
       </p>
       <textarea id="doc-workspace" rows="10" placeholder="Start writing here… your work saves automatically."></textarea>
@@ -632,8 +632,8 @@
         <div style="margin-top: 1rem; padding: 1.5rem; border: 1px dashed var(--color-accent); border-radius: 12px; text-align: center;">
           <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📖</div>
           <div style="margin-bottom: 0.5rem; color: var(--color-accent); font-weight: 600;">The Scholar opens the Codex...</div>
-          <div style="font-size: 0.85rem; color: var(--color-text-muted);">Loading The Professor's reasoning engine. First run downloads ~698MB.</div>
-          <div id="spoke-progress" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem; color: #fff;">0%</div>
+          <div style="font-size: 0.875rem; color: var(--color-text-muted);">Loading The Professor's reasoning engine. First run downloads ~698MB.</div>
+          <div id="spoke-progress" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.875rem; color: #fff;">0%</div>
         </div>
       `;
 
@@ -647,7 +647,7 @@
         resultsDiv.innerHTML = `
           <div style="margin-top: 1rem; padding: 1rem; border: 1px dashed var(--color-mind); border-radius: 8px; text-align: center;">
             <div style="color: var(--color-mind); margin-bottom: 0.5rem;">Analyzing Match...</div>
-            <div style="font-size: 0.85rem; color: var(--color-text-muted);">The Professor is reading your resume and the job description...</div>
+            <div style="font-size: 0.875rem; color: var(--color-text-muted);">The Professor is reading your resume and the job description...</div>
           </div>
         `;
 

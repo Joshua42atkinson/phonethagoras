@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Learn how to use Phonethagoras — a free, private AI self-mastery engine. Tutorial slides and video walkthrough for guilds and mentors.">
+  <meta name="theme-color" content="#0a0f19">
+  <title>Help & Tutorial | Phonethagoras</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>">
+
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #1a1b26 0%, #0a0f19 100%);
+      min-height: 100vh;
+      color: var(--color-text);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-back {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s;
+      font-weight: 500;
+      z-index: 100;
+    }
+    .nav-back:hover { color: var(--color-text); }
+
+    .help-container {
+      padding: 5rem 1.5rem 4rem;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .help-hero {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInDown 0.8s ease forwards;
+    }
+
+    .help-hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #e0e0e0, #888);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .help-hero p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem;
+      color: var(--color-accent);
+      font-style: italic;
+    }
+
+    /* Tab Switcher */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeInUp 0.6s ease forwards;
+      opacity: 0;
+      animation-delay: 0.1s;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      background: rgba(20, 25, 40, 0.4);
+      color: var(--color-text-muted);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      background: rgba(30, 35, 55, 0.5);
+      color: var(--color-text);
+    }
+
+    .tab-btn.active {
+      background: rgba(201, 169, 110, 0.12);
+      color: var(--color-accent);
+      box-shadow: inset 0 -2px 0 var(--color-accent);
+    }
+
+    .tab-btn .tab-emoji {
+      font-size: 1.2rem;
+    }
+
+    /* Content Panels */
+    .tab-panel {
+      display: none;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+    .tab-panel.active { display: block; }
+
+    .embed-frame {
+      background: rgba(20, 25, 40, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.2s;
+    }
+
+    .embed-frame iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      display: block;
+    }
+
+    .embed-placeholder {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .embed-placeholder .placeholder-icon {
+      font-size: 3rem;
+      opacity: 0.4;
+    }
+
+    .embed-placeholder .placeholder-text {
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    .embed-placeholder code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--color-accent);
+      background: rgba(0,0,0,0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Quick Guide Section */
+    .quick-guide {
+      margin-top: 3rem;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+      animation-delay: 0.3s;
+    }
+
+    .quick-guide h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .guide-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .guide-card {
+      background: rgba(20, 25, 40, 0.35);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .guide-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .guide-card .guide-emoji {
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .guide-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .guide-card p {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.2), transparent);
+      margin: 3rem 2rem;
+      border: none;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .help-container { padding: 4.5rem 1rem 3rem; }
+      .guide-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Return to App
+  </a>
+
+  <div class="help-container">
+
+    <header class="help-hero">
+      <h1>Help & Tutorial</h1>
+      <p>Everything you need to get started — for guilds and party members.</p>
+    </header>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="slides" id="tab-slides">
+        <span class="tab-emoji">📖</span> Tutorial Slides
+      </button>
+      <button class="tab-btn" data-tab="video" id="tab-video">
+        <span class="tab-emoji">🎥</span> Watch Video
+      </button>
+    </div>
+
+    <!-- Slides Panel -->
+    <div class="tab-panel active" id="panel-slides">
+      <div class="embed-frame">
+        <!-- 
+          ═══════════════════════════════════════════════════
+          REPLACE THIS PLACEHOLDER WITH YOUR GOOGLE SLIDES:
+          
+          1. Create the tutorial in Google Slides
+          2. File → Share → Publish to web → Embed
+          3. Copy the iframe src URL
+          4. Replace the placeholder below with:
+             <iframe src="https://docs.google.com/presentation/d/YOUR_ID/embed?start=false&loop=false&delayms=5000" allowfullscreen="true"></iframe>
+          ═══════════════════════════════════════════════════
+        -->
+        <div class="embed-placeholder">
+          <span class="placeholder-icon">📖</span>
+          <p class="placeholder-text">
+            Tutorial slides will appear here once published.<br><br>
+            To embed: Create your deck in Google Slides, then<br>
+            <strong>File → Share → Publish to web → Embed</strong><br><br>
+            Paste the embed URL into <code>help.html</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Panel -->
+    <div class="tab-panel" id="panel-video">
+      <div class="embed-frame">
+        <!-- 
+          ═══════════════════════════════════════════════
+          REPLACE THIS PLACEHOLDER WITH YOUR YOUTUBE VIDEO:
+          
+          1. Run Google Vids to generate the tutorial
+          2. Upload to YouTube
+          3. Get the embed URL (Share → Embed)
+          4. Replace the placeholder below with:
+             <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen></iframe>
+          ═══════════════════════════════════════════════
+        -->
+        <div class="embed-placeholder">
+          <span class="placeholder-icon">🎥</span>
+          <p class="placeholder-text">
+            Video tutorial will appear here once uploaded.<br><br>
+            To create: Use Google Vids to narrate your Slides deck,<br>
+            then upload to YouTube and paste the embed URL into <code>help.html</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Quick Reference -->
+    <section class="quick-guide">
+      <h2>Quick Reference</h2>
+      <div class="guide-cards">
+        <div class="guide-card">
+          <span class="guide-emoji">💬</span>
+          <h3>Talk to The Architect</h3>
+          <p>Open the chat and tell Zen Zuse what's going on. Type or tap the mic to talk. It'll ask the right questions and point you to the right tool.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-emoji">📖</span>
+          <h3>Equip The Storyteller</h3>
+          <p>Go to the Storyteller. Write about a hard time in your own words. The AI extracts your strengths and turns them into professional language.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-emoji">🏛️</span>
+          <h3>Equip The Scout</h3>
+          <p>Go to The Scout. Paste a job posting. The AI shows which skills you have and which gaps to work on next.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-emoji">🌿</span>
+          <h3>Equip The Nurse</h3>
+          <p>HP running low? Go to The Nurse for a guided breathing exercise. It's a voluntary stamina reset — drink a potion and step back into the arena.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-emoji">📤</span>
+          <h3>Sync with Guild</h3>
+          <p>Generate a Party Sync, then tap "Sync with Guild." Your mentor gets a summary of your stats — EXP gained, unlocked skills, and needed buffs.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-emoji">🔒</span>
+          <h3>Your Privacy</h3>
+          <p>Everything stays on your device. No login, no server, no tracking. Clear your browser data to erase everything permanently.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

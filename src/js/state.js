@@ -89,7 +89,7 @@ import { Vault } from './vault.js';
         guard: 0.50,
       },
       mentorship: {
-        coachEmail: '',
+        guildMasterEmail: '',
         lastSitRep: null,
       },
 

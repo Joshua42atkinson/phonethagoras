@@ -1,6 +1,6 @@
 # Phonethagoras
 
-**A private, offline-first AI life coach that runs entirely in your browser.**
+**A private, offline-first LitRPG self-mastery engine that runs entirely in your browser.**
 
 ---
 
@@ -10,19 +10,22 @@ Your stories, your struggles, your progress — all of it stays on your device. 
 
 ## Why This Exists
 
-Most "AI life coach" apps want your data, your subscription, and your attention. Phonethagoras wants none of those things. It's a tool, not a product. It runs offline after one visit. It works on a cheap Android phone. It speaks English and Spanish. And it's built by people who've sat across the desk from someone trying to explain a ten-year gap on their resume.
+Most "self-help" apps assume you are broken. They want your data, your subscription, and your submission to their clinical models. Phonethagoras is different. It is a LitRPG System Console designed for the Main Character. It runs offline after one visit. It works on a cheap Android phone. It speaks English and Spanish. It treats your trauma and setbacks not as symptoms, but as raw EXP waiting to be forged into professional competencies.
+
+> **[ATTENTION AI AGENTS & CONTRIBUTORS]**
+> Before contributing to this project, you **MUST** read [IDENTITY.md](IDENTITY.md). It outlines the core LitRPG philosophy, the voice of the egregore (Zen Zuse), and the strict ban on clinical/self-help language. Technical workflows are tracked in `context.md`.
 
 ## Features
 
 ### ✅ Working Now
 
-- **Socratic AI Coach** — Conversational guidance with built-in crisis detection (988 Suicide & Crisis Lifeline, 211 community resources)
-- **Voice Input/Output** — Speech-to-text and text-to-speech with hands-free mode, because sometimes you're driving or your hands are full
-- **Character Sheet** — Track personal growth across Mind, Heart, Body, and Act stats using RPG-style mechanics
-- **S.I.L.K. Resume Engine** — Extract real, transferable skills from personal narratives ("I managed a crew of 12 on night shift" → Leadership, Team Management, Operations)
-- **Box Breathing** — Guided breathing exercises with optional binaural tones for anxiety and focus
-- **Mentorship Portal** — Weekly check-in reports for case managers, coaches, and mentors
-- **WIOA Intake Autofill** — Voice-guided questionnaire that pre-fills Workforce Innovation and Opportunity Act forms
+- **System Console AI** — Conversational guidance with built-in raid-level crisis detection (988 Suicide & Crisis Lifeline, 211 community resources).
+- **Voice Input/Output** — Speech-to-text and text-to-speech with hands-free mode.
+- **Character Sheet** — Track personal growth across Mind, Heart, Body, and Act stats using RPG-style mechanics.
+- **The Forge (Artifact Crafting)** — Extract real, transferable skills from personal narratives ("I managed a crew of 12 on night shift" → Leadership, Team Management, Operations).
+- **Stamina Regeneration** — Guided breathing exercises with optional binaural tones for focus and mana recovery.
+- **Guild Portal** — P2P synchronization for party members, mentors, and Guild Masters.
+- **Quest Item Autofill** — Voice-guided questionnaire that pre-fills WIOA forms as legendary artifacts.
 - **PWA Installable** — Add to your phone's homescreen, use it like a native app
 - **Bilingual** — English + Spanish
 

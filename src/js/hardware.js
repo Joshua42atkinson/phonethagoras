@@ -140,7 +140,12 @@ export const PhoneHardware = (() => {
     // Update header badge
     const badge = document.getElementById('hardware-tier-badge');
     if (badge) {
-      badge.textContent = `${hwProfile.tier} · ${hwProfile.backend.toUpperCase()}`;
+      const tierLabels = {
+        'FULL': 'Full Power',
+        'STANDARD': 'Standard',
+        'MINIMAL': 'Basic Mode'
+      };
+      badge.textContent = tierLabels[hwProfile.tier] || hwProfile.tier;
       badge.className = `status-indicator tier-${hwProfile.tier.toLowerCase()}`;
     }
   }

@@ -83,10 +83,10 @@ export const PEARL = (() => {
     return PHASE_CONTEXTS[currentState];
   }
 
-  function checkCoachRouting(userInput) {
-    // Only route to coach for genuine crisis/danger signals.
-    // Everyday emotional words (overwhelmed, anxious, stressed) are normal coaching topics
-    // and should be handled by the AI, not dismissed to a coach.
+  function checkRaidIntervention(userInput) {
+    // Only route to high-level Paladin (crisis intervention) for genuine danger signals.
+    // Everyday emotional words (overwhelmed, anxious, stressed) are normal EXP/Quest topics
+    // and should be handled by the AI, not dismissed to a Paladin.
     const crisisWords = [
       'suicide', 'kill myself', 'want to die', 'self harm', 'self-harm',
       'abuse', 'domestic violence', 'molest', 'trafficking'
@@ -105,7 +105,7 @@ export const PEARL = (() => {
     getState,
     advanceState,
     getSystemPromptModifier,
-    checkCoachRouting
+    checkRaidIntervention
   };
 })();
 

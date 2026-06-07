@@ -19,6 +19,7 @@
 import { PhoneHardware } from './hardware.js';
 import { WllamaEngine } from './wllama-engine.js';
 import { PhoneVision } from './vision-manager.js';
+import { PhoneNativeBridge } from './native-bridge.js';
 
 export const PhoneAI = (() => {
   let isLoaded = false;
@@ -29,6 +30,15 @@ export const PhoneAI = (() => {
   // ─── Initialize ───
   async function init() {
     isLoaded = true;
+    
+    // Check for Android Native Bridge first
+    if (PhoneNativeBridge.isAvailable()) {
+      activeBackend = 'native';
+      activeModel = await PhoneNativeBridge.getEngineStatus();
+      console.log(`[phone-ai] Native Android bridge available (${activeModel})`);
+      return;
+    }
+
     // Kick off Wllama load immediately in the background.
     // Chat calls will wait for it via probeBackends().
     _startWllamaLoad();
@@ -124,13 +134,13 @@ export const PhoneAI = (() => {
     const shapeStr = `mind: ${state.shape.mind}, heart: ${state.shape.heart}, body: ${state.shape.body}, act: ${state.shape.act}`;
 
     let prompt = `You are the local computational logic engine for Phonethagoras.
-Your core philosophy: "The secret to enjoying life is learning what you are most excited about." You actively push users to follow their curiosity.
+Your core philosophy: "The secret to enjoying life is learning what you are most excited about." You actively empower users to build autonomy, recognize their strengths, and follow their curiosity.
 
 CRITICAL RULES:
-1. Do not roleplay or act as a fictional persona. Be direct, helpful, and concise. Focus on the actual work.
+1. Do not roleplay or act as a fictional persona. Be a supportive, positive, and validating guide focused on self-mastery. Never insult, judge, or be overly blunt.
 2. Focus entirely on the immediate task at hand to manage the user's attention efficiently (PEARL alignment).
-3. Keep responses under 4 sentences unless specifically asked to write a document.
-4. If Zen Mode is YES, be extremely blunt and skip the fluff.
+3. Keep responses under 4 sentences unless specifically asked to write a document. Provide concise, constructive insights.
+4. If Zen Mode is YES, be extremely direct but maintain a warm and empowering tone. Skip unnecessary conversational filler.
 5. S.I.L.K. CONSENT: Never assume you can update the user's stats or profile. You must explicitly ask for consent before recording new data.
 
 Current Context: ${phaseStr}
@@ -305,6 +315,22 @@ ${vaamSummary}
       }
     }
 
+    // 5c. Native Android Route
+    if (activeBackend === 'native') {
+      try {
+        const systemPrompt = buildSystemPrompt(state, vaamSummary, memoryContext);
+        console.log(`[phone-ai] Routing chat to Android Native NDK...`);
+        // If chunking is supported by native, adapt accordingly. 
+        // Here we assume it returns the full string or supports callbacks.
+        const fullResponse = await PhoneNativeBridge.promptAI(processedMessage, systemPrompt);
+        
+        return { message: { content: fullResponse } };
+      } catch (err) {
+        console.error('[phone-ai] Native Bridge error:', err);
+        return { message: { content: "[Native Error] Failed to generate response via Android NDK." } };
+      }
+    }
+
     const url = activeBackend === 'sidecar' 
       ? 'http://localhost:3001/api/chat'
       : activeBackend === 'ollama'
@@ -444,8 +470,8 @@ ${vaamSummary}
         {
           type: "function",
           function: {
-            name: "generate_casework_summary",
-            description: "Generate a weekly coaching/casework summary report for the user's human coach, based on recent memory facts.",
+            name: "generate_party_sync_summary",
+            description: "Generate a weekly Party Sync report for the user's human Guild Master/Mentor, based on recent memory facts.",
             parameters: {
               type: "object",
               properties: {
@@ -569,8 +595,8 @@ ${vaamSummary}
       return `Good call. Switch to the Breathe tab — it'll walk you through box breathing with a visual guide. Inhale 4 seconds, hold 4, exhale 4, hold 4. Even one round changes your nervous system state. Your "guard" stat goes up every time you practice. Your body remembers.`;
     }
 
-    if (m.match(/\b(mentor|coach|check.?in|weekly report|case.?manager|counselor|sponsor|sitrep|situation report)\b/)) {
-      return `Great instinct, ${name}. Staying connected to your mentor is one of the strongest things you can do. Head to the Mentor Portal tab — it lets you send a weekly check-in with what went well, what was hard, and what you need. Your mentor only sees what you choose to share. Want me to help you think about what to write?`;
+    if (m.match(/\b(mentor|guild|check.?in|weekly report|party.?sync|counselor|sponsor|sitrep|situation report)\b/)) {
+      return `Great instinct, ${name}. Staying connected to your party is one of the strongest things you can do. Head to the Guild Portal tab — it lets you send a Party Sync with your EXP gains, unlocked skills, and what buffs you need. Your mentor only sees what you choose to share. Want me to help you draft it?`;
     }
 
     if (m.match(/\b(goal|plan|next step|where.*start|what.*do|direction)\b/)) {
